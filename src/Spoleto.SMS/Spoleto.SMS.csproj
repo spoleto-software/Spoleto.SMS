@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+    <!-- Include symbols for debugging -->
+    <PropertyGroup>
+        <!-- This command creates external file (snupkg) with .pdb next to nuget file (nupkg) -->
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    </PropertyGroup>
+
+    <!-- Package info -->
+    <PropertyGroup>
+        <Product>Spoleto.SMS library</Product>
+        <Description>The client for SPOLETO RESTful service</Description>
+        <PackageId>Spoleto.SMS</PackageId>
+        <Authors>OlegNadymov;Spoleto-Software</Authors>
+        <Company>SPOLETO Software Development</Company>
+        <PackageIcon>MainIcon.jpg</PackageIcon>
+        <PackageProjectUrl>https://spoleto.ru</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/spoleto-software/Spoleto.SMS</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageTags>SMS; SMSC; SMSЦентр; GetSms</PackageTags>
+        <Copyright>Copyright © $([System.DateTime]::Now.Year.ToString())</Copyright>
+        <PackageReleaseNotes></PackageReleaseNotes>
+        <Version>$([System.DateTime]::Now.AddYears(-2022).Year.ToString()).$([System.DateTime]::Now.ToString("MM.dd.HHmm"))</Version>
+        <AssemblyVersion>$([System.DateTime]::Now.AddYears(-2022).Year.ToString()).$([System.DateTime]::Now.ToString("MM.dd.HHmm"))</AssemblyVersion>
+        <FileVersion>$([System.DateTime]::Now.AddYears(-2022).Year.ToString()).$([System.DateTime]::Now.ToString("MM.dd.HHmm"))</FileVersion>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\..\README.md">
+            <Pack>True</Pack>
+            <PackagePath>\</PackagePath>
+        </None>
+        <None Include="Resources\MainIcon.jpg">
+            <Pack>True</Pack>
+            <PackagePath></PackagePath>
+        </None>
+    </ItemGroup>    
+</Project>
