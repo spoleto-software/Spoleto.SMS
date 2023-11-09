@@ -8,16 +8,16 @@
         /// <summary>
         /// Get the error code.
         /// </summary>
-        public string Code { get; }
+        public string Code { get; init; }
 
         /// <summary>
         /// Get the error message.
         /// </summary>
-        public string Message { get; }
+        public string Message { get; init; }
 
         /// <summary>
         /// Get the numeric error code.
         /// </summary>
-        public int NumCode { get; }
+        public int NumCode { get; init; }
     }
 }

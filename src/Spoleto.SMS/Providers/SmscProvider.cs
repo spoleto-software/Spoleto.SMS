@@ -1,4 +1,7 @@
-﻿namespace Spoleto.SMS.Providers
+﻿using Spoleto.SMS.Exceptions;
+using Spoleto.SMS.Extensions;
+
+namespace Spoleto.SMS.Providers
 {
     /// <summary>
     /// The SMSC provider for sending SMS messages.
@@ -6,8 +9,44 @@
     /// <remarks>
     /// <see href="https://smsc.ru/api/code/libraries/http_smtp/cs/#menu"/>.
     /// </remarks>
-    public class SmscProvider : ISmscProvider
+    public partial class SmscProvider : ISmscProvider
     {
+        private const char separator = ';';
+
+        private readonly SmscOptions _options;
+
+        public SmscProvider(SmscOptions options)
+        {
+            _options = options;
+
+            SMSC_LOGIN = _options.SMSC_LOGIN;
+            SMSC_PASSWORD = _options.SMSC_PASSWORD;
+            SMSC_POST = _options.SMSC_POST;
+            SMSC_HTTPS = _options.SMSC_HTTPS;
+            SMSC_CHARSET = _options.SMSC_CHARSET;
+            SMSC_DEBUG = _options.SMSC_DEBUG;
+            SMTP_FROM = _options.SMTP_FROM;
+            SMTP_SERVER = _options.SMTP_SERVER;
+            SMTP_LOGIN = _options.SMTP_LOGIN;
+            SMTP_PASSWORD = _options.SMTP_PASSWORD;
+        }
+
+        //public SmscProvider(IOptions<SmscOptions> options)
+        //{
+        //    _options = options?.Value ?? throw new ArgumentNullException(nameof(SmscOptions));
+
+        //    SMSC_LOGIN = _options.SMSC_LOGIN;
+        //    SMSC_PASSWORD = _options.SMSC_PASSWORD;
+        //    SMSC_POST = _options.SMSC_POST;
+        //    SMSC_HTTPS = _options.SMSC_HTTPS;
+        //    SMSC_CHARSET = _options.SMSC_CHARSET;
+        //    SMSC_DEBUG = _options.SMSC_DEBUG;
+        //    SMTP_FROM = _options.SMTP_FROM;
+        //    SMTP_SERVER = _options.SMTP_SERVER;
+        //    SMTP_LOGIN = _options.SMTP_LOGIN;
+        //    SMTP_PASSWORD = _options.SMTP_PASSWORD;
+        //}
+
         private const string ProviderName = nameof(SmsProviderName.SMSC);
 
         /// <inheritdoc/>
@@ -16,37 +55,142 @@
         /// <inheritdoc/>
         public SmsSendingResult Send(SmsMessage message)
         {
-            throw new NotImplementedException();
+            var result = send_sms(message.To, message.Body, sender: message.From);
+
+            return GetSmsSendingResult(result);
         }
 
         /// <inheritdoc/>
-        public Task<SmsSendingResult> SendAsync(SmsMessage message, CancellationToken cancellationToken = default)
+        public async Task<SmsSendingResult> SendAsync(SmsMessage message, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var result = await send_smsAsync(message.To, message.Body, sender: message.From).ConfigureAwait(false);
+
+            return GetSmsSendingResult(result);
         }
 
         /// <inheritdoc/>
         public SmsStatusResult GetStatus(string id, string? phoneNumber)
         {
-            throw new NotImplementedException();
+            if (phoneNumber == null)
+                throw new ArgumentNullException(nameof(phoneNumber));
+
+            var result = get_status(id, phoneNumber);
+
+            return GetSmsStatusResult(result);
         }
 
         /// <inheritdoc/>
-        public Task<SmsStatusResult> GetStatusAsync(string id, string? phoneNumber, CancellationToken cancellationToken = default)
+        public async Task<SmsStatusResult> GetStatusAsync(string id, string? phoneNumber, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            if (phoneNumber == null)
+                throw new ArgumentNullException(nameof(phoneNumber));
+
+            var result = await get_statusAsync(id, phoneNumber).ConfigureAwait(false);
+
+            return GetSmsStatusResult(result);
         }
 
         /// <inheritdoc/>
-        public void CheckPhoneNumber(string phoneNumber, bool isAllowSendToForeignNumbers = false)
+        public void CheckPhoneNumber(string phoneNumber, string sender, bool isAllowSendToForeignNumbers = false)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(phoneNumber))
+                throw new ArgumentNullException(nameof(phoneNumber));
+
+            if (string.IsNullOrWhiteSpace(sender))
+                throw new ArgumentNullException(nameof(sender));
+
+            phoneNumber.Split(separator).ForEach(number => ValidatePhoneNumber(number, isAllowSendToForeignNumbers));
+
+            var result = send_sms(phoneNumber, string.Empty, sender: sender, query: "hlr=1");
+
+            var smsResult = GetSmsSendingResult(result);
+            if (!smsResult.Success)
+            {
+                throw new SmsSendingException(smsResult.Errors.First().Message);
+            }
         }
 
         /// <inheritdoc/>
         public string GetBalance()
         {
-            throw new NotImplementedException();
+            return get_balance();
         }
+
+        private void ValidatePhoneNumber(string phoneNumber, bool isAllowSendToForeignNumbers = false)
+        {
+            if (string.IsNullOrWhiteSpace(phoneNumber))
+                throw new ArgumentNullException(nameof(phoneNumber));
+
+            phoneNumber = phoneNumber.Replace("(", "").Replace(")", "").Replace(" ", "").Replace("-", "").Replace("+", "");
+            if (string.IsNullOrWhiteSpace(phoneNumber) || phoneNumber.Length < 11 || phoneNumber.Length > 15)
+            {
+                throw new ArgumentException($"The phone number {phoneNumber} is not in the correct format.");
+            }
+
+            if (!isAllowSendToForeignNumbers)
+            {
+                if (!_options.LocalPrefixPhoneNumbers.Any(phoneNumber.StartsWith))
+                {
+                    throw new ArgumentException($"The phone number {phoneNumber} is not local number.");
+                }
+            }
+        }
+
+        private SmsSendingResult GetSmsSendingResult(string[] result)
+        {
+            if (Convert.ToInt32(result[1]) > 0)
+            {
+                return new SmsSendingResult
+                {
+                    ProviderName = Name,
+                    Success = true
+                };
+            }
+
+            return new SmsSendingResult
+            {
+                ProviderName = Name,
+                Success = false,
+                Errors = new List<SmsSendingError>
+                {
+                    new SmsSendingError
+                    {
+                        Code = result[1],
+                        Message= GetErrorMessage(result[1])
+                    }
+                }
+            };
+        }
+
+        private SmsStatusResult GetSmsStatusResult(string[] result)
+        {
+            if (Convert.ToInt32(result[0]) > 0)
+            {
+                return new SmsStatusResult
+                {
+                    Success = true
+                };
+            }
+
+            return new SmsStatusResult
+            {
+                Success = false
+            };
+        }
+
+        private static string GetErrorMessage(string code)
+            => code switch
+            {
+                "-1" => "Ошибка в параметрах.",
+                "-2" => "Неверный логин или пароль.",
+                "-3" => "Недостаточно средств на счете Клиента.",
+                "-4" => "IP-адрес временно заблокирован из-за частых ошибок в запросах.",
+                "-5" => "Неверный формат даты.",
+                "-6" => "Сообщение запрещено (по тексту или по имени отправителя).",
+                "-7" => "Неверный формат номера телефона.",
+                "-8" => "Сообщение на указанный номер не может быть доставлено.",
+                "-9" => "Отправка более одного одинакового запроса на передачу SMS-сообщения либо более пяти одинаковых запросов на получение стоимости сообщения в течение минуты.",
+                _ => $"Неизвестная ошибка. Свяжитесь с ИТ отделом. Код ошибки : {code}.",
+            };
     }
 }

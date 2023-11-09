@@ -12,7 +12,6 @@
 
         string GetBalance();
 
-        void CheckPhoneNumber(string phoneNumber, bool isAllowSendToForeignNumbers = false);
-
+        void CheckPhoneNumber(string phoneNumber, string sender, bool isAllowSendToForeignNumbers = false);
     }
 }

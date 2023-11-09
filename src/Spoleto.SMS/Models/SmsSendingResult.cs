@@ -8,16 +8,16 @@
         /// <summary>
         /// Get if the SMS has been sent successfully.
         /// </summary>
-        public bool Success { get; }
+        public bool Success { get; init; }
 
         /// <summary>
         /// Get the name of the provider used to send the SMS.
         /// </summary>
-        public string ProviderName { get; }
+        public string ProviderName { get; init; }
 
         /// <summary>
         /// Get the errors associated with the sending failure.
         /// </summary>
-        public IEnumerable<SmsSendingError> Errors { get; }
+        public IEnumerable<SmsSendingError> Errors { get; init; }
     }
 }
