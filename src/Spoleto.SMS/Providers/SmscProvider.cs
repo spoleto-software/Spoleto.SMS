@@ -11,6 +11,7 @@ namespace Spoleto.SMS.Providers
     /// </remarks>
     public partial class SmscProvider : ISmscProvider
     {
+        private const string ProviderName = nameof(SmsProviderName.SMSC);
         private const char separator = ';';
 
         private readonly SmscOptions _options;
@@ -46,8 +47,6 @@ namespace Spoleto.SMS.Providers
         //    SMTP_LOGIN = _options.SMTP_LOGIN;
         //    SMTP_PASSWORD = _options.SMTP_PASSWORD;
         //}
-
-        private const string ProviderName = nameof(SmsProviderName.SMSC);
 
         /// <inheritdoc/>
         public string Name => ProviderName;

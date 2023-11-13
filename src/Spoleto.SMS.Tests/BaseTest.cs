@@ -23,6 +23,9 @@ namespace Spoleto.SMS.Tests
             services.AddSingleton(ConfigurationHelper.Configuration.GetSection(nameof(SmscOptions)).Get<SmscOptions>()!);
             services.AddSingleton<ISmscProvider, SmscProvider>();
 
+            services.AddSingleton(ConfigurationHelper.Configuration.GetSection(nameof(GetSmsOptions)).Get<GetSmsOptions>()!);
+            services.AddSingleton<ISmsProvider, GetSmsProvider>();
+
 
             _serviceProvider = services.BuildServiceProvider();
         }

@@ -18,13 +18,6 @@ namespace CIS.Service.Client.Tests
 
         public static IConfigurationRoot Configuration => _config;
 
-        public static SmscOptions GetSmscOptions()
-        {
-            var options = _config.GetSection(nameof(SmscOptions)).Get<SmscOptions>()!;
-
-            return options;
-        }
-
         public static SmsMessage GetSmsMessage()
         {
             var sms = _config.GetSection(nameof(SmsMessage)).Get<SmsMessage>()!;

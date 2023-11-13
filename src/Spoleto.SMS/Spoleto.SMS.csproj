@@ -43,5 +43,9 @@
             <Pack>True</Pack>
             <PackagePath></PackagePath>
         </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Spoleto.Common" Version="1.6.8.1844" />
     </ItemGroup>    
 </Project>
