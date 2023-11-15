@@ -7,8 +7,5 @@
         public string Password { get; init; }
 
         public string ServiceUrl { get; init; }
-
-        public string? Nickname { get; init; }
-
     }
 }

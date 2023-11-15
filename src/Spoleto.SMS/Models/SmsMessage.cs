@@ -21,7 +21,7 @@
         /// <summary>
         /// Gets the phone number or another ID of the sender.
         /// </summary>
-        public string From { get; private set; }
+        public string? From { get; private set; }
 
         /// <summary>
         /// Gets the phone numbers of recipients to send the SMS message to.

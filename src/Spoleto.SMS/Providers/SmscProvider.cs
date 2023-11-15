@@ -50,9 +50,15 @@ namespace Spoleto.SMS.Providers
         /// <inheritdoc/>
         public override string Name => ProviderName;
 
+        protected override List<string> LocalPrefixPhoneNumbers { get; } = new List<string> { "7", "8" };
+
         /// <inheritdoc/>
         public override SmsSendingResult Send(SmsMessage message)
         {
+            // Validate:
+            message.To.Split(Separator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .ForEach(number => ValidateDataForSMS(number, message.Body, message.IsAllowSendToForeignNumbers));
+
             var result = send_sms(message.To, message.Body, sender: message.From);
 
             return GetSmsSendingResult(result);
@@ -61,6 +67,10 @@ namespace Spoleto.SMS.Providers
         /// <inheritdoc/>
         public override async Task<SmsSendingResult> SendAsync(SmsMessage message, CancellationToken cancellationToken = default)
         {
+            // Validate:
+            message.To.Split(Separator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .ForEach(number => ValidateDataForSMS(number, message.Body, message.IsAllowSendToForeignNumbers));
+
             var result = await send_smsAsync(message.To, message.Body, sender: message.From).ConfigureAwait(false);
 
             return GetSmsSendingResult(result);
@@ -114,7 +124,7 @@ namespace Spoleto.SMS.Providers
             return get_balance();
         }
 
-        private void ValidatePhoneNumber(string phoneNumber, bool isAllowSendToForeignNumbers = false)
+        protected override void ValidatePhoneNumber(string phoneNumber, bool isAllowSendToForeignNumbers = false)
         {
             if (string.IsNullOrWhiteSpace(phoneNumber))
                 throw new ArgumentNullException(nameof(phoneNumber));
@@ -125,13 +135,7 @@ namespace Spoleto.SMS.Providers
                 throw new ArgumentException($"The phone number {phoneNumber} is not in the correct format.");
             }
 
-            if (!isAllowSendToForeignNumbers)
-            {
-                if (!_options.LocalPrefixPhoneNumbers.Any(phoneNumber.StartsWith))
-                {
-                    throw new ArgumentException($"The phone number {phoneNumber} is not local number.");
-                }
-            }
+            base.ValidatePhoneNumber(phoneNumber, isAllowSendToForeignNumbers);
         }
 
         private SmsSendingResult GetSmsSendingResult(string[] result)

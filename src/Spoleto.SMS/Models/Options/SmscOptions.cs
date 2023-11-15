@@ -59,7 +59,5 @@
         public string SMTP_PASSWORD { get; init; }
 
         #endregion
-
-        public List<string> LocalPrefixPhoneNumbers { get; init; } = new List<string> { "7", "8" };
     }
 }

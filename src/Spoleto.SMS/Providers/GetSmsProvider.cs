@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Spoleto.Common.Helpers;
+using Spoleto.SMS.Extensions;
 
 namespace Spoleto.SMS.Providers
 {
@@ -26,6 +27,8 @@ namespace Spoleto.SMS.Providers
         /// <inheritdoc/>
         public override string Name => ProviderName;
 
+        protected override List<string> LocalPrefixPhoneNumbers { get; } = new List<string> { "998" };
+
         /// <inheritdoc/>
         public override SmsSendingResult Send(SmsMessage message)
             => SendAsync(message).GetAwaiter().GetResult();
@@ -35,7 +38,12 @@ namespace Spoleto.SMS.Providers
         {
             var httpClient = new HttpClient(); //todo:
 
-            var smsList = message.To.Split(Separator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+            var phoneNumbers = message.To.Split(Separator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+            // Validate:
+            phoneNumbers.ForEach(number => ValidateDataForSMS(number, message.Body, message.IsAllowSendToForeignNumbers));
+
+            var smsList = phoneNumbers
                 .Select(x => new Dictionary<string, string>()
                 {
                     {"phone", x},
@@ -48,9 +56,9 @@ namespace Spoleto.SMS.Providers
                 { "password", _options.Password }
             };
 
-            if (!string.IsNullOrEmpty(_options.Nickname))
+            if (!string.IsNullOrEmpty(message.From))
             {
-                requestData.Add("nickname", _options.Nickname);
+                requestData.Add("nickname", message.From);
             }
 
             requestData.Add("data", JsonHelper.ToJson(smsList));
