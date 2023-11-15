@@ -17,6 +17,8 @@ namespace Spoleto.SMS.Providers
 
         public SmscProvider(SmscOptions options)
         {
+            // Validates if the options are valid
+            options.Validate();
             _options = options;
 
             SMSC_LOGIN = _options.SMSC_LOGIN;
@@ -49,6 +51,9 @@ namespace Spoleto.SMS.Providers
 
         /// <inheritdoc/>
         public override string Name => ProviderName;
+
+        /// <inheritdoc/>
+        public override bool IsAllowNullFrom => false;
 
         protected override List<string> LocalPrefixPhoneNumbers { get; } = new List<string> { "7", "8" };
 

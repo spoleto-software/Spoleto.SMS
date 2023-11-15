@@ -21,11 +21,16 @@ namespace Spoleto.SMS.Providers
 
         public GetSmsProvider(GetSmsOptions options)
         {
+            // Validates if the options are valid
+            options.Validate();
             _options = options;
         }
 
         /// <inheritdoc/>
         public override string Name => ProviderName;
+
+        /// <inheritdoc/>
+        public override bool IsAllowNullFrom => true;
 
         protected override List<string> LocalPrefixPhoneNumbers { get; } = new List<string> { "998" };
 

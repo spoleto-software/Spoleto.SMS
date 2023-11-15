@@ -12,6 +12,9 @@ namespace Spoleto.SMS.Providers
         public abstract string Name { get; }
 
         /// <inheritdoc/>
+        public abstract bool IsAllowNullFrom { get; }
+
+        /// <inheritdoc/>
         public abstract SmsSendingResult Send(SmsMessage message);
 
         /// <inheritdoc/>

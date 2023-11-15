@@ -7,17 +7,17 @@
         /// <summary>
         /// логин клиента
         /// </summary>
-        public string SMSC_LOGIN { get; init; }
+        public string SMSC_LOGIN { get; set; }
 
         /// <summary>
         /// пароль или MD5-хеш пароля в нижнем регистре
         /// </summary>
-        public string SMSC_PASSWORD { get; init; }
+        public string SMSC_PASSWORD { get; set; }
 
         /// <summary>
         /// использовать метод POST
         /// </summary>
-        public bool SMSC_POST { get;  init; }
+        public bool SMSC_POST { get;  set; }
 
         /// <summary>
         /// использовать HTTPS протокол
@@ -59,5 +59,17 @@
         public string SMTP_PASSWORD { get; init; }
 
         #endregion
+
+        /// <summary>
+        /// validate if the options are all set correctly
+        /// </summary>
+        public void Validate()
+        {
+            if (string.IsNullOrWhiteSpace(SMSC_LOGIN))
+                throw new ArgumentNullException($"{nameof(SMSC_LOGIN)}");
+
+            if (string.IsNullOrWhiteSpace(SMSC_PASSWORD))
+                throw new ArgumentNullException($"{nameof(SMSC_PASSWORD)}");
+        }
     }
 }

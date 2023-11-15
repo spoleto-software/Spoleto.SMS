@@ -6,9 +6,14 @@
     public interface ISmsProvider
     {
         /// <summary>
-        /// The SMS provider unique name.
+        /// Gets the SMS provider unique name.
         /// </summary>
         string Name { get; }
+
+        /// <summary>
+        /// Gets the flag whether null in From is allowed.
+        /// </summary>
+        bool IsAllowNullFrom { get; }
 
         /// <summary>
         /// Sends the SMS message.

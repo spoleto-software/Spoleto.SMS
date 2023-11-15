@@ -3,6 +3,9 @@ using Spoleto.SMS.Providers;
 
 namespace Spoleto.SMS
 {
+    /// <summary>
+    /// The SMS service used to abstract the SMS sending.
+    /// </summary
     public class SmsService : ISmsService
     {
         private readonly ISmsProvider _defaultProvider;
@@ -63,13 +66,17 @@ namespace Spoleto.SMS
             => Send(message, _defaultProvider);
 
         /// <inheritdoc/>
-        public SmsSendingResult Send(SmsMessage message, SmsProviderName providerName)
+        public SmsSendingResult Send(SmsMessage message, string providerName)
         {
-            if (!_providers.TryGetValue(providerName.ToString(), out var provider))
-                throw new SmsProviderNotFoundException(providerName.ToString());
+            if (!_providers.TryGetValue(providerName, out var provider))
+                throw new SmsProviderNotFoundException(providerName);
 
             return Send(message, provider);
         }
+
+        /// <inheritdoc/>
+        public SmsSendingResult Send(SmsMessage message, SmsProviderName providerName)
+            => Send(message, providerName.ToString());
 
         /// <inheritdoc/>
         public SmsSendingResult Send(SmsMessage message, ISmsProvider provider)
@@ -81,7 +88,7 @@ namespace Spoleto.SMS
                 throw new ArgumentNullException(nameof(provider));
 
             // check if the from is null
-            CheckMessageFromValue(message);
+            CheckMessageFromValue(provider, message);
 
             // send the sms message
             return provider.Send(message);
@@ -92,13 +99,17 @@ namespace Spoleto.SMS
             => SendAsync(message, _defaultProvider, cancellationToken);
 
         /// <inheritdoc/>
-        public Task<SmsSendingResult> SendAsync(SmsMessage message, SmsProviderName providerName, CancellationToken cancellationToken = default)
+        public Task<SmsSendingResult> SendAsync(SmsMessage message, string providerName, CancellationToken cancellationToken = default)
         {
-            if (!_providers.TryGetValue(providerName.ToString(), out var provider))
-                throw new SmsProviderNotFoundException(providerName.ToString());
+            if (!_providers.TryGetValue(providerName, out var provider))
+                throw new SmsProviderNotFoundException(providerName);
 
             return SendAsync(message, provider, cancellationToken);
         }
+
+        /// <inheritdoc/>
+        public Task<SmsSendingResult> SendAsync(SmsMessage message, SmsProviderName providerName, CancellationToken cancellationToken = default)
+            => SendAsync(message, providerName.ToString(), cancellationToken);
 
         /// <inheritdoc/>
         public Task<SmsSendingResult> SendAsync(SmsMessage message, ISmsProvider provider, CancellationToken cancellationToken = default)
@@ -109,7 +120,7 @@ namespace Spoleto.SMS
             if (provider is null)
                 throw new ArgumentNullException(nameof(provider));
 
-            CheckMessageFromValue(message);
+            CheckMessageFromValue(provider, message);
 
             return provider.SendAsync(message, cancellationToken);
         }
@@ -162,9 +173,10 @@ namespace Spoleto.SMS
         /// Checks if the message from value is supplied.
         /// </summary>
         /// <param name="message">The message instance.</param>
-        private void CheckMessageFromValue(SmsMessage message)
+        private void CheckMessageFromValue(ISmsProvider provider, SmsMessage message)
         {
-            if (message.From is null)
+            if (!provider.IsAllowNullFrom
+                  && message.From is null)
             {
                 if (Options.DefaultFrom is null)
                     throw new ArgumentException($"{nameof(SmsMessage)}.{nameof(SmsMessage.From)} is null. Either supply a {nameof(SmsMessage.From)} value in the message, or set a [{nameof(SmsServiceOptions.DefaultFrom)}] value in {nameof(SmsServiceOptions)}");
