@@ -25,9 +25,16 @@ namespace CIS.Service.Client.Tests
             return sms;
         }
 
-        public static SentSmsMessage GetSentSmsMessage()
+        public static SentSmsMessage GetSentSmsMessageSmsc()
         {
-            var sms = _config.GetSection(nameof(SentSmsMessage)).Get<SentSmsMessage>()!;
+            var sms = _config.GetSection("SentSmsMessageSmsc").Get<SentSmsMessage>()!;
+
+            return sms;
+        }
+
+        public static SentSmsMessage GetSentSmsMessageGetSms()
+        {
+            var sms = _config.GetSection("SentSmsMessageGetSms").Get<SentSmsMessage>()!;
 
             return sms;
         }

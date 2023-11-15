@@ -11,9 +11,14 @@
         public bool Success { get; init; }
 
         /// <summary>
+        /// Get the name of the provider used to send the SMS.
+        /// </summary>
+        public string ProviderName { get; init; }
+
+        /// <summary>
         /// Get the status info.
         /// </summary>
-        public IEnumerable<SmsStatus> SmsStatuses { get; init; }
+        public IEnumerable<SmsStatusData> SmsStatusData { get; init; }
 
         /// <summary>
         /// Get the errors.

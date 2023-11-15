@@ -13,7 +13,7 @@ namespace Spoleto.SMS.Tests.Providers
         public void Setup()
         {
             _sms = ConfigurationHelper.GetSmsMessage();
-            _sentSms = ConfigurationHelper.GetSentSmsMessage();
+            _sentSms = ConfigurationHelper.GetSentSmsMessageSmsc();
         }
 
         [Test]

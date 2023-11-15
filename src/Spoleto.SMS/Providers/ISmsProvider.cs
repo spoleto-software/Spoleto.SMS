@@ -32,7 +32,7 @@
         /// <param name="id">The SMS message Id.</param>
         /// <param name="phoneNumber">The recipient's phone number.</param>
         /// <returns>a <see cref="SmsStatusResult"/> to indicate status result.</returns>
-        SmsStatusResult GetStatus(string id, string? phoneNumber);
+        SmsStatusResult GetStatus(string id, string? phoneNumber = null);
 
         /// <summary>
         /// Async gets the status of the specified SMS message with the given Id.
@@ -42,6 +42,6 @@
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
         /// <returns>a <see cref="SmsStatusResult"/> to indicate status result.</returns>
         /// <exception cref="OperationCanceledException">If the System.Threading.CancellationToken is canceled.</exception>
-        Task<SmsStatusResult> GetStatusAsync(string id, string? phoneNumber, CancellationToken cancellationToken = default);
+        Task<SmsStatusResult> GetStatusAsync(string id, string? phoneNumber = null, CancellationToken cancellationToken = default);
     }
 }

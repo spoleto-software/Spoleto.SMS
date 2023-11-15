@@ -9,10 +9,9 @@ namespace Spoleto.SMS.Providers
     /// <remarks>
     /// <see href="https://smsc.ru/api/code/libraries/http_smtp/cs/#menu"/>.
     /// </remarks>
-    public partial class SmscProvider : ISmscProvider
+    public partial class SmscProvider : SmsProviderBase, ISmscProvider
     {
         private const string ProviderName = nameof(SmsProviderName.SMSC);
-        private const char separator = ';';
 
         private readonly SmscOptions _options;
 
@@ -49,10 +48,10 @@ namespace Spoleto.SMS.Providers
         //}
 
         /// <inheritdoc/>
-        public string Name => ProviderName;
+        public override string Name => ProviderName;
 
         /// <inheritdoc/>
-        public SmsSendingResult Send(SmsMessage message)
+        public override SmsSendingResult Send(SmsMessage message)
         {
             var result = send_sms(message.To, message.Body, sender: message.From);
 
@@ -60,7 +59,7 @@ namespace Spoleto.SMS.Providers
         }
 
         /// <inheritdoc/>
-        public async Task<SmsSendingResult> SendAsync(SmsMessage message, CancellationToken cancellationToken = default)
+        public override async Task<SmsSendingResult> SendAsync(SmsMessage message, CancellationToken cancellationToken = default)
         {
             var result = await send_smsAsync(message.To, message.Body, sender: message.From).ConfigureAwait(false);
 
@@ -68,7 +67,7 @@ namespace Spoleto.SMS.Providers
         }
 
         /// <inheritdoc/>
-        public SmsStatusResult GetStatus(string id, string? phoneNumber)
+        public override SmsStatusResult GetStatus(string id, string? phoneNumber)
         {
             if (phoneNumber == null)
                 throw new ArgumentNullException(nameof(phoneNumber));
@@ -79,7 +78,7 @@ namespace Spoleto.SMS.Providers
         }
 
         /// <inheritdoc/>
-        public async Task<SmsStatusResult> GetStatusAsync(string id, string? phoneNumber, CancellationToken cancellationToken = default)
+        public override async Task<SmsStatusResult> GetStatusAsync(string id, string? phoneNumber, CancellationToken cancellationToken = default)
         {
             if (phoneNumber == null)
                 throw new ArgumentNullException(nameof(phoneNumber));
@@ -98,7 +97,7 @@ namespace Spoleto.SMS.Providers
             if (string.IsNullOrWhiteSpace(sender))
                 throw new ArgumentNullException(nameof(sender));
 
-            phoneNumber.Split(separator).ForEach(number => ValidatePhoneNumber(number, isAllowSendToForeignNumbers));
+            phoneNumber.Split(Separator).ForEach(number => ValidatePhoneNumber(number, isAllowSendToForeignNumbers));
 
             var result = send_sms(phoneNumber, string.Empty, sender: sender, query: "hlr=1");
 
@@ -167,12 +166,14 @@ namespace Spoleto.SMS.Providers
             {
                 return new SmsStatusResult
                 {
+                    ProviderName = Name,
                     Success = true
                 };
             }
 
             return new SmsStatusResult
             {
+                ProviderName = Name,
                 Success = false
             };
         }

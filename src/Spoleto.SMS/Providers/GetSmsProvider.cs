@@ -1,4 +1,8 @@
-﻿using Spoleto.Common.Helpers;
+﻿using System.Collections;
+using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using Spoleto.Common.Helpers;
 
 namespace Spoleto.SMS.Providers
 {
@@ -8,9 +12,10 @@ namespace Spoleto.SMS.Providers
     /// <remarks>
     /// <see href="https://getsms.uz/page/index/16"/>.
     /// </remarks>
-    public class GetSmsProvider : ISmsProvider
+    public class GetSmsProvider : SmsProviderBase
     {
         private const string ProviderName = nameof(SmsProviderName.GetSMS);
+
         private readonly GetSmsOptions _options;
 
         public GetSmsProvider(GetSmsOptions options)
@@ -19,103 +24,242 @@ namespace Spoleto.SMS.Providers
         }
 
         /// <inheritdoc/>
-        public string Name => ProviderName;
+        public override string Name => ProviderName;
 
         /// <inheritdoc/>
-        public SmsSendingResult Send(SmsMessage message)
-        {
-            throw new NotImplementedException();
-        }
+        public override SmsSendingResult Send(SmsMessage message)
+            => SendAsync(message).GetAwaiter().GetResult();
 
         /// <inheritdoc/>
-        public async Task<SmsSendingResult> SendAsync(SmsMessage message, CancellationToken cancellationToken = default)
+        public override async Task<SmsSendingResult> SendAsync(SmsMessage message, CancellationToken cancellationToken = default)
         {
-            //todo: process if message.To is multiple numbers
+            var httpClient = new HttpClient(); //todo:
 
-            var httpClient = new HttpClient();
-
-            var smsList = new List<Dictionary<string, string>>
-            {
-                new Dictionary<string, string>
-            {
-                { "phone", "998909711322" },
-                { "text", "Ваш текст СМС" }
-            },
-            new Dictionary<string, string>
-            {
-                { "phone", "998909711322" },
-                { "text", "Ваш текст СМС 2" }
-            }
-        };
+            var smsList = message.To.Split(Separator, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                .Select(x => new Dictionary<string, string>()
+                {
+                    {"phone", x},
+                    {"text", message.Body}
+                }).ToList();
 
             var requestData = new Dictionary<string, string>
             {
-                { "login", Uri.EscapeDataString(_options.Login) },
-                { "password", Uri.EscapeDataString(_options.Password) }
+                { "login", _options.Login },
+                { "password", _options.Password }
             };
 
             if (!string.IsNullOrEmpty(_options.Nickname))
             {
-                requestData.Add("nickname", Uri.EscapeDataString(_options.Nickname));
+                requestData.Add("nickname", _options.Nickname);
             }
 
-            requestData.Add("data", Uri.EscapeDataString(JsonHelper.ToJson(smsList)));
+            requestData.Add("data", JsonHelper.ToJson(smsList));
 
             var content = new FormUrlEncodedContent(requestData);
 
             httpClient.DefaultRequestHeaders.Add("User-Agent", "Opera 10.00");
-
+            httpClient.Timeout = TimeSpan.FromSeconds(60);
 
             var response = await httpClient.PostAsync(_options.ServiceUrl, content, cancellationToken).ConfigureAwait(false);
-
-            var result = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+            var responseString = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
             if (response.IsSuccessStatusCode)
-                return new SmsSendingResult
+            {
+                using var jsonDocument = JsonDocument.Parse(responseString);
+                var rootElement = jsonDocument.RootElement;
+
+                // Check if the returned JSON is an array
+                if (rootElement.ValueKind == JsonValueKind.Array)
                 {
-                    Success = true,
-                };
+                    foreach (var item in rootElement.EnumerateArray())
+                    {
+                        // Assuming the array items are objects and have at least one property
+                        if (item.ValueKind == JsonValueKind.Object)
+                        {
+                            // Check for a distinct property that's only in one of the JSON types
+                            if (item.TryGetProperty(GetJsonPropertyName<SmsSendingError>(nameof(SmsSendingError.Error)), out var _))
+                            {
+                                // Handle the error case when JSON is an object
+                                var errors = JsonHelper.FromJson<List<SmsSendingError>>(responseString);
+                                return new SmsSendingResult
+                                {
+                                    Success = false,
+                                    ProviderName = Name,
+                                    Errors = errors
+                                };
+                            }
 
-            return new SmsSendingResult();
+                            // Handle the success case when JSON is an object
+                            var statusData = JsonHelper.FromJson<List<SmdSendingData>>(responseString);
+                            return new SmsSendingResult
+                            {
+                                ProviderName = Name,
+                                Success = true,
+                                SmsSendingData = statusData
+                            };
+                        }
+                    }
+                }
+                // Check if the returned JSON is an object
+                else if (rootElement.ValueKind == JsonValueKind.Object)
+                {
+                    // Check for a distinct property that's only in one of the JSON types
+                    if (rootElement.TryGetProperty(GetJsonPropertyName<SmsSendingError>(nameof(SmsSendingError.Error)), out var _))
+                    {
+                        // Handle the error case when JSON is an object
+                        var error = JsonHelper.FromJson<SmsSendingError>(responseString);
+                        return new SmsSendingResult
+                        {
+                            ProviderName = Name,
+                            Success = false,
+                            Errors = new List<SmsSendingError> { error }
+                        };
+                    }
 
-            //    var smsList = new List<Dictionary<string, string>>()
-            //{
-            //    new Dictionary<string, string>(){
-            //        {"phone", message.To},
-            //        {"text", message.Body}
-            //    }
-            //};
-
-            //var dataDict = new Dictionary<string, string>()
-            //{
-            //    { "login", _options.Login },
-            //    { "password", _options.Password },
-            //    { "data", JsonHelper.ToJson(smsList)}
-            //};
-
-            ////Extend this conditional block if you need to add 'nickname' in your request data
-            //string nickname = null;
-            //if (!string.IsNullOrEmpty(nickname))
-            //{
-            //    dataDict.Add("nickname", nickname);
-            //}
-
-            //var dataContent = new FormUrlEncodedContent(dataDict);
+                    // Handle the success case when JSON is an object
+                    var statusData = JsonHelper.FromJson<SmdSendingData>(responseString);
+                    return new SmsSendingResult
+                    {
+                        ProviderName = Name,
+                        Success = true,
+                        SmsSendingData = new List<SmdSendingData> { statusData }
+                    };
+                }
 
 
+            }
 
+            return new SmsSendingResult
+            {
+                ProviderName = Name,
+                Success = false,
+                Errors = new List<SmsSendingError> { new() { Message = responseString } }
+            };
         }
 
         /// <inheritdoc/>
-        public SmsStatusResult GetStatus(string id, string? phoneNumber)
-        {
-            throw new NotImplementedException();
-        }
+        public override SmsStatusResult GetStatus(string id, string? phoneNumber)
+            => GetStatusAsync(id, phoneNumber).GetAwaiter().GetResult();
 
         /// <inheritdoc/>
-        public Task<SmsStatusResult> GetStatusAsync(string id, string? phoneNumber, CancellationToken cancellationToken = default)
+        public override async Task<SmsStatusResult> GetStatusAsync(string id, string? phoneNumber, CancellationToken cancellationToken = default)
         {
-            throw new NotImplementedException();
+            var httpClient = new HttpClient(); //todo:
+
+            var requestIdData = new List<Dictionary<string, string>>
+            {
+                new Dictionary<string, string>
+                {
+                    { "request_id", id }
+                }
+            };
+
+            var requestData = new Dictionary<string, string>
+            {
+                { "login", _options.Login },
+                { "password", _options.Password },
+                { "data", JsonHelper.ToJson(requestIdData) }
+            };
+
+            var content = new FormUrlEncodedContent(requestData);
+
+            httpClient.DefaultRequestHeaders.Add("User-Agent", "Opera 10.00");
+            httpClient.Timeout = TimeSpan.FromSeconds(60);
+
+            var url = new Uri(new Uri(_options.ServiceUrl), "status/");
+            var response = await httpClient.PostAsync(url, content, cancellationToken).ConfigureAwait(false);
+            var responseString = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+
+            if (response.IsSuccessStatusCode)
+            {
+                using var jsonDocument = JsonDocument.Parse(responseString);
+                var rootElement = jsonDocument.RootElement;
+
+                // Check if the returned JSON is an object
+                if (rootElement.ValueKind == JsonValueKind.Object)
+                {
+                    // Check for a distinct property that's only in one of the JSON types
+                    if (rootElement.TryGetProperty(GetJsonPropertyName<SmsSendingError>(nameof(SmsSendingError.Error)), out var _))
+                    {
+                        // Handle the error case when JSON is an object
+                        var error = JsonHelper.FromJson<SmsSendingError>(responseString);
+                        return new SmsStatusResult
+                        {
+                            ProviderName = Name,
+                            Success = false,
+                            Errors = new List<SmsSendingError> { error }
+                        };
+                    }
+
+                    // Handle the success case when JSON is an object
+                    var statusData = JsonHelper.FromJson<SmsStatusData>(responseString);
+                    return new SmsStatusResult
+                    {
+                        ProviderName = Name,
+                        Success = true,
+                        SmsStatusData = new List<SmsStatusData> { statusData }
+                    };
+                }
+                // Check if the returned JSON is an array
+                else if (rootElement.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (var item in rootElement.EnumerateArray())
+                    {
+                        // Assuming the array items are objects and have at least one property
+                        if (item.ValueKind == JsonValueKind.Object)
+                        {
+                            // Check for a distinct property that's only in one of the JSON types
+                            if (item.TryGetProperty(GetJsonPropertyName<SmsSendingError>(nameof(SmsSendingError.Error)), out var _))
+                            {
+                                // Handle the error case when JSON is an object
+                                var errors = JsonHelper.FromJson<List<SmsSendingError>>(responseString);
+                                return new SmsStatusResult
+                                {
+                                    ProviderName = Name,
+                                    Success = false,
+                                    Errors = errors
+                                };
+                            }
+
+                            // Handle the success case when JSON is an object
+                            var statusData = JsonHelper.FromJson<List<SmsStatusData>>(responseString);
+                            return new SmsStatusResult
+                            {
+                                ProviderName = Name,
+                                Success = true,
+                                SmsStatusData = statusData
+                            };
+                        }
+                    }
+                }
+            }
+
+            return new SmsStatusResult
+            {
+                ProviderName = Name,
+                Success = false,
+                Errors = new List<SmsSendingError> { new() { Message = responseString } }
+            };
+        }
+
+        private static readonly Dictionary<string, string> _reflectionCache = new();
+
+        public static string GetJsonPropertyName<T>(string propertyName)
+        {
+            lock (((ICollection)_reflectionCache).SyncRoot)
+            {
+                var key = typeof(T).FullName + "." + propertyName;
+                if (!_reflectionCache.TryGetValue(key, out var jsonPropertyName))
+                {
+                    var propertyInfo = typeof(T).GetProperty(propertyName) ?? throw new ArgumentException("Property not found.", nameof(propertyName));
+
+                    var jsonPropertyNameAttribute = propertyInfo.GetCustomAttribute<JsonPropertyNameAttribute>();
+
+                    _reflectionCache[key] = jsonPropertyName = jsonPropertyNameAttribute?.Name ?? propertyName; // Json attribute name or the actual property name if not defined.
+                }
+
+                return jsonPropertyName;
+            }
         }
     }
 }

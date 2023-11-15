@@ -13,7 +13,7 @@ namespace Spoleto.SMS.Tests.Providers
         public void Setup()
         {
             _sms = ConfigurationHelper.GetSmsMessage();
-            _sentSms = ConfigurationHelper.GetSentSmsMessage();
+            _sentSms = ConfigurationHelper.GetSentSmsMessageGetSms();
         }
 
         [Test]
@@ -49,7 +49,7 @@ namespace Spoleto.SMS.Tests.Providers
             var provider = ServiceProvider.GetRequiredService<ISmsProvider>();
 
             // Act
-            var result = provider.GetStatus(_sentSms.Id, _sentSms.To);
+            var result = provider.GetStatus(_sentSms.Id);
 
             // Assert
             Assert.That(result.Success, Is.True);
@@ -62,7 +62,7 @@ namespace Spoleto.SMS.Tests.Providers
             var provider = ServiceProvider.GetRequiredService<ISmsProvider>();
 
             // Act
-            var result = await provider.GetStatusAsync(_sentSms.Id, _sentSms.To);
+            var result = await provider.GetStatusAsync(_sentSms.Id);
 
             // Assert
             Assert.That(result.Success, Is.True);

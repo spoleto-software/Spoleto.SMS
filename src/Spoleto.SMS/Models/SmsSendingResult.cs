@@ -15,6 +15,8 @@
         /// </summary>
         public string ProviderName { get; init; }
 
+        public IEnumerable<SmdSendingData> SmsSendingData { get; init; }
+
         /// <summary>
         /// Get the errors associated with the sending failure.
         /// </summary>
