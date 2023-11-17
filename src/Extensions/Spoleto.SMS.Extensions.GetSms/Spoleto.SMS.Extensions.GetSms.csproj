@@ -16,7 +16,7 @@
 
     <ItemGroup>
     <ProjectReference Include="..\..\Providers\Spoleto.SMS.GetSms\Spoleto.SMS.GetSms.csproj" />
-    <ProjectReference Include="..\Spoleto.SMS.Extensions\Spoleto.SMS.Extensions.Messaging.csproj" />
+    <ProjectReference Include="..\Spoleto.SMS.Extensions.Messaging\Spoleto.SMS.Extensions.Messaging.csproj" />
   </ItemGroup>
 
 </Project>
