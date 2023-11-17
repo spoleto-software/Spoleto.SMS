@@ -35,9 +35,9 @@
         <PackageTags>SMS; SMSC; SMSЦентр; GetSms</PackageTags>
         <Copyright>Copyright © $([System.DateTime]::Now.Year.ToString())</Copyright>
         <PackageReleaseNotes></PackageReleaseNotes>
-        <Version>$([System.DateTime]::Now.AddYears(-2022).Year.ToString()).$([System.DateTime]::Now.ToString("MM.dd.HHmm"))</Version>
-        <AssemblyVersion>$([System.DateTime]::Now.AddYears(-2022).Year.ToString()).$([System.DateTime]::Now.ToString("MM.dd.HHmm"))</AssemblyVersion>
-        <FileVersion>$([System.DateTime]::Now.AddYears(-2022).Year.ToString()).$([System.DateTime]::Now.ToString("MM.dd.HHmm"))</FileVersion>
+        <Version>1.0.2.0</Version>
+        <AssemblyVersion>1.0.2.0</AssemblyVersion>
+        <FileVersion>1.0.2.0</FileVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)' == 'Release'">

@@ -51,7 +51,7 @@ jobs:
         run: dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg --no-build -c Release src/Extensions/Spoleto.SMS.Extensions.Smsc/Spoleto.SMS.Extensions.Smsc.csproj -o .
 
       - name: Push packages
-        run: dotnet nuget push *.nupkg --api-key ${{secrets.NUGET_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
+        run: dotnet nuget push *.nupkg --api-key ${{secrets.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
 
       - name: Upload assets to release
         run: |
