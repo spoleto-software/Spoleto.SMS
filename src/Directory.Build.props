@@ -14,8 +14,6 @@
     <!-- Package info -->
     <PropertyGroup>
         <Product>Spoleto.SMS library</Product>
-        <Description>The client for SPOLETO RESTful service</Description>
-        <PackageId>Spoleto.SMS</PackageId>
         <Authors>OlegNadymov;Spoleto-Software</Authors>
         <Company>SPOLETO Software Development</Company>
         <PackageIcon>MainIcon.jpg</PackageIcon>
