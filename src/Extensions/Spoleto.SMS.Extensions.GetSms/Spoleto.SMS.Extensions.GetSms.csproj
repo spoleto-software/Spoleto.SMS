@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+    <!-- Package info -->
+    <PropertyGroup>
+        <Title>Spoleto.SMS - GetSMS provider</Title>
+        <PackageId>Spoleto.SMS.Smsc</PackageId>
+        <PackageTags>Spoleto.SMS; SMS; GetSMS</PackageTags>
+        <Description>GetSMS provider for Spoleto.SMS</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+    <ProjectReference Include="..\..\Providers\Spoleto.SMS.GetSms\Spoleto.SMS.GetSms.csproj" />
+    <ProjectReference Include="..\Spoleto.SMS.Extensions\Spoleto.SMS.Extensions.Messaging.csproj" />
+  </ItemGroup>
+
+</Project>

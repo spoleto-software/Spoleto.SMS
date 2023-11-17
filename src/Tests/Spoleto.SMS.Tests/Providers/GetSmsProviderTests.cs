@@ -1,6 +1,7 @@
 ﻿using CIS.Service.Client.Tests;
 using Microsoft.Extensions.DependencyInjection;
 using Spoleto.SMS.Providers;
+using Spoleto.SMS.Providers.GetSms;
 
 namespace Spoleto.SMS.Tests.Providers
 {
@@ -20,7 +21,7 @@ namespace Spoleto.SMS.Tests.Providers
         public void SensSms()
         {
             // Arrange
-            var provider = ServiceProvider.GetRequiredService<ISmsProvider>();
+            var provider = ServiceProvider.GetRequiredService<IGetSmsProvider>();
 
             // Act
             var result = provider.Send(_sms);
@@ -33,7 +34,7 @@ namespace Spoleto.SMS.Tests.Providers
         public async Task SensSmsAsync()
         {
             // Arrange
-            var provider = ServiceProvider.GetRequiredService<ISmsProvider>();
+            var provider = ServiceProvider.GetRequiredService<IGetSmsProvider>();
 
             // Act
             var result = await provider.SendAsync(_sms);
@@ -46,7 +47,7 @@ namespace Spoleto.SMS.Tests.Providers
         public void GetStatus()
         {
             // Arrange
-            var provider = ServiceProvider.GetRequiredService<ISmsProvider>();
+            var provider = ServiceProvider.GetRequiredService<IGetSmsProvider>();
 
             // Act
             var result = provider.GetStatus(_sentSms.Id);
@@ -59,7 +60,7 @@ namespace Spoleto.SMS.Tests.Providers
         public async Task GetStatusAsync()
         {
             // Arrange
-            var provider = ServiceProvider.GetRequiredService<ISmsProvider>();
+            var provider = ServiceProvider.GetRequiredService<IGetSmsProvider>();
 
             // Act
             var result = await provider.GetStatusAsync(_sentSms.Id);

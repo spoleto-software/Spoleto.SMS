@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+    <!-- Package info -->
+    <PropertyGroup>
+        <Title>Spoleto.SMS - SMSC provider</Title>
+        <PackageId>Spoleto.SMS.Smsc</PackageId>
+        <PackageTags>Spoleto.SMS; SMS; SMSC</PackageTags>
+        <Description>SMSC provider for Spoleto.SMS</Description>
+    </PropertyGroup>    
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Providers\Spoleto.SMS.Smsc\Spoleto.SMS.Smsc.csproj" />
+    <ProjectReference Include="..\Spoleto.SMS.Extensions\Spoleto.SMS.Extensions.Messaging.csproj" />
+  </ItemGroup>
+
+</Project>

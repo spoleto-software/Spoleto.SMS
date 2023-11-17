@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 using Spoleto.Common.Helpers;
 using Spoleto.SMS.Extensions;
 
-namespace Spoleto.SMS.Providers
+namespace Spoleto.SMS.Providers.GetSms
 {
     /// <summary>
     /// The GetSMS provider for sending SMS messages.
@@ -13,7 +13,7 @@ namespace Spoleto.SMS.Providers
     /// <remarks>
     /// <see href="https://getsms.uz/page/index/16"/>.
     /// </remarks>
-    public class GetSmsProvider : SmsProviderBase
+    public class GetSmsProvider : SmsProviderBase, IGetSmsProvider
     {
         private const string ProviderName = nameof(SmsProviderName.GetSMS);
 

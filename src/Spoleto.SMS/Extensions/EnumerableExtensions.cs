@@ -3,7 +3,7 @@
     /// <summary>
     /// Extension methods for the <see cref="Enumerable"/> type.
     /// </summary>
-    internal static class EnumerableExtensions
+    public static class EnumerableExtensions
     {
         /// <summary>
         /// Foreach by any IEnumerable source.

@@ -1,4 +1,4 @@
-﻿namespace Spoleto.SMS.Providers
+﻿namespace Spoleto.SMS.Providers.Smsc
 {
     /// <summary>
     /// The SMSC provider for sending SMS messages.

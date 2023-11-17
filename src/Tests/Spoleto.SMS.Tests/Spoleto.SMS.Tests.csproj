@@ -42,7 +42,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Spoleto.SMS\Spoleto.SMS.csproj" />
+      <ProjectReference Include="..\..\Providers\Spoleto.SMS.GetSms\Spoleto.SMS.GetSms.csproj" />
+      <ProjectReference Include="..\..\Providers\Spoleto.SMS.Smsc\Spoleto.SMS.Smsc.csproj" />
+      <ProjectReference Include="..\..\Spoleto.SMS\Spoleto.SMS.csproj" />
     </ItemGroup>
 
 </Project>

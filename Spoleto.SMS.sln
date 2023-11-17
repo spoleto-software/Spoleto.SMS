@@ -8,16 +8,35 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{43166AC9-FC79-4566-8208-08F095E0D619}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		src\Directory.Build.props = src\Directory.Build.props
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WorkFlow", "WorkFlow", "{8C6F5EC6-EE3F-429C-9792-79F6540F58B3}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GitHub Actions", "GitHub Actions", "{8C6F5EC6-EE3F-429C-9792-79F6540F58B3}"
 	ProjectSection(SolutionItems) = preProject
+		.github\workflows\cd.yml = .github\workflows\cd.yml
+		.github\workflows\ci.yml = .github\workflows\ci.yml
 		.github\workflows\publish-to-nuget.yml = .github\workflows\publish-to-nuget.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spoleto.SMS.Tests", "src\Spoleto.SMS.Tests\Spoleto.SMS.Tests.csproj", "{DF9494D7-4229-44E8-814B-E31EF87C437B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Spoleto.SMS.Extensions", "Spoleto.SMS.Extensions", "{4F9CB045-D843-4E58-A862-7E14E9165317}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Spoleto.SMS.Tests", "Spoleto.SMS.Tests", "{260AC401-B508-4744-9384-BA6D969764FC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Spoleto.SMS.Providers", "Spoleto.SMS.Providers", "{35B21F9B-0AB9-4D49-B1BF-9C1038979063}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spoleto.SMS.Tests", "src\Tests\Spoleto.SMS.Tests\Spoleto.SMS.Tests.csproj", "{D00562B2-64D4-4069-9CB2-8D510EDD347D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spoleto.SMS.GetSms", "src\Providers\Spoleto.SMS.GetSms\Spoleto.SMS.GetSms.csproj", "{CE8EEA94-2EC9-4AA3-8636-BAA18C2DA350}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spoleto.SMS.Smsc", "src\Providers\Spoleto.SMS.Smsc\Spoleto.SMS.Smsc.csproj", "{74918AA3-D5EF-494F-A0AC-515A4E7BF4F0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spoleto.SMS.Extensions.Messaging", "src\Extensions\Spoleto.SMS.Extensions\Spoleto.SMS.Extensions.Messaging.csproj", "{36C0E60D-0F6C-4CCB-9065-04B468FEB533}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spoleto.SMS.Extensions.GetSms", "src\Extensions\Spoleto.SMS.Extensions.GetSms\Spoleto.SMS.Extensions.GetSms.csproj", "{5353AFAB-4F7A-4E3A-B163-78DF39DF25FA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spoleto.SMS.Extensions.Smsc", "src\Extensions\Spoleto.SMS.Extensions.Smsc\Spoleto.SMS.Extensions.Smsc.csproj", "{EFDBD794-B790-436C-9ABC-61E91302ABA6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,13 +48,41 @@ Global
 		{3335ACCB-D5BE-4211-998D-1FA95D0252A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3335ACCB-D5BE-4211-998D-1FA95D0252A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3335ACCB-D5BE-4211-998D-1FA95D0252A9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DF9494D7-4229-44E8-814B-E31EF87C437B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DF9494D7-4229-44E8-814B-E31EF87C437B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DF9494D7-4229-44E8-814B-E31EF87C437B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DF9494D7-4229-44E8-814B-E31EF87C437B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D00562B2-64D4-4069-9CB2-8D510EDD347D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D00562B2-64D4-4069-9CB2-8D510EDD347D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D00562B2-64D4-4069-9CB2-8D510EDD347D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D00562B2-64D4-4069-9CB2-8D510EDD347D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE8EEA94-2EC9-4AA3-8636-BAA18C2DA350}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE8EEA94-2EC9-4AA3-8636-BAA18C2DA350}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE8EEA94-2EC9-4AA3-8636-BAA18C2DA350}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE8EEA94-2EC9-4AA3-8636-BAA18C2DA350}.Release|Any CPU.Build.0 = Release|Any CPU
+		{74918AA3-D5EF-494F-A0AC-515A4E7BF4F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74918AA3-D5EF-494F-A0AC-515A4E7BF4F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74918AA3-D5EF-494F-A0AC-515A4E7BF4F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74918AA3-D5EF-494F-A0AC-515A4E7BF4F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36C0E60D-0F6C-4CCB-9065-04B468FEB533}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36C0E60D-0F6C-4CCB-9065-04B468FEB533}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36C0E60D-0F6C-4CCB-9065-04B468FEB533}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36C0E60D-0F6C-4CCB-9065-04B468FEB533}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5353AFAB-4F7A-4E3A-B163-78DF39DF25FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5353AFAB-4F7A-4E3A-B163-78DF39DF25FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5353AFAB-4F7A-4E3A-B163-78DF39DF25FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5353AFAB-4F7A-4E3A-B163-78DF39DF25FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFDBD794-B790-436C-9ABC-61E91302ABA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFDBD794-B790-436C-9ABC-61E91302ABA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFDBD794-B790-436C-9ABC-61E91302ABA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFDBD794-B790-436C-9ABC-61E91302ABA6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D00562B2-64D4-4069-9CB2-8D510EDD347D} = {260AC401-B508-4744-9384-BA6D969764FC}
+		{CE8EEA94-2EC9-4AA3-8636-BAA18C2DA350} = {35B21F9B-0AB9-4D49-B1BF-9C1038979063}
+		{74918AA3-D5EF-494F-A0AC-515A4E7BF4F0} = {35B21F9B-0AB9-4D49-B1BF-9C1038979063}
+		{36C0E60D-0F6C-4CCB-9065-04B468FEB533} = {4F9CB045-D843-4E58-A862-7E14E9165317}
+		{5353AFAB-4F7A-4E3A-B163-78DF39DF25FA} = {4F9CB045-D843-4E58-A862-7E14E9165317}
+		{EFDBD794-B790-436C-9ABC-61E91302ABA6} = {4F9CB045-D843-4E58-A862-7E14E9165317}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E78F0DB7-5080-45F0-B6F0-2AF0FB821A7B}

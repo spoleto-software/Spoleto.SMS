@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -8,13 +8,18 @@
 
     <!-- Package info -->
     <PropertyGroup>
-        <Title>Spoleto.SMS</Title>
-        <PackageId>Spoleto.SMS</PackageId>
+        <Title>Spoleto.SMS extensions for Microsoft DependencyInjection</Title>
+        <PackageId>Spoleto.SMS.Extensions.Messaging</PackageId>
         <PackageTags>Spoleto.SMS; SMS; SMSC; GetSMS</PackageTags>
         <Description>SMS sender with different SMS providers such as SMSC; GetSMS</Description>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Spoleto.Common" Version="1.6.8.1844" />
-    </ItemGroup>    
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Spoleto.SMS\Spoleto.SMS.csproj" />
+  </ItemGroup>
+
 </Project>

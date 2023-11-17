@@ -1,4 +1,4 @@
-﻿namespace Spoleto.SMS
+﻿namespace Spoleto.SMS.Providers.GetSms
 {
     public record GetSmsOptions
     {

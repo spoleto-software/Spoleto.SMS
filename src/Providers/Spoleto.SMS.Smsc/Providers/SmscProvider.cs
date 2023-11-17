@@ -1,7 +1,7 @@
 ﻿using Spoleto.SMS.Exceptions;
 using Spoleto.SMS.Extensions;
 
-namespace Spoleto.SMS.Providers
+namespace Spoleto.SMS.Providers.Smsc
 {
     /// <summary>
     /// The SMSC provider for sending SMS messages.

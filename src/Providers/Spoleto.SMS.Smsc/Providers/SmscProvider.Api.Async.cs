@@ -1,9 +1,8 @@
-﻿using System.Net.Mail;
-using System.Net;
+﻿using System.Net;
+using System.Net.Mail;
 using System.Text;
-using System.Web;
 
-namespace Spoleto.SMS.Providers
+namespace Spoleto.SMS.Providers.Smsc
 {
     /// <summary>
     /// The SMSC API.
@@ -15,52 +14,17 @@ namespace Spoleto.SMS.Providers
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
     public partial class SmscProvider
     {
-        // Константы с параметрами отправки
-        private readonly string SMSC_LOGIN = "login";          // логин клиента
-        private readonly string SMSC_PASSWORD = "password";    // пароль или MD5-хеш пароля в нижнем регистре
-        private bool SMSC_POST = false;                     // использовать метод POST
-        private readonly bool SMSC_HTTPS = false;              // использовать HTTPS протокол
-        private readonly string SMSC_CHARSET = "utf-8";        // кодировка сообщения (windows-1251 или koi8-r), по умолчанию используется utf-8
-        private readonly bool SMSC_DEBUG = false;              // флаг отладки
-
-        // Константы для отправки SMS по SMTP
-        private readonly string SMTP_FROM = "api@smsc.ru";     // e-mail адрес отправителя
-        private readonly string SMTP_SERVER = "send.smsc.ru";  // адрес smtp сервера
-        private readonly string SMTP_LOGIN = "";               // логин для smtp сервера
-        private readonly string SMTP_PASSWORD = "";			// пароль для smtp сервера
-
-        public string[][] D2Res;
-
-        // Метод отправки SMS
-        //
-        // обязательные параметры:
-        //
-        // phones - список телефонов через запятую или точку с запятой
-        // message - отправляемое сообщение
-        //
-        // необязательные параметры:
-        //
-        // translit - переводить или нет в транслит
-        // time - необходимое время доставки в виде строки (DDMMYYhhmm, h1-h2, 0ts, +m)
-        // id - идентификатор сообщения. Представляет собой 32-битное число в диапазоне от 1 до 2147483647.
-        // format - формат сообщения (0 - обычное sms, 1 - flash-sms, 2 - wap-push, 3 - hlr, 4 - bin, 5 - bin-hex, 6 - ping-sms, 7 - mms, 8 - mail, 9 - call, 10 - viber, 11 - soc)
-        // sender - имя отправителя (Sender ID).
-        // query - строка дополнительных параметров, добавляемая в URL-запрос ("valid=01:00&maxsms=3")
-        //
-        // возвращает массив строк (<id>, <количество sms>, <стоимость>, <баланс>) в случае успешной отправки
-        // либо массив строк (<id>, -<код ошибки>) в случае ошибки
-
-        public string[] send_sms(string phones, string message, int translit = 0, string time = "", int id = 0, int format = 0, string sender = "", string query = "", string[] files = null)
+        public async Task<string[]> send_smsAsync(string phones, string message, int translit = 0, string time = "", int id = 0, int format = 0, string sender = "", string query = "", string[] files = null)
         {
             if (files != null)
                 SMSC_POST = true;
 
             string[] formats = { "flash=1", "push=1", "hlr=1", "bin=1", "bin=2", "ping=1", "mms=1", "mail=1", "call=1", "viber=1", "soc=1" };
 
-            string[] m = _smsc_send_cmd("send", "cost=3&phones=" + _urlencode(phones)
+            string[] m = await _smsc_send_cmdAsync("send", "cost=3&phones=" + _urlencode(phones)
                             + "&mes=" + _urlencode(message) + "&id=" + id.ToString() + "&translit=" + translit.ToString()
                             + (format > 0 ? "&" + formats[format - 1] : "") + (sender != "" ? "&sender=" + _urlencode(sender) : "")
-                            + (time != "" ? "&time=" + _urlencode(time) : "") + (query != "" ? "&" + query : ""), files);
+                            + (time != "" ? "&time=" + _urlencode(time) : "") + (query != "" ? "&" + query : ""), files).ConfigureAwait(false);
 
             // (id, cnt, cost, balance) или (id, -error)
 
@@ -77,7 +41,7 @@ namespace Spoleto.SMS.Providers
 
         // SMTP версия метода отправки SMS
 
-        public void send_sms_mail(string phones, string message, int translit = 0, string time = "", int id = 0, int format = 0, string sender = "")
+        public async Task send_sms_mailAsync(string phones, string message, int translit = 0, string time = "", int id = 0, int format = 0, string sender = "")
         {
             MailMessage mail = new MailMessage();
 
@@ -99,7 +63,7 @@ namespace Spoleto.SMS.Providers
             if (SMTP_LOGIN != "")
                 client.Credentials = new NetworkCredential(SMTP_LOGIN, SMTP_PASSWORD);
 
-            client.Send(mail);
+            await client.SendMailAsync(mail).ConfigureAwait(false);
         }
 
         // Метод получения стоимости SMS
@@ -118,13 +82,13 @@ namespace Spoleto.SMS.Providers
         //
         // возвращает массив (<стоимость>, <количество sms>) либо массив (0, -<код ошибки>) в случае ошибки
 
-        public string[] get_sms_cost(string phones, string message, int translit = 0, int format = 0, string sender = "", string query = "")
+        public async Task<string[]> get_sms_costAsync(string phones, string message, int translit = 0, int format = 0, string sender = "", string query = "")
         {
             string[] formats = { "flash=1", "push=1", "hlr=1", "bin=1", "bin=2", "ping=1", "mms=1", "mail=1", "call=1", "viber=1", "soc=1" };
 
-            string[] m = _smsc_send_cmd("send", "cost=1&phones=" + _urlencode(phones)
+            string[] m = await _smsc_send_cmdAsync("send", "cost=1&phones=" + _urlencode(phones)
                             + "&mes=" + _urlencode(message) + translit.ToString() + (format > 0 ? "&" + formats[format - 1] : "")
-                            + (sender != "" ? "&sender=" + _urlencode(sender) : "") + (query != "" ? "&query" : ""));
+                            + (sender != "" ? "&sender=" + _urlencode(sender) : "") + (query != "" ? "&query" : "")).ConfigureAwait(false);
 
             // (cost, cnt) или (0, -error)
 
@@ -167,9 +131,9 @@ namespace Spoleto.SMS.Providers
         //
         // либо массив (0, -<код ошибки>) в случае ошибки
 
-        public string[] get_status(string id, string phone, int all = 0)
+        public async Task<string[]> get_statusAsync(string id, string phone, int all = 0)
         {
-            string[] m = _smsc_send_cmd("status", "phone=" + _urlencode(phone) + "&id=" + _urlencode(id) + "&all=" + all.ToString());
+            string[] m = await _smsc_send_cmdAsync("status", "phone=" + _urlencode(phone) + "&id=" + _urlencode(id) + "&all=" + all.ToString()).ConfigureAwait(false);
 
             // (status, time, err, ...) или (0, -error)
 
@@ -218,9 +182,9 @@ namespace Spoleto.SMS.Providers
         //
         // возвращает баланс в виде строки или пустую строку в случае ошибки
 
-        public string get_balance()
+        public async Task<string> get_balanceAsync()
         {
-            string[] m = _smsc_send_cmd("balance", ""); // (balance) или (0, -error)
+            string[] m = await _smsc_send_cmdAsync("balance", "").ConfigureAwait(false); // (balance) или (0, -error)
 
             if (SMSC_DEBUG)
             {
@@ -237,7 +201,7 @@ namespace Spoleto.SMS.Providers
 
         // Метод вызова запроса. Формирует URL и делает 3 попытки чтения
 
-        private string[] _smsc_send_cmd(string cmd, string arg, string[] files = null)
+        private async Task<string[]> _smsc_send_cmdAsync(string cmd, string arg, string[] files = null)
         {
             string url, _url;
 
@@ -349,16 +313,16 @@ namespace Spoleto.SMS.Providers
                         request.ContentLength = output.Length;
                     }
 
-                    Stream requestStream = request.GetRequestStream();
-                    requestStream.Write(output, 0, output.Length);
+                    Stream requestStream = await request.GetRequestStreamAsync().ConfigureAwait(false);
+                    await requestStream.WriteAsync(output).ConfigureAwait(false);
                 }
 
                 try
                 {
-                    response = (HttpWebResponse)request.GetResponse();
+                    response = (HttpWebResponse)await request.GetResponseAsync().ConfigureAwait(false);
 
                     sr = new StreamReader(response.GetResponseStream());
-                    ret = sr.ReadToEnd();
+                    ret = await sr.ReadToEndAsync().ConfigureAwait(false);
                 }
                 catch (WebException)
                 {
@@ -391,32 +355,6 @@ namespace Spoleto.SMS.Providers
             }
 
             return ret.Split(delim);
-        }
-
-        // кодирование параметра в http-запросе
-        private string _urlencode(string str)
-        {
-            if (SMSC_POST) return str;
-
-            return HttpUtility.UrlEncode(str);
-        }
-
-        // объединение байтовых массивов
-        private byte[] _concatb(byte[] farr, byte[] sarr)
-        {
-            int opl = farr.Length;
-
-            Array.Resize(ref farr, farr.Length + sarr.Length);
-            Array.Copy(sarr, 0, farr, opl, sarr.Length);
-
-            return farr;
-        }
-
-        // вывод отладочной информации
-        private void _print_debug(string str)
-        {
-            //System.Windows.Forms.MessageBox.Show(str);
-            System.Diagnostics.Debug.WriteLine(str);
         }
     }
 }
