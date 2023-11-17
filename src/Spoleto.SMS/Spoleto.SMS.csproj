@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFrameworks>net7.0;net8.0</TargetFrameworks>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
     <!-- Package info -->
     <PropertyGroup>
@@ -15,6 +15,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Spoleto.Common" Version="1.6.8.1844" />
-    </ItemGroup>    
+        <PackageReference Include="Spoleto.Common" Version="1.6.8.1844" />
+    </ItemGroup>
 </Project>
