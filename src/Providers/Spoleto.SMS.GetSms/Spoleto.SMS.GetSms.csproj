@@ -10,7 +10,7 @@
     <PropertyGroup>
         <Title>Spoleto.SMS - GetSMS provider</Title>
         <PackageId>Spoleto.SMS.GetSms</PackageId>
-        <PackageTags>Spoleto.SMS; SMS; GetSMS</PackageTags>
+        <PackageTags>Spoleto.SMS; Messaging; SMS; GetSMS</PackageTags>
         <Description>GetSMS provider for Spoleto.SMS</Description>
     </PropertyGroup>
 

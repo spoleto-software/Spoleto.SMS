@@ -20,7 +20,6 @@
         <PackageProjectUrl>https://spoleto.ru</PackageProjectUrl>
         <RepositoryUrl>https://github.com/spoleto-software/Spoleto.SMS</RepositoryUrl>
         <RepositoryType>GitHub</RepositoryType>
-        <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
         <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>

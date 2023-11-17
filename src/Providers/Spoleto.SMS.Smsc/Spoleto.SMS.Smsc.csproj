@@ -10,7 +10,7 @@
     <PropertyGroup>
         <Title>Spoleto.SMS - SMSC provider</Title>
         <PackageId>Spoleto.SMS.Smsc</PackageId>
-        <PackageTags>Spoleto.SMS; SMS; SMSC</PackageTags>
+        <PackageTags>Spoleto.SMS; Messaging; SMS; SMSC</PackageTags>
         <Description>SMSC provider for Spoleto.SMS</Description>
     </PropertyGroup>
 
