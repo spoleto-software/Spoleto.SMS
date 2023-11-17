@@ -21,7 +21,7 @@
         <PackageIcon>MainIcon.jpg</PackageIcon>
         <PackageProjectUrl>https://spoleto.ru</PackageProjectUrl>
         <RepositoryUrl>https://github.com/spoleto-software/Spoleto.SMS</RepositoryUrl>
-        <RepositoryType>git</RepositoryType>
+        <RepositoryType>GitHub</RepositoryType>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
