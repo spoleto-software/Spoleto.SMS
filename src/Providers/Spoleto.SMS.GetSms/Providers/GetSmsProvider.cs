@@ -15,7 +15,10 @@ namespace Spoleto.SMS.Providers.GetSms
     /// </remarks>
     public class GetSmsProvider : SmsProviderBase, IGetSmsProvider
     {
-        private const string ProviderName = nameof(SmsProviderName.GetSMS);
+        /// <summary>
+        /// The name of the SMS provider.
+        /// </summary>
+        public const string ProviderName = nameof(SmsProviderName.GetSMS);
 
         private readonly GetSmsOptions _options;
 

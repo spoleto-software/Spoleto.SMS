@@ -11,7 +11,10 @@ namespace Spoleto.SMS.Providers.Smsc
     /// </remarks>
     public partial class SmscProvider : SmsProviderBase, ISmscProvider
     {
-        private const string ProviderName = nameof(SmsProviderName.SMSC);
+        /// <summary>
+        /// The name of the SMS provider.
+        /// </summary>
+        public const string ProviderName = nameof(SmsProviderName.SMSC);
 
         private readonly SmscOptions _options;
 
