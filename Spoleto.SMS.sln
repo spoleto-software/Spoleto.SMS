@@ -31,7 +31,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spoleto.SMS.GetSms", "src\P
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spoleto.SMS.Smsc", "src\Providers\Spoleto.SMS.Smsc\Spoleto.SMS.Smsc.csproj", "{74918AA3-D5EF-494F-A0AC-515A4E7BF4F0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spoleto.SMS.Extensions.Messaging", "src\Extensions\Spoleto.SMS.Extensions\Spoleto.SMS.Extensions.Messaging.csproj", "{36C0E60D-0F6C-4CCB-9065-04B468FEB533}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spoleto.SMS.Extensions.Messaging", "src\Extensions\Spoleto.SMS.Extensions.Messaging\Spoleto.SMS.Extensions.Messaging.csproj", "{36C0E60D-0F6C-4CCB-9065-04B468FEB533}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spoleto.SMS.Extensions.GetSms", "src\Extensions\Spoleto.SMS.Extensions.GetSms\Spoleto.SMS.Extensions.GetSms.csproj", "{5353AFAB-4F7A-4E3A-B163-78DF39DF25FA}"
 EndProject

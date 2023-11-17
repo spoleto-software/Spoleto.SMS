@@ -38,23 +38,17 @@ jobs:
 
       - name: Pack Spoleto.SMS
         run: dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg --no-build -c Release src/Spoleto.SMS/Spoleto.SMS.csproj -o .
-      # - name: Pack SMS.Net.RavenSMS
-      #   run: dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg --no-build -c Release src/SmsDeliveryChannels/SMS.Net.RavenSMS/SMS.Net.RavenSMS.csproj -o .
-      # - name: Pack SMS.Net.Avochato
-      #   run: dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg --no-build -c Release src/SmsDeliveryChannels/SMS.Net.Avochato/SMS.Net.Avochato.csproj -o .
-      # - name: Pack SMS.Net.MessageBird
-      #   run: dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg --no-build -c Release src/SmsDeliveryChannels/SMS.Net.MessageBird/SMS.Net.MessageBird.csproj -o .
-      # - name: Pack SMS.Net.Twilio
-      #   run: dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg --no-build -c Release src/SmsDeliveryChannels/SMS.Net.Twilio/SMS.Net.Twilio.csproj -o .
+      - name: Pack Spoleto.SMS.GetSms
+        run: dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg --no-build -c Release src/Providers/Spoleto.SMS.GetSms/Spoleto.SMS.GetSms.csproj -o .
+      - name: Pack Spoleto.SMS.Smsc
+        run: dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg --no-build -c Release src/Providers/Spoleto.SMS.Smsc/Spoleto.SMS.Smsc.csproj -o .
 
-      # - name: Pack SMS.Net.DependencyInjection
-      #   run: dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg --no-build -c Release src/DependencyInjection/SMS.Net.DependencyInjection/SMS.Net.DependencyInjection.csproj -o .
-      # - name: Pack SMS.Net.Avochato.DependencyInjection
-      #   run: dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg --no-build -c Release src/DependencyInjection/SMS.Net.Avochato.DependencyInjection/SMS.Net.Avochato.DependencyInjection.csproj -o .
-      # - name: Pack SMS.Net.MessageBird.DependencyInjection
-      #   run: dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg --no-build -c Release src/DependencyInjection/SMS.Net.MessageBird.DependencyInjection/SMS.Net.MessageBird.DependencyInjection.csproj -o .
-      # - name: Pack SMS.Net.Twilio.DependencyInjection
-      #   run: dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg --no-build -c Release src/DependencyInjection/SMS.Net.Twilio.DependencyInjection/SMS.Net.Twilio.DependencyInjection.csproj -o .
+      - name: Pack Spoleto.SMS.Extensions.Messaging
+        run: dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg --no-build -c Release src/Extensions/Spoleto.SMS.Extensions.Messaging/Spoleto.SMS.Extensions.Messaging.csproj -o .
+      - name: Pack Spoleto.SMS.Extensions.GetSms
+        run: dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg --no-build -c Release src/Extensions/Spoleto.SMS.Extensions.GetSms/Spoleto.SMS.Extensions.GetSms.csproj -o .
+      - name: Pack Spoleto.SMS.Extensions.Smsc
+        run: dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg --no-build -c Release src/Extensions/Spoleto.SMS.Extensions.Smsc/Spoleto.SMS.Extensions.Smsc.csproj -o .
 
       - name: Push packages
         run: dotnet nuget push *.nupkg --api-key ${{secrets.NUGET_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
