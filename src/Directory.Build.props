@@ -11,6 +11,15 @@
         <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     </PropertyGroup>
 
+    <!-- https://github.com/dotnet/sourcelink -->
+    <PropertyGroup>
+        <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+
+        <!-- Optional: Embed source files that are not tracked by the source control manager in the PDB -->
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    </PropertyGroup>
+
     <!-- Package info -->
     <PropertyGroup>
         <Product>Spoleto.SMS library</Product>
@@ -53,4 +62,9 @@
             <Visible>False</Visible>
         </None>
     </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
+    </ItemGroup>
+    
 </Project>
