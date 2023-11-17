@@ -5,7 +5,7 @@ namespace Spoleto.SMS
 {
     /// <summary>
     /// The SMS service used to abstract the SMS sending.
-    /// </summary
+    /// </summary>
     public interface ISmsService
     {
         /// <summary>
