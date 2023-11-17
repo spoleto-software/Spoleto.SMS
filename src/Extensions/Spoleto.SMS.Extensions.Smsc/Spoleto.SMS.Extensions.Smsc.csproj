@@ -8,8 +8,8 @@
 
     <!-- Package info -->
     <PropertyGroup>
-        <Title>Spoleto.SMS - SMSC provider</Title>
-        <PackageId>Spoleto.SMS.Smsc</PackageId>
+        <Title>Spoleto.SMS Extensions - SMSC provider</Title>
+        <PackageId>Spoleto.SMS.Extensions.Smsc</PackageId>
         <PackageTags>Spoleto.SMS; SMS; SMSC</PackageTags>
         <Description>SMSC provider for Spoleto.SMS</Description>
     </PropertyGroup>    
