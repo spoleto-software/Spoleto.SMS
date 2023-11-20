@@ -11,8 +11,11 @@ namespace Spoleto.SMS.Extensions.GetSms
     public static class SmsServiceBuilderExtensions
     {
         /// <summary>
-        /// Adds the SMSC provider to be used in the SMS service.
+        /// Adds the GetSms provider to be used in the SMS service.
         /// </summary>
+        /// <remarks>
+        /// <see href="https://getsms.uz/page/index/16"/>
+        /// </remarks>
         /// <param name="builder">The <see cref="SmsServiceBuilder"/> instance.</param>
         /// <param name="login">Login.</param>
         /// <param name="password">Password.</param>
@@ -28,8 +31,11 @@ namespace Spoleto.SMS.Extensions.GetSms
 
 
         /// <summary>
-        /// Adds the SMSC provider to be used in the SMS service.
+        /// Adds the GetSms provider to be used in the SMS service.
         /// </summary>
+        /// <remarks>
+        /// <see href="https://getsms.uz/page/index/16"/>
+        /// </remarks>
         /// <param name="builder">The <see cref="SmsServiceBuilder"/> instance.</param>
         /// <param name="config">The configuration builder instance.</param>
         /// <returns>The instance of <see cref="SmsServiceBuilder"/> to enable methods chaining.</returns>
@@ -50,8 +56,11 @@ namespace Spoleto.SMS.Extensions.GetSms
         }
 
         /// <summary>
-        /// Adds the SMSC provider to be used in the SMS service.
+        /// Adds the GetSms provider to be used in the SMS service.
         /// </summary>
+        /// <remarks>
+        /// <see href="https://getsms.uz/page/index/16"/>
+        /// </remarks>
         /// <param name="builder">The <see cref="SmsServiceBuilder"/> instance.</param>
         /// <param name="provider">The <see cref="GetSmsProvider"/> instance.</param>
         /// <returns>The instance of <see cref="SmsServiceBuilder"/> to enable methods chaining.</returns>

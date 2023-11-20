@@ -13,6 +13,9 @@ namespace Spoleto.SMS.Extensions.Smsc
         /// <summary>
         /// Adds the SMSC provider to be used in the SMS service.
         /// </summary>
+        /// <remarks>
+        /// <see href="https://smsc.ru/api/code/libraries/http_smtp/cs/#menu"/>
+        /// </remarks>
         /// <param name="builder">The <see cref="SmsServiceBuilder"/> instance.</param>
         /// <param name="login">SMSC_LOGIN.</param>
         /// <param name="password">SMSC_PASSWORD.</param>
@@ -23,6 +26,9 @@ namespace Spoleto.SMS.Extensions.Smsc
         /// <summary>
         /// Adds the SMSC provider to be used in the SMS service.
         /// </summary>
+        /// <remarks>
+        /// <see href="https://smsc.ru/api/code/libraries/http_smtp/cs/#menu"/>
+        /// </remarks>
         /// <param name="builder">The <see cref="SmsServiceBuilder"/> instance.</param>
         /// <param name="config">The configuration builder instance.</param>
         /// <returns>The instance of <see cref="SmsServiceBuilder"/> to enable methods chaining.</returns>
@@ -44,6 +50,9 @@ namespace Spoleto.SMS.Extensions.Smsc
         /// <summary>
         /// Adds the SMSC provider to be used in the SMS service.
         /// </summary>
+        /// <remarks>
+        /// <see href="https://smsc.ru/api/code/libraries/http_smtp/cs/#menu"/>
+        /// </remarks>
         /// <param name="builder">The <see cref="SmsServiceBuilder"/> instance.</param>
         /// <param name="provider">The <see cref="SmscProvider"/> instance.</param>
         /// <returns>The instance of <see cref="SmsServiceBuilder"/> to enable methods chaining.</returns>

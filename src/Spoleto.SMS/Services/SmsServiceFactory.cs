@@ -15,7 +15,7 @@ namespace Spoleto.SMS
         /// </summary>
         /// <param name="options">The SMS option initializer.</param>
         /// <returns>The instance of <see cref="SmsServiceFactory"/> to enable method chaining.</returns>
-        public SmsServiceFactory UseOptions(Action<SmsServiceOptions> options)
+        public SmsServiceFactory WithOptions(Action<SmsServiceOptions> options)
         {
             if (options is null)
                 throw new ArgumentNullException(nameof(options));
@@ -28,11 +28,11 @@ namespace Spoleto.SMS
         }
 
         /// <summary>
-        /// Sets the <see cref="ISmsProvider"/> to be used by the SMS service.
+        /// Adds the <see cref="ISmsProvider"/> to be used by the SMS service.
         /// </summary>
         /// <param name="provider">The <see cref="ISmsProvider"/> instance.</param>
         /// <returns>The instance of <see cref="SmsServiceFactory"/> to enable method chaining.</returns>
-        public SmsServiceFactory UseProvider(ISmsProvider provider)
+        public SmsServiceFactory AddProvider(ISmsProvider provider)
         {
             if (provider is null)
                 throw new ArgumentNullException(nameof(provider));
