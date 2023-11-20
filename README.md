@@ -10,7 +10,7 @@ https://github.com/spoleto-software/Spoleto.SMS
 
 ## Quick setup
 
-Begin by installing the package through the [NuGet](https://www.nuget.org/packages/Spoleto.SMS/) package manager with the command: 
+Begin by installing the package through the [NuGet](https://www.nuget.org/packages/Spoleto.SMS/) package manager with the command:  
 ``Install-Package Spoleto.SMS``.
 
 ## Getting started
