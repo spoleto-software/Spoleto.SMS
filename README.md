@@ -17,13 +17,13 @@ Begin by installing the package through the [NuGet](https://www.nuget.org/packag
 
 To send an SMS message, you will engage with three key elements:
 
-- SmsMessage: This represents the actual content, the recipients and the sender of the SMS that you wish to send;
-- SmsService: This is the mechanism through which the SMS is dispatched;
-- SmsProvider: This refers to the SMS delivery provider.
+- **SmsMessage**: This represents the actual content, the recipients and the sender of the SMS that you wish to send;
+- **SmsService**: This is the mechanism through which the SMS is dispatched;
+- **SmsProvider**: This refers to the SMS delivery provider.
 
-Initially, you create the content of the SMS message, set the recipients and the sender.  
-Afterward, this message is handed over to the SmsService. 
-Finally, the SmsService dispatches the message through the pre-configured SmsProvider.
+Initially, you create the content of the ``SmsMessage``, set the recipients and the sender.  
+Afterward, this message is handed over to the ``SmsService``. 
+Finally, the SmsService dispatches the message through the pre-configured ``SmsProvider``.
 
 ### SmsMessage
 
@@ -46,8 +46,8 @@ SmsProvider is the underlying mechanisms that enable the actual transmission of 
 
 The providers come as pre-configured NuGet packages:
 
-- **Spoleto.SMS.GetSms** (https://www.nuget.org/packages/Spoleto.SMS.GetSms/): Send SMS messages through GetSms https://getsms.uz/; 
-- **Spoleto.SMS.Smsc** (https://www.nuget.org/packages/Spoleto.SMS.Smsc/): Send SMS messages through SMSC https://smsc.ru/.
+- **[Spoleto.SMS.GetSms]**(https://www.nuget.org/packages/Spoleto.SMS.GetSms/): Send SMS messages through GetSms https://getsms.uz/; 
+- **[Spoleto.SMS.Smsc]**(https://www.nuget.org/packages/Spoleto.SMS.Smsc/): Send SMS messages through SMSC https://smsc.ru/.
 
 
 If you wish to add a custom provider, you can do it by implementing the interface ``Spoleto.SMS.Providers.ISmsProvider`` or the abstract class ``Spoleto.SMS.Providers.SmsProviderBase``.
@@ -83,7 +83,7 @@ The factory provides you with three essential methods:
 
 For ``AddProvider()``, the method expects a SMS provider instance, e.g.: ``AddProvider(new SmscProvider(options))``. 
 However, direct usage of this method is generally unnecessary since the SMS providers include extension methods for registration. 
-For instance, the RavenSMS channel provides the ``AddSmsc()`` extension method that simplifies its registration.
+For instance, the SMSC channel provides the ``AddSmsc()`` extension method that simplifies its registration.
 
 The ``Create()`` function straightforwardly creates a new SmsService instance.
 
@@ -109,8 +109,7 @@ var result = smsService.Send(smsMessage);
 // or async:
 var result = await smsService.SendAsync(smsMessage);
 
-
-// and then you can additionally  check a status of SMS delivery:
+// and then you can additionally check a status of SMS delivery:
 var status = smsService.GetStatus("id", "phoneNumber");
 
 // or async:
@@ -129,17 +128,17 @@ To integrate Spoleto.SMS into Microsoft Dependency injection framework, you shou
 
 The extentions for SMS providers come as pre-configured NuGet packages:
 
-- **Spoleto.SMS.Extensions.GetSms** (https://www.nuget.org/packages/Spoleto.SMS.Extensions.GetSms/): GetSms registration; 
-- **Spoleto.SMS.Extensions.Smsc** (https://www.nuget.org/packages/Spoleto.SMS.Extensions.Smsc/): SMSCregistration.
+- **[Spoleto.SMS.Extensions.GetSms]**(https://www.nuget.org/packages/Spoleto.SMS.Extensions.GetSms/): GetSms registration; 
+- **[Spoleto.SMS.Extensions.Smsc]**(https://www.nuget.org/packages/Spoleto.SMS.Extensions.Smsc/): SMSC registration.
 
-After ensuring that the Spoleto.SMS.Extensions.Messaging package is installed from NuGet, you can proceed with the registration of Spoleto.SMS within the Startup.cs or your DI configuration file in the following manner:
+After ensuring that the ``Spoleto.SMS.Extensions.Messaging`` package with at least one SMS provider package are installed from NuGet, you can proceed with the registration of Spoleto.SMS within the ``Startup.cs`` or your DI configuration file in the following manner:
 
 ```csharp
 public void ConfigureServices(IServiceCollection services)
 {
     // Other DI registrations...
 
-    // Register Spoleto.SMS as a scoped service
+    // Register Spoleto.SMS as a scoped service:
     services.AddSMS(SmscProvider.ProviderName)
         .AddGetSms(getSmsOptions.Login, getSmsOptions.Password, getSmsOptions.ServiceUrl)
         .AddSmsc(smscOptions.SMSC_LOGIN, smscOptions.SMSC_PASSWORD);
