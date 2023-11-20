@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>net7.0;net8.0</TargetFrameworks>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFrameworks>net7.0;net8.0;netstandard2.0</TargetFrameworks>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
     <!-- Package info -->
     <PropertyGroup>
@@ -15,8 +15,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-    <ProjectReference Include="..\..\Providers\Spoleto.SMS.GetSms\Spoleto.SMS.GetSms.csproj" />
-    <ProjectReference Include="..\Spoleto.SMS.Extensions.Messaging\Spoleto.SMS.Extensions.Messaging.csproj" />
-  </ItemGroup>
+        <ProjectReference Include="..\..\Providers\Spoleto.SMS.GetSms\Spoleto.SMS.GetSms.csproj" />
+        <ProjectReference Include="..\Spoleto.SMS.Extensions.Messaging\Spoleto.SMS.Extensions.Messaging.csproj" />
+    </ItemGroup>
 
 </Project>

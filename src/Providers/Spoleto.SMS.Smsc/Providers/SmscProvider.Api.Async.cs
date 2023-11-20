@@ -314,7 +314,12 @@ namespace Spoleto.SMS.Providers.Smsc
                     }
 
                     Stream requestStream = await request.GetRequestStreamAsync().ConfigureAwait(false);
+#if NET5_0_OR_GREATER
                     await requestStream.WriteAsync(output).ConfigureAwait(false);
+#else
+                    await requestStream.WriteAsync(output, 0, output.Length).ConfigureAwait(false);
+#endif
+
                 }
 
                 try

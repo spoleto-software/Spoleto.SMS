@@ -14,11 +14,11 @@ namespace Spoleto.SMS
         /// <summary>
         /// The constructor with parameters.
         /// </summary>
-        /// <param name="providers">the list of supported SMS providers.</param>
-        /// <param name="options">the sms service options.</param>
-        /// <exception cref="ArgumentNullException">if SMS provider or options are null.</exception>
-        /// <exception cref="ArgumentException">if SMS provider list is empty.</exception>
-        /// <exception cref="SmsProviderNotFoundException">if the default SMS provider cannot be found.</exception>
+        /// <param name="providers">The list of supported SMS providers.</param>
+        /// <param name="options">The sms service options.</param>
+        /// <exception cref="ArgumentNullException">If SMS provider or options are null.</exception>
+        /// <exception cref="ArgumentException">If SMS provider list is empty.</exception>
+        /// <exception cref="SmsProviderNotFoundException">If the default SMS provider cannot be found.</exception>
         public SmsService(IEnumerable<ISmsProvider> providers, SmsServiceOptions options)
         {
             if (providers is null)
@@ -47,17 +47,17 @@ namespace Spoleto.SMS
         }
 
         /// <summary>
-        /// Get the sms service options instance
+        /// Gets the sms service options instance
         /// </summary>
         public SmsServiceOptions Options { get; }
 
         /// <summary>
-        /// Get the list of sms providers attached to this sms service.
+        /// Gets the list of sms providers attached to this sms service.
         /// </summary>
         public IEnumerable<ISmsProvider> Providers => _providers.Values;
 
         /// <summary>
-        /// Get the default sms provider attached to this sms service.
+        /// Gets the default sms provider attached to this sms service.
         /// </summary>
         public ISmsProvider DefaultProvider => _defaultProvider;
 

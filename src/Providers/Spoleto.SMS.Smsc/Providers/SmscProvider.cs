@@ -64,8 +64,13 @@ namespace Spoleto.SMS.Providers.Smsc
         public override SmsSendingResult Send(SmsMessage message)
         {
             // Validate:
+#if NET5_0_OR_GREATER
             message.To.Split(Separator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                 .ForEach(number => ValidateDataForSMS(number, message.Body, message.IsAllowSendToForeignNumbers));
+#else
+            message.To.Split(Separator)
+                .ForEach(number => ValidateDataForSMS(number, message.Body, message.IsAllowSendToForeignNumbers));
+#endif
 
             var result = send_sms(message.To, message.Body, sender: message.From);
 
@@ -76,8 +81,13 @@ namespace Spoleto.SMS.Providers.Smsc
         public override async Task<SmsSendingResult> SendAsync(SmsMessage message, CancellationToken cancellationToken = default)
         {
             // Validate:
+#if NET5_0_OR_GREATER
             message.To.Split(Separator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                 .ForEach(number => ValidateDataForSMS(number, message.Body, message.IsAllowSendToForeignNumbers));
+#else
+            message.To.Split(Separator)
+                .ForEach(number => ValidateDataForSMS(number, message.Body, message.IsAllowSendToForeignNumbers));
+#endif
 
             var result = await send_smsAsync(message.To, message.Body, sender: message.From).ConfigureAwait(false);
 

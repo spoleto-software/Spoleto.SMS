@@ -18,14 +18,14 @@
         /// <summary>
         /// Sends the SMS message.
         /// </summary>
-        /// <param name="message">the SMS message to be send</param>
+        /// <param name="message">The SMS message to be send</param>
         /// <returns>a <see cref="SmsSendingResult"/> to indicate sending result.</returns>
         SmsSendingResult Send(SmsMessage message);
 
         /// <summary>
         /// Async sends the SMS message.
         /// </summary>
-        /// <param name="message">the SMS message to be send</param>
+        /// <param name="message">The SMS message to be send</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
         /// <returns>a <see cref="SmsSendingResult"/> to indicate sending result.</returns>
         /// <exception cref="OperationCanceledException">If the System.Threading.CancellationToken is canceled.</exception>

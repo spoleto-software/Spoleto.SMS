@@ -9,21 +9,45 @@ namespace Spoleto.SMS
     public record SmsSendingError
     {
         /// <summary>
-        /// Get the error code.
+        /// Gets the error code.
         /// </summary>
-        public string Code { get; init; }
+        public string Code
+        {
+            get;
+#if NET5_0_OR_GREATER
+            init;
+#else
+            set;
+#endif
+        }
 
         /// <summary>
-        /// Get the error message.
+        /// Gets the error message.
         /// </summary>
         [JsonPropertyName("error_text")]
-        public string Message { get; init; }
+        public string Message
+        {
+            get;
+#if NET5_0_OR_GREATER
+            init;
+#else
+            set;
+#endif
+        }
 
         /// <summary>
-        /// Get the numeric error code.
+        /// Gets the numeric error code.
         /// </summary>
         [JsonPropertyName("error_no")]
-        public int NumCode { get; init; }
+        public int NumCode
+        {
+            get;
+#if NET5_0_OR_GREATER
+            init;
+#else
+            set;
+#endif
+        }
 
         [JsonPropertyName("error")]
         public int Error { get; set; }

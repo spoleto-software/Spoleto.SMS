@@ -22,7 +22,15 @@
         /// <summary>
         /// использовать HTTPS протокол
         /// </summary>
-        public bool SMSC_HTTPS { get; init; }
+        public bool SMSC_HTTPS
+        {
+            get;
+#if NET5_0_OR_GREATER
+            init;
+#else
+            set;
+#endif
+        }
 
         /// <summary>
         /// кодировка сообщения (windows-1251 или koi8-r), по умолчанию используется utf-8
@@ -32,7 +40,15 @@
         /// <summary>
         /// флаг отладки
         /// </summary>
-        public bool SMSC_DEBUG { get; init; }
+        public bool SMSC_DEBUG
+        {
+            get;
+#if NET5_0_OR_GREATER
+            init;
+#else
+            set;
+#endif
+        }
 
         #endregion
 
@@ -41,22 +57,54 @@
         /// <summary>
         /// e-mail адрес отправителя
         /// </summary>
-        public string SMTP_FROM { get; init; } = "api@smsc.ru";
+        public string SMTP_FROM
+        {
+            get;
+#if NET5_0_OR_GREATER
+            init;
+#else
+            set;
+#endif
+        } = "api@smsc.ru";
 
         /// <summary>
         /// адрес smtp сервера
         /// </summary>
-        public string SMTP_SERVER { get; init; } = "send.smsc.ru";
+        public string SMTP_SERVER
+        {
+            get;
+#if NET5_0_OR_GREATER
+            init;
+#else
+            set;
+#endif
+        } = "send.smsc.ru";
 
         /// <summary>
         /// логин для smtp сервера
         /// </summary>
-        public string SMTP_LOGIN { get; init; }
+        public string SMTP_LOGIN
+        {
+            get;
+#if NET5_0_OR_GREATER
+            init;
+#else
+            set;
+#endif
+        }
 
         /// <summary>
         /// пароль для smtp сервера
         /// </summary>
-        public string SMTP_PASSWORD { get; init; }
+        public string SMTP_PASSWORD
+        {
+            get;
+#if NET5_0_OR_GREATER
+            init;
+#else
+            set;
+#endif
+        }
 
         #endregion
 

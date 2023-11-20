@@ -9,48 +9,144 @@ namespace Spoleto.SMS
     public record SmsStatusData
     {
         /// <summary>
-        ///  Get the status info.
+        ///  Gets the status info.
         /// </summary>
         [JsonPropertyName("status")]
-        public string Status { get; init; }
+        public string Status
+        {
+            get;
+#if NET5_0_OR_GREATER
+            init;
+#else
+            set;
+#endif
+        }
 
         /// <summary>
-        /// Get the status description.
+        /// Gets the status description.
         /// </summary>
         [JsonPropertyName("description")]
-        public string Description { get; init; }
+        public string Description
+        {
+            get;
+#if NET5_0_OR_GREATER
+            init;
+#else
+            set;
+#endif
+        }
 
         [JsonPropertyName("recipient")]
-        public string Recipient { get; init; }
+        public string Recipient
+        {
+            get;
+#if NET5_0_OR_GREATER
+            init;
+#else
+            set;
+#endif
+        }
 
         [JsonPropertyName("text")]
-        public string Text { get; init; }
+        public string Text
+        {
+            get;
+#if NET5_0_OR_GREATER
+            init;
+#else
+            set;
+#endif
+        }
 
         [JsonPropertyName("user_id")]
-        public string UserId { get; init; }
+        public string UserId
+        {
+            get;
+#if NET5_0_OR_GREATER
+            init;
+#else
+            set;
+#endif
+        }
 
         [JsonPropertyName("date_received")]
         [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime DateReceived { get; init; }
+        public DateTime DateReceived
+        {
+            get;
+#if NET5_0_OR_GREATER
+            init;
+#else
+            set;
+#endif
+        }
 
         [JsonPropertyName("date_sent")]
         [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime DateSent { get; init; }
+        public DateTime DateSent
+        {
+            get;
+#if NET5_0_OR_GREATER
+            init;
+#else
+            set;
+#endif
+        }
 
         [JsonPropertyName("date_delivered")]
         [JsonConverter(typeof(DateTimeConverter))]
-        public DateTime DateDelivered { get; init; }
+        public DateTime DateDelivered
+        {
+            get;
+#if NET5_0_OR_GREATER
+            init;
+#else
+            set;
+#endif
+        }
 
         [JsonPropertyName("message_id")]
-        public string MessageId { get; init; }
+        public string MessageId
+        {
+            get;
+#if NET5_0_OR_GREATER
+            init;
+#else
+            set;
+#endif
+        }
 
         [JsonPropertyName("request_id")]
-        public string RequestId { get; init; }
+        public string RequestId
+        {
+            get;
+#if NET5_0_OR_GREATER
+            init;
+#else
+            set;
+#endif
+        }
 
         [JsonPropertyName("count_messages")]
-        public string CountMessages { get; init; }
+        public string CountMessages
+        {
+            get;
+#if NET5_0_OR_GREATER
+            init;
+#else
+            set;
+#endif
+        }
 
         [JsonPropertyName("client_ip")]
-        public string ClientIp { get; init; }
+        public string ClientIp
+        {
+            get;
+#if NET5_0_OR_GREATER
+            init;
+#else
+            set;
+#endif
+        }
     }
 }

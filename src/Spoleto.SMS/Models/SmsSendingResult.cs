@@ -6,20 +6,52 @@
     public record SmsSendingResult
     {
         /// <summary>
-        /// Get if the SMS has been sent successfully.
+        /// Gets if the SMS has been sent successfully.
         /// </summary>
-        public bool Success { get; init; }
+        public bool Success
+        {
+            get;
+#if NET5_0_OR_GREATER
+            init;
+#else
+            set;
+#endif
+        }
 
         /// <summary>
-        /// Get the name of the provider used to send the SMS.
+        /// Gets the name of the provider used to send the SMS.
         /// </summary>
-        public string ProviderName { get; init; }
+        public string ProviderName
+        {
+            get;
+#if NET5_0_OR_GREATER
+            init;
+#else
+            set;
+#endif
+        }
 
-        public IEnumerable<SmdSendingData> SmsSendingData { get; init; }
+        public IEnumerable<SmdSendingData> SmsSendingData
+        {
+            get;
+#if NET5_0_OR_GREATER
+            init;
+#else
+            set;
+#endif
+        }
 
         /// <summary>
-        /// Get the errors associated with the sending failure.
+        /// Gets the errors associated with the sending failure.
         /// </summary>
-        public IEnumerable<SmsSendingError> Errors { get; init; }
+        public IEnumerable<SmsSendingError> Errors
+        {
+            get;
+#if NET5_0_OR_GREATER
+            init;
+#else
+            set;
+#endif
+        }
     }
 }

@@ -46,7 +46,11 @@ namespace Spoleto.SMS.Providers.GetSms
         {
             var httpClient = new HttpClient(); //todo:
 
+#if NET5_0_OR_GREATER
             var phoneNumbers = message.To.Split(Separator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+#else
+            var phoneNumbers = message.To.Split(Separator);
+#endif
 
             // Validate:
             phoneNumbers.ForEach(number => ValidateDataForSMS(number, message.Body, message.IsAllowSendToForeignNumbers));
@@ -77,7 +81,11 @@ namespace Spoleto.SMS.Providers.GetSms
             httpClient.Timeout = TimeSpan.FromSeconds(60);
 
             var response = await httpClient.PostAsync(_options.ServiceUrl, content, cancellationToken).ConfigureAwait(false);
+#if NET5_0_OR_GREATER
             var responseString = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+#else
+            var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+#endif
 
             if (response.IsSuccessStatusCode)
             {
@@ -184,7 +192,11 @@ namespace Spoleto.SMS.Providers.GetSms
 
             var url = new Uri(new Uri(_options.ServiceUrl), "status/");
             var response = await httpClient.PostAsync(url, content, cancellationToken).ConfigureAwait(false);
+#if NET5_0_OR_GREATER
             var responseString = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+#else
+            var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+#endif
 
             if (response.IsSuccessStatusCode)
             {
