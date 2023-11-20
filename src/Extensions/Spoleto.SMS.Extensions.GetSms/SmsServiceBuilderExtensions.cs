@@ -41,14 +41,14 @@ namespace Spoleto.SMS.Extensions.GetSms
         /// <returns>The instance of <see cref="SmsServiceBuilder"/> to enable methods chaining.</returns>
         public static SmsServiceBuilder AddGetSms(this SmsServiceBuilder builder, Action<GetSmsOptions> config)
         {
-            // loads the configuration
-            var configuration = new GetSmsOptions();
-            config(configuration);
+            // loads the options
+            var options = new GetSmsOptions();
+            config(options);
 
-            // validates the configuration
-            configuration.Validate();
+            // validates the options
+            options.Validate();
 
-            builder.ServiceCollection.AddSingleton((s) => configuration);
+            builder.ServiceCollection.AddSingleton(s => options);
             builder.ServiceCollection.AddHttpClient<ISmsProvider, GetSmsProvider>();
             builder.ServiceCollection.AddHttpClient<IGetSmsProvider, GetSmsProvider>();
 

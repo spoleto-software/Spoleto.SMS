@@ -19,11 +19,11 @@ namespace Spoleto.SMS.DependencyInjection.GetSms
         /// /// <param name="serviceUrl">Service Url.</param>
         /// <returns>The instance of <see cref="SmsServiceFactory"/> to enable methods chaining.</returns>
         public static SmsServiceFactory AddGetSms(this SmsServiceFactory builder, string login, string password, string serviceUrl)
-           => builder.AddGetSms(op =>
+           => builder.AddGetSms(x =>
            {
-               op.Login = login;
-               op.Password = password;
-               op.ServiceUrl = serviceUrl;
+               x.Login = login;
+               x.Password = password;
+               x.ServiceUrl = serviceUrl;
            });
 
 
@@ -38,15 +38,15 @@ namespace Spoleto.SMS.DependencyInjection.GetSms
         /// <returns>The instance of <see cref="SmsServiceFactory"/> to enable methods chaining.</returns>
         public static SmsServiceFactory AddGetSms(this SmsServiceFactory builder, Action<GetSmsOptions> config)
         {
-            // loads the configuration
-            var configuration = new GetSmsOptions();
-            config(configuration);
+            // loads the options:
+            var options = new GetSmsOptions();
+            config(options);
 
-            // validates the configuration
-            configuration.Validate();
+            // validates the options:
+            options.Validate();
 
             // add the provider to the SMS service factory
-            builder.AddProvider(new GetSmsProvider(configuration));
+            builder.AddProvider(new GetSmsProvider(options));
 
             return builder;
         }

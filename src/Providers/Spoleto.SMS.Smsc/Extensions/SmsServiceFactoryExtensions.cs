@@ -18,7 +18,7 @@ namespace Spoleto.SMS
         /// <param name="password">SMSC_PASSWORD.</param>
         /// <returns>The instance of <see cref="SmsServiceFactory"/> to enable methods chaining.</returns>
         public static SmsServiceFactory AddSmsc(this SmsServiceFactory builder, string login, string password)
-           => builder.AddSmsc(op => { op.SMSC_LOGIN = login; op.SMSC_PASSWORD = password; });
+           => builder.AddSmsc(x => { x.SMSC_LOGIN = login; x.SMSC_PASSWORD = password; });
 
         /// <summary>
         /// Adds the SMSC provider to be used in the SMS service.
@@ -31,15 +31,15 @@ namespace Spoleto.SMS
         /// <returns>The instance of <see cref="SmsServiceFactory"/> to enable methods chaining.</returns>
         public static SmsServiceFactory AddSmsc(this SmsServiceFactory builder, Action<SmscOptions> config)
         {
-            // loads the configuration
-            var configuration = new SmscOptions();
-            config(configuration);
+            // loads the options
+            var options = new SmscOptions();
+            config(options);
 
-            // validates the configuration
-            configuration.Validate();
+            // validates the options
+            options.Validate();
 
             // add the provider to the SMS service factory
-            builder.AddProvider(new SmscProvider(configuration));
+            builder.AddProvider(new SmscProvider(options));
 
             return builder;
         }

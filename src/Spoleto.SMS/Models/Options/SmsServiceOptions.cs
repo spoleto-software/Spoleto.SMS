@@ -6,14 +6,14 @@
     public record SmsServiceOptions
     {
         /// <summary>
-        /// Gets or sets the name of the default SMS provider.
-        /// </summary>
-        public string DefaultProvider { get; set; }
-
-        /// <summary>
         /// Gets or sets the default ID to be used as the "From" value (phone number or another ID).
         /// </summary>
         public string DefaultFrom { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of the default SMS provider.
+        /// </summary>
+        public string DefaultProvider { get; set; }
 
         /// <summary>
         /// Validates if the options are all set correctly

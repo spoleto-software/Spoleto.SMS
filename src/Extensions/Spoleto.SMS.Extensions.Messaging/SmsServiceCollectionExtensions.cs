@@ -25,11 +25,11 @@ namespace Spoleto.SMS.Extensions.Messaging
             if (config is null)
                 throw new ArgumentNullException(nameof(config));
 
-            // loads the configuration
-            var configuration = new SmsServiceOptions();
-            config(configuration);
+            // loads the options
+            var options = new SmsServiceOptions();
+            config(options);
 
-            serviceCollection.AddSingleton((s) => configuration);
+            serviceCollection.AddSingleton(s => options);
             serviceCollection.AddScoped<ISmsService, SmsService>();
 
             // registers the providers on this instance:

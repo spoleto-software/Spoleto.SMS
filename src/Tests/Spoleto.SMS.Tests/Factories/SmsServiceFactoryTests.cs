@@ -26,12 +26,11 @@ namespace Spoleto.SMS.Tests.Factories
                    options.DefaultFrom = "Default Sender ID";
                    options.DefaultProvider = SmscProvider.ProviderName;
                })
-               // register the EDPs
                .AddSmsc(smscOptions.SMSC_LOGIN, smscOptions.SMSC_PASSWORD)
                .AddGetSms(getSmsOptions.Login, getSmsOptions.Password, getSmsOptions.ServiceUrl)
                .Create();
-
         }
+
         [Test]
         public void SendSms()
         {
