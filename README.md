@@ -29,10 +29,10 @@ Finally, the ``SmsService`` dispatches the message through the pre-configured ``
 
 SmsMessage contains your message details:
 
-- **From:** - the phone number or another ID that will appear as the sender;
-- **To:** - the phone numbers of the intended recipients (separated by semicolons ; if several);
-- **Body:** - the content of the SMS message;
-- **IsAllowSendToForeignNumbers** - a flag indicating whether the message can be sent to international numbers.
+- **From:** The phone number or another ID that will appear as the sender;
+- **To:** The phone numbers of the intended recipients (separated by semicolons ; if several);
+- **Body:** The content of the SMS message;
+- **IsAllowSendToForeignNumbers:** A flag indicating whether the message can be sent to international numbers.
 
 Example of SmsMessage:
 
