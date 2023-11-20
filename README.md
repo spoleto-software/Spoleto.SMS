@@ -22,8 +22,8 @@ To send an SMS message, you will engage with three key elements:
 - **SmsProvider**: This refers to the SMS delivery provider.
 
 Initially, you create the content of the ``SmsMessage``, set the recipients and the sender.  
-Afterward, this message is handed over to the ``SmsService``. 
-Finally, the SmsService dispatches the message through the pre-configured ``SmsProvider``.
+Afterward, this message is handed over to the ``SmsService``.  
+Finally, the ``SmsService`` dispatches the message through the pre-configured ``SmsProvider``.
 
 ### SmsMessage
 
@@ -46,8 +46,8 @@ SmsProvider is the underlying mechanisms that enable the actual transmission of 
 
 The providers come as pre-configured NuGet packages:
 
-- **[Spoleto.SMS.GetSms]**(https://www.nuget.org/packages/Spoleto.SMS.GetSms/): Send SMS messages through GetSms https://getsms.uz/; 
-- **[Spoleto.SMS.Smsc]**(https://www.nuget.org/packages/Spoleto.SMS.Smsc/): Send SMS messages through SMSC https://smsc.ru/.
+- **[Spoleto.SMS.GetSms](https://www.nuget.org/packages/Spoleto.SMS.GetSms/)**: Send SMS messages through GetSms https://getsms.uz/; 
+- **[Spoleto.SMS.Smsc](https://www.nuget.org/packages/Spoleto.SMS.Smsc/)**: Send SMS messages through SMSC https://smsc.ru/.
 
 
 If you wish to add a custom provider, you can do it by implementing the interface ``Spoleto.SMS.Providers.ISmsProvider`` or the abstract class ``Spoleto.SMS.Providers.SmsProviderBase``.
@@ -128,8 +128,8 @@ To integrate Spoleto.SMS into Microsoft Dependency injection framework, you shou
 
 The extentions for SMS providers come as pre-configured NuGet packages:
 
-- **[Spoleto.SMS.Extensions.GetSms]**(https://www.nuget.org/packages/Spoleto.SMS.Extensions.GetSms/): GetSms registration; 
-- **[Spoleto.SMS.Extensions.Smsc]**(https://www.nuget.org/packages/Spoleto.SMS.Extensions.Smsc/): SMSC registration.
+- **[Spoleto.SMS.Extensions.GetSms](https://www.nuget.org/packages/Spoleto.SMS.Extensions.GetSms/)**: GetSms registration; 
+- **[Spoleto.SMS.Extensions.Smsc](https://www.nuget.org/packages/Spoleto.SMS.Extensions.Smsc/)**: SMSC registration.
 
 After ensuring that the ``Spoleto.SMS.Extensions.Messaging`` package with at least one SMS provider package are installed from NuGet, you can proceed with the registration of Spoleto.SMS within the ``Startup.cs`` or your DI configuration file in the following manner:
 
