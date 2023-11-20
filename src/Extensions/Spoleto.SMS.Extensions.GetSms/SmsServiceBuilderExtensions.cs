@@ -37,7 +37,7 @@ namespace Spoleto.SMS.Extensions.GetSms
             configuration.Validate();
 
             builder.ServiceCollection.AddSingleton((s) => configuration);
-            builder.ServiceCollection.AddScoped<ISmsProvider, GetSmsProvider>();
+            builder.ServiceCollection.AddHttpClient<IGetSmsProvider, GetSmsProvider>();
 
             return builder;
         }

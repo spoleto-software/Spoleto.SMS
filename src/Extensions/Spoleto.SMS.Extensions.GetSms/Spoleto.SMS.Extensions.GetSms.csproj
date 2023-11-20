@@ -13,6 +13,9 @@
         <PackageTags>Spoleto.SMS; Messaging; SMS; GetSMS</PackageTags>
         <Description>GetSMS provider for Spoleto.SMS</Description>
     </PropertyGroup>
+    <ItemGroup>
+      <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+    </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\..\Providers\Spoleto.SMS.GetSms\Spoleto.SMS.GetSms.csproj" />

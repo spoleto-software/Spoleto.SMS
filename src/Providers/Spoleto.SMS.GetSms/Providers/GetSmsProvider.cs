@@ -21,12 +21,39 @@ namespace Spoleto.SMS.Providers.GetSms
         public const string ProviderName = nameof(SmsProviderName.GetSMS);
 
         private readonly GetSmsOptions _options;
+        private readonly HttpClient _httpClient;
 
+        /// <summary>
+        /// Creates an instance of <see cref="GetSmsProvider"/>.
+        /// </summary>
+        /// <param name="httpClient">The <see cref="HttpClient"/> instance.</param>
+        /// <param name="options">The options instance.</param>
+        /// <exception cref="ArgumentNullException">If the given provider options is null.</exception>
         public GetSmsProvider(GetSmsOptions options)
+            : this(new HttpClient(), options)
         {
+        }
+
+        /// <summary>
+        /// Creates an instance of <see cref="GetSmsProvider"/>.
+        /// </summary>
+        /// <param name="httpClient">The <see cref="HttpClient"/> instance<./param>
+        /// <param name="options">The options instance.</param>
+        /// <exception cref="ArgumentNullException">If the given http client or provider options are null.</exception>
+        public GetSmsProvider(HttpClient httpClient, GetSmsOptions options)
+        {
+            if (httpClient is null)
+                throw new ArgumentNullException(nameof(httpClient));
+
+            if (options is null)
+                throw new ArgumentNullException(nameof(options));
+
             // Validates if the options are valid
             options.Validate();
             _options = options;
+
+            // if the HTTP client is null
+            _httpClient = ConfigureHttpClient(httpClient);
         }
 
         /// <inheritdoc/>
@@ -44,8 +71,6 @@ namespace Spoleto.SMS.Providers.GetSms
         /// <inheritdoc/>
         public override async Task<SmsSendingResult> SendAsync(SmsMessage message, CancellationToken cancellationToken = default)
         {
-            var httpClient = new HttpClient(); //todo:
-
 #if NET5_0_OR_GREATER
             var phoneNumbers = message.To.Split(Separator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 #else
@@ -77,10 +102,7 @@ namespace Spoleto.SMS.Providers.GetSms
 
             var content = new FormUrlEncodedContent(requestData);
 
-            httpClient.DefaultRequestHeaders.Add("User-Agent", "Opera 10.00");
-            httpClient.Timeout = TimeSpan.FromSeconds(60);
-
-            var response = await httpClient.PostAsync(_options.ServiceUrl, content, cancellationToken).ConfigureAwait(false);
+            var response = await _httpClient.PostAsync(_options.ServiceUrl, content, cancellationToken).ConfigureAwait(false);
 #if NET5_0_OR_GREATER
             var responseString = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 #else
@@ -168,8 +190,6 @@ namespace Spoleto.SMS.Providers.GetSms
         /// <inheritdoc/>
         public override async Task<SmsStatusResult> GetStatusAsync(string id, string? phoneNumber, CancellationToken cancellationToken = default)
         {
-            var httpClient = new HttpClient(); //todo:
-
             var requestIdData = new List<Dictionary<string, string>>
             {
                 new Dictionary<string, string>
@@ -187,11 +207,8 @@ namespace Spoleto.SMS.Providers.GetSms
 
             var content = new FormUrlEncodedContent(requestData);
 
-            httpClient.DefaultRequestHeaders.Add("User-Agent", "Opera 10.00");
-            httpClient.Timeout = TimeSpan.FromSeconds(60);
-
             var url = new Uri(new Uri(_options.ServiceUrl), "status/");
-            var response = await httpClient.PostAsync(url, content, cancellationToken).ConfigureAwait(false);
+            var response = await _httpClient.PostAsync(url, content, cancellationToken).ConfigureAwait(false);
 #if NET5_0_OR_GREATER
             var responseString = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 #else
@@ -272,7 +289,7 @@ namespace Spoleto.SMS.Providers.GetSms
 
         private static readonly Dictionary<string, string> _reflectionCache = new();
 
-        public static string GetJsonPropertyName<T>(string propertyName)
+        private static string GetJsonPropertyName<T>(string propertyName)
         {
             lock (((ICollection)_reflectionCache).SyncRoot)
             {
@@ -288,6 +305,14 @@ namespace Spoleto.SMS.Providers.GetSms
 
                 return jsonPropertyName;
             }
+        }
+
+        private static HttpClient ConfigureHttpClient(HttpClient client)
+        {
+            client.DefaultRequestHeaders.Add("User-Agent", "Opera 10.00");
+            client.Timeout = TimeSpan.FromSeconds(60);
+
+            return client;
         }
     }
 }
