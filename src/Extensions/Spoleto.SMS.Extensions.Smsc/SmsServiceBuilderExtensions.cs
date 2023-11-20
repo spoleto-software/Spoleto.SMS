@@ -21,7 +21,11 @@ namespace Spoleto.SMS.Extensions.Smsc
         /// <param name="password">SMSC_PASSWORD.</param>
         /// <returns>The instance of <see cref="SmsServiceBuilder"/> to enable methods chaining.</returns>
         public static SmsServiceBuilder AddSmsc(this SmsServiceBuilder builder, string login, string password)
-           => builder.AddSmsc(x => { x.SMSC_LOGIN = login; x.SMSC_PASSWORD = password; });
+           => builder.AddSmsc(x =>
+           {
+               x.SMSC_LOGIN = login;
+               x.SMSC_PASSWORD = password;
+           });
 
         /// <summary>
         /// Adds the SMSC provider to be used in the SMS service.

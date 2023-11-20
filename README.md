@@ -66,7 +66,7 @@ var smsService = new SmsServiceFactory()
         options.DefaultProvider = SmscProvider.ProviderName;
     })
     .AddSmsc("SMSC_LOGIN", "SMSC_PASSWORD")
-    .AddGetSms("GetSmsLogin", "GetSmsPassword", "GetSmsServiceUrl")
+    .AddGetSms("GetSmsLogin", "GetSmsPassword")
     .Create();
 ```
 
@@ -100,7 +100,7 @@ var smsService = new SmsServiceFactory()
         options.DefaultProvider = SmscProvider.ProviderName;
     })
     .AddSmsc("SMSC_LOGIN", "SMSC_PASSWORD")
-    .AddGetSms("GetSmsLogin", "GetSmsPassword", "GetSmsServiceUrl")
+    .AddGetSms("GetSmsLogin", "GetSmsPassword")
     .Create();
 
 var smsMessage = new SmsMessage("SMS content", "Sender number/ID", "Recipients numbers");
@@ -144,7 +144,7 @@ public void ConfigureServices(IServiceCollection services)
 
     // Register Spoleto.SMS as a scoped service:
     services.AddSMS(SmscProvider.ProviderName)
-        .AddGetSms(getSmsOptions.Login, getSmsOptions.Password, getSmsOptions.ServiceUrl)
+        .AddGetSms(getSmsOptions.Login, getSmsOptions.Password)
         .AddSmsc(smscOptions.SMSC_LOGIN, smscOptions.SMSC_PASSWORD);
     
     // or:
@@ -153,7 +153,7 @@ public void ConfigureServices(IServiceCollection services)
         options.DefaultFrom = "Default Sender ID";
         options.DefaultProvider = SmscProvider.ProviderName;
     })
-    .AddGetSms(getSmsOptions.Login, getSmsOptions.Password, getSmsOptions.ServiceUrl)
+    .AddGetSms(getSmsOptions.Login, getSmsOptions.Password)
     .AddSmsc(smscOptions.SMSC_LOGIN, smscOptions.SMSC_PASSWORD);
 
     // Continue with the rest of your service configuration...

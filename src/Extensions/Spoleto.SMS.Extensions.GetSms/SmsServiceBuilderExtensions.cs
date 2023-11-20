@@ -19,14 +19,12 @@ namespace Spoleto.SMS.Extensions.GetSms
         /// <param name="builder">The <see cref="SmsServiceBuilder"/> instance.</param>
         /// <param name="login">Login.</param>
         /// <param name="password">Password.</param>
-        /// /// <param name="serviceUrl">Service Url.</param>
         /// <returns>The instance of <see cref="SmsServiceBuilder"/> to enable methods chaining.</returns>
-        public static SmsServiceBuilder AddGetSms(this SmsServiceBuilder builder, string login, string password, string serviceUrl)
+        public static SmsServiceBuilder AddGetSms(this SmsServiceBuilder builder, string login, string password)
            => builder.AddGetSms(x =>
            {
                x.Login = login;
                x.Password = password;
-               x.ServiceUrl = serviceUrl;
            });
 
 

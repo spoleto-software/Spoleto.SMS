@@ -6,7 +6,7 @@
 
         public string Password { get; set; }
 
-        public string ServiceUrl { get; set; }
+        public string ServiceUrl { get; set; } = "http://185.8.212.184/smsgateway/";
 
         /// <summary>
         /// validate if the options are all set correctly

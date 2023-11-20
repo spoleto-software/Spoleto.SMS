@@ -18,12 +18,11 @@ namespace Spoleto.SMS.DependencyInjection.GetSms
         /// <param name="password">Password.</param>
         /// /// <param name="serviceUrl">Service Url.</param>
         /// <returns>The instance of <see cref="SmsServiceFactory"/> to enable methods chaining.</returns>
-        public static SmsServiceFactory AddGetSms(this SmsServiceFactory builder, string login, string password, string serviceUrl)
+        public static SmsServiceFactory AddGetSms(this SmsServiceFactory builder, string login, string password)
            => builder.AddGetSms(x =>
            {
                x.Login = login;
                x.Password = password;
-               x.ServiceUrl = serviceUrl;
            });
 
 

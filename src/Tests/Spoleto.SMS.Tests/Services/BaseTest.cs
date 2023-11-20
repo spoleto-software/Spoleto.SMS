@@ -25,7 +25,7 @@ namespace Spoleto.SMS.Tests.Services
             var getSmsOptions = ConfigurationHelper.Configuration.GetSection(nameof(GetSmsOptions)).Get<GetSmsOptions>()!;
 
             services.AddSMS(SmscProvider.ProviderName)
-                .AddGetSms(getSmsOptions.Login, getSmsOptions.Password, getSmsOptions.ServiceUrl)
+                .AddGetSms(getSmsOptions.Login, getSmsOptions.Password)
                 .AddSmsc(smscOptions.SMSC_LOGIN, smscOptions.SMSC_PASSWORD);
 
             _serviceProvider = services.BuildServiceProvider();
