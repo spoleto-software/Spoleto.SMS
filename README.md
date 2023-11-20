@@ -167,7 +167,7 @@ public class YourSmsSender
     private readonly ILogger<YourSmsSender> _logger;
     private readonly ISmsService _smsService;
 
-    public IndexModel(ILogger<IndexModel> logger, ISmsService smsService)
+    public YourSmsSender(ILogger<IndexModel> logger, ISmsService smsService)
     {
         _logger = logger;
         _smsService = smsService;
