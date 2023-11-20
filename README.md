@@ -56,7 +56,7 @@ If you wish to add a custom provider, you can do it by implementing the interfac
 
 The SmsService acts as the service with which you communicate to dispatch your messages. To instantiate the service, you can use the ``Spoleto.SMS.SmsServiceFactory``, which serves as a factory for creating service instances.
 
-Example of creating SmsService using SmsServiceFactory:
+Example of creating ``SmsService`` using ``SmsServiceFactory``:
 
 ```csharp
 var smsService = new SmsServiceFactory()
@@ -76,20 +76,21 @@ The factory provides you with three essential methods:
 
 - **WithOptions()**: This method allows you to specify the SMS service settings:
   - **DefaultFrom**: This setting allows you to assign a default sender phone number or another ID, so you do not need to to specify it for each individual message. Note that this default is overridden if a sender phone number is explicitly provided in the SmsMessage.
-  - **DefaultProvider**: This is where you specify the default SMS provider for sending SMS messages. Since it's possible to set up multiple channels, it's important to point out which one you prefer for default use.
+  - **DefaultProvider**: This is where you specify the default SMS provider for sending SMS messages. Since it's possible to set up multiple SMS providers, it's important to point out which one you prefer for default use.
 - **AddProvider()**: With this method, you can add the SMS provider that will be utilized for SMS message transmission.
-- **Create()**: This method is used to generate a new instance of the SmsService.
+- **Create()**: This method is used to generate a new instance of the ``SmsService``.
 
 
 For ``AddProvider()``, the method expects a SMS provider instance, e.g.: ``AddProvider(new SmscProvider(options))``. 
 However, direct usage of this method is generally unnecessary since the SMS providers include extension methods for registration. 
-For instance, the SMSC channel provides the ``AddSmsc()`` extension method that simplifies its registration.
+For instance, the SMSC provider provides the ``AddSmsc()`` extension method that simplifies its registration.
 
-The ``Create()`` function straightforwardly creates a new SmsService instance.
+The ``Create()`` function straightforwardly creates a new ``SmsService`` instance.
 
 It is only necessary to create the SMS service once and thereafter it can be reused throughout your application.
 
-Now you have an instance of the SmsService. So, you're ready to begin sending SMS messages.
+Now you have an instance of the ``SmsService``.  
+So, you're ready to begin sending SMS messages.
 
 ```csharp
 var smsService = new SmsServiceFactory()
