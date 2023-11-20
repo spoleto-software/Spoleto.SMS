@@ -4,7 +4,7 @@
 [![](https://img.shields.io/nuget/v/Spoleto.SMS)](https://www.nuget.org/packages/Spoleto.SMS/)
 ![Build](https://github.com/spoleto-software/Spoleto.SMS/actions/workflows/ci.yml/badge.svg)
 
-Incorporate SMS functionality into your .NET application using a versatile solution that ensures maintainable architecture and provides access to various delivery providers, e.g SMSC, GetSms.
+Incorporate SMS functionality into your .NET application using a versatile solution that ensures maintainable architecture and provides access to various delivery providers (e.g., SMSC, GetSms).
 
 https://github.com/spoleto-software/Spoleto.SMS
 
