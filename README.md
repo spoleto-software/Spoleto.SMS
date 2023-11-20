@@ -90,7 +90,7 @@ The ``Create()`` function straightforwardly creates a new ``SmsService`` instanc
 It is only necessary to create the SMS service once and thereafter it can be reused throughout your application.
 
 Now you have an instance of the ``SmsService``.  
-So, you're ready to begin sending SMS messages.
+So, you're ready to begin sending SMS messages:
 
 ```csharp
 var smsService = new SmsServiceFactory()
@@ -120,6 +120,9 @@ var status = await smsService.GetStatusAsync("id", "phoneNumber");
 If you want to send message through the particular SMS provider, you need to specify it as the first argument:
 
 ```csharp
+var result = smsService.Send(SmsProviderName.GetSMS, smsMessage);
+
+// or async:
 var result = await smsService.SendAsync(SmsProviderName.GetSMS, smsMessage);
 ```
 
@@ -168,7 +171,7 @@ public class YourSmsSender
     private readonly ILogger<YourSmsSender> _logger;
     private readonly ISmsService _smsService;
 
-    public YourSmsSender(ILogger<IndexModel> logger, ISmsService smsService)
+    public YourSmsSender(ILogger<YourSmsSender> logger, ISmsService smsService)
     {
         _logger = logger;
         _smsService = smsService;
