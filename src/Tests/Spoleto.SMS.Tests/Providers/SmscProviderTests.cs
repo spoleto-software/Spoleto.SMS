@@ -1,6 +1,5 @@
 ﻿using CIS.Service.Client.Tests;
 using Microsoft.Extensions.DependencyInjection;
-using Spoleto.SMS.Providers;
 using Spoleto.SMS.Providers.Smsc;
 
 namespace Spoleto.SMS.Tests.Providers
@@ -18,7 +17,7 @@ namespace Spoleto.SMS.Tests.Providers
         }
 
         [Test]
-        public void SensSms()
+        public void SendSms()
         {
             // Arrange
             var provider = ServiceProvider.GetRequiredService<ISmscProvider>();
@@ -31,7 +30,7 @@ namespace Spoleto.SMS.Tests.Providers
         }
 
         [Test]
-        public async Task SensSmsAsync()
+        public async Task SendSmsAsync()
         {
             // Arrange
             var provider = ServiceProvider.GetRequiredService<ISmscProvider>();

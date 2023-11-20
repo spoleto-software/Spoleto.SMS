@@ -6,15 +6,7 @@
 
         public string Password { get; set; }
 
-        public string ServiceUrl
-        {
-            get;
-#if NET5_0_OR_GREATER
-            init;
-#else
-            set;
-#endif
-        }
+        public string ServiceUrl { get; set; }
 
         /// <summary>
         /// validate if the options are all set correctly

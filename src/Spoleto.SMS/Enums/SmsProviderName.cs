@@ -1,5 +1,8 @@
 ﻿namespace Spoleto.SMS
 {
+    /// <summary>
+    /// SMS provider names.
+    /// </summary>
     public enum SmsProviderName
     {
         /// <summary>

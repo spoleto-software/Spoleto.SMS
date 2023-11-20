@@ -63,23 +63,23 @@ namespace Spoleto.SMS
 
         /// <inheritdoc/>
         public SmsSendingResult Send(SmsMessage message)
-            => Send(message, _defaultProvider);
+            => Send(_defaultProvider, message);
 
         /// <inheritdoc/>
-        public SmsSendingResult Send(SmsMessage message, string providerName)
+        public SmsSendingResult Send(string providerName, SmsMessage message)
         {
             if (!_providers.TryGetValue(providerName, out var provider))
                 throw new SmsProviderNotFoundException(providerName);
 
-            return Send(message, provider);
+            return Send(provider, message);
         }
 
         /// <inheritdoc/>
-        public SmsSendingResult Send(SmsMessage message, SmsProviderName providerName)
-            => Send(message, providerName.ToString());
+        public SmsSendingResult Send(SmsProviderName providerName, SmsMessage message)
+            => Send(providerName.ToString(), message);
 
         /// <inheritdoc/>
-        public SmsSendingResult Send(SmsMessage message, ISmsProvider provider)
+        public SmsSendingResult Send(ISmsProvider provider, SmsMessage message)
         {
             if (message is null)
                 throw new ArgumentNullException(nameof(message));
@@ -96,23 +96,23 @@ namespace Spoleto.SMS
 
         /// <inheritdoc/>
         public Task<SmsSendingResult> SendAsync(SmsMessage message, CancellationToken cancellationToken = default)
-            => SendAsync(message, _defaultProvider, cancellationToken);
+            => SendAsync(_defaultProvider, message, cancellationToken);
 
         /// <inheritdoc/>
-        public Task<SmsSendingResult> SendAsync(SmsMessage message, string providerName, CancellationToken cancellationToken = default)
+        public Task<SmsSendingResult> SendAsync(string providerName, SmsMessage message, CancellationToken cancellationToken = default)
         {
             if (!_providers.TryGetValue(providerName, out var provider))
                 throw new SmsProviderNotFoundException(providerName);
 
-            return SendAsync(message, provider, cancellationToken);
+            return SendAsync(provider, message, cancellationToken);
         }
 
         /// <inheritdoc/>
-        public Task<SmsSendingResult> SendAsync(SmsMessage message, SmsProviderName providerName, CancellationToken cancellationToken = default)
-            => SendAsync(message, providerName.ToString(), cancellationToken);
+        public Task<SmsSendingResult> SendAsync(SmsProviderName providerName, SmsMessage message, CancellationToken cancellationToken = default)
+            => SendAsync(providerName.ToString(), message, cancellationToken);
 
         /// <inheritdoc/>
-        public Task<SmsSendingResult> SendAsync(SmsMessage message, ISmsProvider provider, CancellationToken cancellationToken = default)
+        public Task<SmsSendingResult> SendAsync(ISmsProvider provider, SmsMessage message, CancellationToken cancellationToken = default)
         {
             if (message is null)
                 throw new ArgumentNullException(nameof(message));
@@ -127,19 +127,23 @@ namespace Spoleto.SMS
 
         /// <inheritdoc/>
         public SmsStatusResult GetStatus(string id, string? phoneNumber)
-            => GetStatus(id, phoneNumber, _defaultProvider);
+            => GetStatus(_defaultProvider, id, phoneNumber);
 
         /// <inheritdoc/>
-        public SmsStatusResult GetStatus(string id, string? phoneNumber, SmsProviderName providerName)
+        public SmsStatusResult GetStatus(string providerName, string id, string? phoneNumber)
         {
             if (!_providers.TryGetValue(providerName.ToString(), out var provider))
                 throw new SmsProviderNotFoundException(providerName.ToString());
 
-            return GetStatus(id, phoneNumber, provider);
+            return GetStatus(provider, id, phoneNumber);
         }
 
         /// <inheritdoc/>
-        public SmsStatusResult GetStatus(string id, string? phoneNumber, ISmsProvider provider)
+        public SmsStatusResult GetStatus(SmsProviderName providerName, string id, string? phoneNumber)
+            => GetStatus(providerName.ToString(), id, phoneNumber);
+
+        /// <inheritdoc/>
+        public SmsStatusResult GetStatus(ISmsProvider provider, string id, string? phoneNumber)
         {
             if (id is null)
                 throw new ArgumentNullException(nameof(id));
@@ -149,19 +153,22 @@ namespace Spoleto.SMS
 
         /// <inheritdoc/>
         public Task<SmsStatusResult> GetStatusAsync(string id, string? phoneNumber, CancellationToken cancellationToken = default)
-            => GetStatusAsync(id, phoneNumber, _defaultProvider, cancellationToken);
+            => GetStatusAsync(_defaultProvider, id, phoneNumber, cancellationToken);
 
         /// <inheritdoc/>
-        public Task<SmsStatusResult> GetStatusAsync(string id, string? phoneNumber, SmsProviderName providerName, CancellationToken cancellationToken = default)
+        public Task<SmsStatusResult> GetStatusAsync(SmsProviderName providerName, string id, string? phoneNumber, CancellationToken cancellationToken = default)
+            => GetStatusAsync(providerName.ToString(), id, phoneNumber, cancellationToken);
+
+        public Task<SmsStatusResult> GetStatusAsync(string providerName, string id, string? phoneNumber, CancellationToken cancellationToken = default)
         {
             if (!_providers.TryGetValue(providerName.ToString(), out var provider))
                 throw new SmsProviderNotFoundException(providerName.ToString());
 
-            return GetStatusAsync(id, phoneNumber, provider, cancellationToken);
+            return GetStatusAsync(provider, id, phoneNumber, cancellationToken);
         }
 
         /// <inheritdoc/>
-        public Task<SmsStatusResult> GetStatusAsync(string id, string? phoneNumber, ISmsProvider provider, CancellationToken cancellationToken = default)
+        public Task<SmsStatusResult> GetStatusAsync(ISmsProvider provider, string id, string? phoneNumber, CancellationToken cancellationToken = default)
         {
             if (id is null)
                 throw new ArgumentNullException(nameof(id));

@@ -21,13 +21,13 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="7.0.4" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
-        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="8.0.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
         <PackageReference Include="NUnit" Version="3.14.0" />
         <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
@@ -42,6 +42,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\Extensions\Spoleto.SMS.Extensions.GetSms\Spoleto.SMS.Extensions.GetSms.csproj" />
+      <ProjectReference Include="..\..\Extensions\Spoleto.SMS.Extensions.Messaging\Spoleto.SMS.Extensions.Messaging.csproj" />
+      <ProjectReference Include="..\..\Extensions\Spoleto.SMS.Extensions.Smsc\Spoleto.SMS.Extensions.Smsc.csproj" />
       <ProjectReference Include="..\..\Providers\Spoleto.SMS.GetSms\Spoleto.SMS.GetSms.csproj" />
       <ProjectReference Include="..\..\Providers\Spoleto.SMS.Smsc\Spoleto.SMS.Smsc.csproj" />
       <ProjectReference Include="..\..\Spoleto.SMS\Spoleto.SMS.csproj" />

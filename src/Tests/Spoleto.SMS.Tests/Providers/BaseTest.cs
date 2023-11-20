@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Spoleto.SMS.Providers.GetSms;
 using Spoleto.SMS.Providers.Smsc;
 
-namespace Spoleto.SMS.Tests
+namespace Spoleto.SMS.Tests.Providers
 {
     public class BaseTest
     {
@@ -17,15 +17,13 @@ namespace Spoleto.SMS.Tests
         {
             var services = new ServiceCollection();
 
-            //services.AddOptions();
-            //services.Configure<SmscOptions>(ConfigurationHelper.Configuration.GetSection(nameof(SmscOptions)));
-
-            services.AddSingleton(ConfigurationHelper.Configuration.GetSection(nameof(SmscOptions)).Get<SmscOptions>()!);
+            var smscOptions = ConfigurationHelper.Configuration.GetSection(nameof(SmscOptions)).Get<SmscOptions>()!;
+            services.AddSingleton(smscOptions);
             services.AddSingleton<ISmscProvider, SmscProvider>();
 
-            services.AddSingleton(ConfigurationHelper.Configuration.GetSection(nameof(GetSmsOptions)).Get<GetSmsOptions>()!);
+            var getSmsOptions = ConfigurationHelper.Configuration.GetSection(nameof(GetSmsOptions)).Get<GetSmsOptions>()!;
+            services.AddSingleton(getSmsOptions);
             services.AddHttpClient<IGetSmsProvider, GetSmsProvider>();
-            services.AddSingleton<IGetSmsProvider, GetSmsProvider>();
 
             _serviceProvider = services.BuildServiceProvider();
         }

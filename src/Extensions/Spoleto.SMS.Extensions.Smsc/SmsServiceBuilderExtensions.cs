@@ -17,8 +17,8 @@ namespace Spoleto.SMS.Extensions.Smsc
         /// <param name="login">SMSC_LOGIN.</param>
         /// <param name="password">SMSC_PASSWORD.</param>
         /// <returns>The instance of <see cref="SmsServiceBuilder"/> to enable methods chaining.</returns>
-        public static SmsServiceBuilder UseSmsc(this SmsServiceBuilder builder, string login, string password)
-           => builder.UseSmsc(op => { op.SMSC_LOGIN = login; op.SMSC_PASSWORD = password; });
+        public static SmsServiceBuilder AddSmsc(this SmsServiceBuilder builder, string login, string password)
+           => builder.AddSmsc(op => { op.SMSC_LOGIN = login; op.SMSC_PASSWORD = password; });
 
         /// <summary>
         /// Adds the SMSC provider to be used in the SMS service.
@@ -26,7 +26,7 @@ namespace Spoleto.SMS.Extensions.Smsc
         /// <param name="builder">The <see cref="SmsServiceBuilder"/> instance.</param>
         /// <param name="config">The configuration builder instance.</param>
         /// <returns>The instance of <see cref="SmsServiceBuilder"/> to enable methods chaining.</returns>
-        public static SmsServiceBuilder UseSmsc(this SmsServiceBuilder builder, Action<SmscOptions> config)
+        public static SmsServiceBuilder AddSmsc(this SmsServiceBuilder builder, Action<SmscOptions> config)
         {
             // loads the configuration
             var configuration = new SmscOptions();
@@ -47,7 +47,7 @@ namespace Spoleto.SMS.Extensions.Smsc
         /// <param name="builder">The <see cref="SmsServiceBuilder"/> instance.</param>
         /// <param name="provider">The <see cref="SmscProvider"/> instance.</param>
         /// <returns>The instance of <see cref="SmsServiceBuilder"/> to enable methods chaining.</returns>
-        public static SmsServiceBuilder UseSmsc(this SmsServiceBuilder builder, SmscProvider provider)
+        public static SmsServiceBuilder AddSmsc(this SmsServiceBuilder builder, SmscProvider provider)
         {
             builder.ServiceCollection.AddScoped<ISmsProvider>(x => provider);
 

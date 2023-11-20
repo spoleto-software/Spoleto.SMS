@@ -24,37 +24,37 @@ namespace Spoleto.SMS
         /// <summary>
         /// Sends the specified SMS message using the SMS delivery provider with the given name.
         /// </summary>
-        /// <param name="message">The SMS message to be send</param>
         /// <param name="providerName">The name of the SMS delivery provider used for sending the SMS message.</param>
+        /// <param name="message">The SMS message to be send</param>
         /// <exception cref="ArgumentNullException">The given message instance is null, or the provider name is null.</exception>
         /// <exception cref="SmsProviderNotFoundException">Couldn't find any delivery provider with the given name.</exception>
         /// <exception cref="ArgumentException">The message doesn't contain a 'From' (sender) phone number, 
         /// and no default 'From' (sender) phone number is set in the <see cref="SmsServiceOptions.DefaultFrom"/> option supplied to the SmsService instance.
         /// </exception>
-        SmsSendingResult Send(SmsMessage message, string providerName);
+        SmsSendingResult Send(string providerName, SmsMessage message);
 
         /// <summary>
         /// Sends the specified SMS message using the SMS delivery provider with the given name.
         /// </summary>
-        /// <param name="message">The SMS message to be send</param>
         /// <param name="providerName">The name of the SMS delivery provider used for sending the SMS message.</param>
+        /// <param name="message">The SMS message to be send</param>
         /// <exception cref="ArgumentNullException">The given message instance is null, or the provider name is null.</exception>
         /// <exception cref="SmsProviderNotFoundException">Couldn't find any delivery provider with the given name.</exception>
         /// <exception cref="ArgumentException">The message doesn't contain a 'From' (sender) phone number, 
         /// and no default 'From' (sender) phone number is set in the <see cref="SmsServiceOptions.DefaultFrom"/> option supplied to the SmsService instance.
         /// </exception>
-        SmsSendingResult Send(SmsMessage message, SmsProviderName providerName);
+        SmsSendingResult Send(SmsProviderName providerName, SmsMessage message);
 
         /// <summary>
         /// Sends the specified SMS message using the given SMS delivery provider.
         /// </summary>
-        /// <param name="message">The SMS message to be send</param>
         /// <param name="provider">The SMS delivery provider used for sending the SMS message.</param>
+        /// <param name="message">The SMS message to be send</param>
         /// <exception cref="ArgumentNullException">The message instance is null, or the delivery provider is null.</exception>
         /// <exception cref="ArgumentException">The message doesn't contain a 'From' (sender) phone number, 
         /// and no default 'From' (sender) phone number is set in the <see cref="SmsServiceOptions.DefaultFrom"/> option supplied to the SmsService instance.
         /// </exception>
-        SmsSendingResult Send(SmsMessage message, ISmsProvider provider);
+        SmsSendingResult Send(ISmsProvider provider, SmsMessage message);
 
         /// <summary>
         /// Async sends the specified SMS message using the default <see cref="ISmsProvider"/>.
@@ -74,8 +74,8 @@ namespace Spoleto.SMS
         /// <summary>
         /// Async sends the specified SMS message using the SMS delivery provider with the given name.
         /// </summary>
-        /// <param name="message">The SMS message to be send</param>
         /// <param name="providerName">The name of the SMS delivery provider used for sending the SMS message.</param>
+        /// <param name="message">The SMS message to be send</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
         /// <exception cref="ArgumentNullException">The message instance is null, or the delivery provider name is null</exception>
         /// <exception cref="SmsProviderNotFoundException">Couldn't find any provider with the given name.</exception>
@@ -83,13 +83,13 @@ namespace Spoleto.SMS
         /// and no default 'From' (sender) phone number is set in the <see cref="SmsServiceOptions.DefaultFrom"/> option supplied to the SmsService instance.
         /// </exception>
         /// <exception cref="OperationCanceledException">If the System.Threading.CancellationToken is canceled.</exception>
-        Task<SmsSendingResult> SendAsync(SmsMessage message, string providerName, CancellationToken cancellationToken = default);
+        Task<SmsSendingResult> SendAsync(string providerName, SmsMessage message, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Async sends the specified SMS message using the SMS delivery provider with the given name.
         /// </summary>
-        /// <param name="message">The SMS message to be send</param>
         /// <param name="providerName">The name of the SMS delivery provider used for sending the SMS message.</param>
+        /// <param name="message">The SMS message to be send</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
         /// <exception cref="ArgumentNullException">The message instance is null, or the delivery provider name is null</exception>
         /// <exception cref="SmsProviderNotFoundException">Couldn't find any provider with the given name.</exception>
@@ -97,20 +97,20 @@ namespace Spoleto.SMS
         /// and no default 'From' (sender) phone number is set in the <see cref="SmsServiceOptions.DefaultFrom"/> option supplied to the SmsService instance.
         /// </exception>
         /// <exception cref="OperationCanceledException">If the System.Threading.CancellationToken is canceled.</exception>
-        Task<SmsSendingResult> SendAsync(SmsMessage message, SmsProviderName providerName, CancellationToken cancellationToken = default);
+        Task<SmsSendingResult> SendAsync(SmsProviderName providerName, SmsMessage message, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Async sends the specified SMS message using the given SMS delivery provider.
         /// </summary>
-        /// <param name="message">The SMS message to be send</param>
         /// <param name="provider">The SMS delivery provider used for sending the SMS message.</param>
+        /// <param name="message">The SMS message to be send</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
         /// <exception cref="ArgumentNullException">The message instance is null, or the delivery provider is null.</exception>
         /// <exception cref="ArgumentException">The message doesn't contain a 'From' (sender) phone number, 
         /// and no default 'From' (sender) phone number is set in the <see cref="SmsServiceOptions.DefaultFrom"/> option supplied to the SmsService instance.
         /// </exception>
         /// <exception cref="OperationCanceledException">If the System.Threading.CancellationToken is canceled.</exception>
-        Task<SmsSendingResult> SendAsync(SmsMessage message, ISmsProvider provider, CancellationToken cancellationToken = default);
+        Task<SmsSendingResult> SendAsync(ISmsProvider provider, SmsMessage message, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets the status of the specified SMS message with the given Id.
@@ -129,15 +129,28 @@ namespace Spoleto.SMS
         /// <summary>
         /// Gets the status of the specified SMS message with the given Id.
         /// </summary>
+        /// <param name="providerName">The name of the SMS delivery provider used for sending the SMS message.</param>
         /// <param name="id">The SMS message Id.</param>
         /// <param name="phoneNumber">The recipient's phone number.</param>
-        /// <param name="providerName">The name of the SMS delivery provider used for sending the SMS message.</param>
         /// <exception cref="ArgumentNullException">The given message instance is null, or the provider name is null.</exception>
         /// <exception cref="SmsProviderNotFoundException">Couldn't find any delivery provider with the given name.</exception>
         /// <exception cref="ArgumentException">The message doesn't contain a 'From' (sender) phone number, 
         /// and no default 'From' (sender) phone number is set in the <see cref="SmsServiceOptions.DefaultFrom"/> option supplied to the SmsService instance.
         /// </exception>
-        SmsStatusResult GetStatus(string id, string? phoneNumber, SmsProviderName providerName);
+        SmsStatusResult GetStatus(string providerName, string id, string? phoneNumber);
+
+        /// <summary>
+        /// Gets the status of the specified SMS message with the given Id.
+        /// </summary>
+        /// <param name="providerName">The name of the SMS delivery provider used for sending the SMS message.</param>
+        /// <param name="id">The SMS message Id.</param>
+        /// <param name="phoneNumber">The recipient's phone number.</param>
+        /// <exception cref="ArgumentNullException">The given message instance is null, or the provider name is null.</exception>
+        /// <exception cref="SmsProviderNotFoundException">Couldn't find any delivery provider with the given name.</exception>
+        /// <exception cref="ArgumentException">The message doesn't contain a 'From' (sender) phone number, 
+        /// and no default 'From' (sender) phone number is set in the <see cref="SmsServiceOptions.DefaultFrom"/> option supplied to the SmsService instance.
+        /// </exception>
+        SmsStatusResult GetStatus(SmsProviderName providerName, string id, string? phoneNumber);
 
         /// <summary>
         /// Gets the status of the specified SMS message with the given Id.
@@ -149,7 +162,7 @@ namespace Spoleto.SMS
         /// <exception cref="ArgumentException">The message doesn't contain a 'From' (sender) phone number, 
         /// and no default 'From' (sender) phone number is set in the <see cref="SmsServiceOptions.DefaultFrom"/> option supplied to the SmsService instance.
         /// </exception>
-        SmsStatusResult GetStatus(string id, string? phoneNumber, ISmsProvider provider);
+        SmsStatusResult GetStatus(ISmsProvider provider, string id, string? phoneNumber);
 
         /// <summary>
         /// Async gets the status of the specified SMS message with the given Id.
@@ -170,9 +183,9 @@ namespace Spoleto.SMS
         /// <summary>
         /// Async gets the status of the specified SMS message with the given Id.
         /// </summary>
+        /// <param name="providerName">The name of the SMS delivery provider used for sending the SMS message.</param>
         /// <param name="id">The SMS message Id.</param>
         /// <param name="phoneNumber">The recipient's phone number.</param>
-        /// <param name="providerName">The name of the SMS delivery provider used for sending the SMS message.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
         /// <exception cref="ArgumentNullException">The message instance is null, or the delivery provider name is null</exception>
         /// <exception cref="SmsProviderNotFoundException">Couldn't find any provider with the given name.</exception>
@@ -180,20 +193,35 @@ namespace Spoleto.SMS
         /// and no default 'From' (sender) phone number is set in the <see cref="SmsServiceOptions.DefaultFrom"/> option supplied to the SmsService instance.
         /// </exception>
         /// <exception cref="OperationCanceledException">If the System.Threading.CancellationToken is canceled.</exception>
-        Task<SmsStatusResult> GetStatusAsync(string id, string? phoneNumber, SmsProviderName providerName, CancellationToken cancellationToken = default);
+        Task<SmsStatusResult> GetStatusAsync(string providerName, string id, string? phoneNumber, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Async gets the status of the specified SMS message with the given Id.
         /// </summary>
+        /// <param name="providerName">The name of the SMS delivery provider used for sending the SMS message.</param>
         /// <param name="id">The SMS message Id.</param>
         /// <param name="phoneNumber">The recipient's phone number.</param>
+        /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
+        /// <exception cref="ArgumentNullException">The message instance is null, or the delivery provider name is null</exception>
+        /// <exception cref="SmsProviderNotFoundException">Couldn't find any provider with the given name.</exception>
+        /// <exception cref="ArgumentException">The message doesn't contain a 'From' (sender) phone number, 
+        /// and no default 'From' (sender) phone number is set in the <see cref="SmsServiceOptions.DefaultFrom"/> option supplied to the SmsService instance.
+        /// </exception>
+        /// <exception cref="OperationCanceledException">If the System.Threading.CancellationToken is canceled.</exception>
+        Task<SmsStatusResult> GetStatusAsync(SmsProviderName providerName, string id, string? phoneNumber, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Async gets the status of the specified SMS message with the given Id.
+        /// </summary>
         /// <param name="provider">The SMS delivery provider used for sending the SMS message.</param>
+        /// <param name="id">The SMS message Id.</param>
+        /// <param name="phoneNumber">The recipient's phone number.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> to observe while waiting for the task to complete.</param>
         /// <exception cref="ArgumentNullException">The message instance is null, or the delivery provider is null.</exception>
         /// <exception cref="ArgumentException">The message doesn't contain a 'From' (sender) phone number, 
         /// and no default 'From' (sender) phone number is set in the <see cref="SmsServiceOptions.DefaultFrom"/> option supplied to the SmsService instance.
         /// </exception>
         /// <exception cref="OperationCanceledException">If the System.Threading.CancellationToken is canceled.</exception>
-        Task<SmsStatusResult> GetStatusAsync(string id, string? phoneNumber, ISmsProvider provider, CancellationToken cancellationToken = default);
+        Task<SmsStatusResult> GetStatusAsync(ISmsProvider provider, string id, string? phoneNumber, CancellationToken cancellationToken = default);
     }
 }
