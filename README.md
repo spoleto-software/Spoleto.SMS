@@ -213,7 +213,7 @@ Parameters:
 
 - ``smsService``: The instance of the ``ISmsService`` which this method extends.
 
-- ``phoneNumber``: The target phone number for which an SMS provider needs to be picked. Must be provided as a non-null string.
+- ``phoneNumber``: The target phone number for which an SMS provider needs to be picked. Must be provided as a non-null and non-empty string.
 
 - ``returnDefaultIfNotFound`` (optional): A boolean flag indicating whether to return the default provider in case none is found specifically for the given phone number. Defaults to true.
 
@@ -231,10 +231,10 @@ Usage Example:
 
 ```csharp
 // Assume smsService is an instance of ISmsService:
-var uzbekSmsprovider = smsService.GetProviderForPhoneNumber("+998111111111");
+var uzbekSmsProvider = smsService.GetProviderForPhoneNumber("+998111111111");
 ```
 
-This code returns a suitable SMS provider or the default provider if no suitable provider is found for the provided phone number.
+This code returns a suitable SMS provider or the default provider, if no suitable provider is found for the provided phone number.
 
 ### SendUsingSuitableProvider Method
 
@@ -269,8 +269,8 @@ Usage Example:
 smsService.SendUsingSuitableProvider("+71111111111", message);
 ```
 
-This code sends the SMS with the ``sendUsingDefaultIfNotFound`` is set to its default value, true, which could be omitted in the method call.
+This code sends the SMS using a suitable provider that is selected based on the phone number with the flag ``sendUsingDefaultIfNotFound`` is set to its default value, true, which could be omitted in the method call.
 
 ### SendUsingSuitableProviderAsync Method
 
-Asynchronous version for the method ``SendUsingSuitableProvider``. This method sends messages asynchronously.
+Asynchronous version for the method [``SendUsingSuitableProvider](#sendusingsuitableprovider-method)``. This method sends messages asynchronously.
