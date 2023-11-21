@@ -28,7 +28,7 @@ namespace Spoleto.SMS.Tests.Factories
                })
                .AddSmsc(smscOptions.SMSC_LOGIN, smscOptions.SMSC_PASSWORD)
                .AddGetSms(getSmsOptions.Login, getSmsOptions.Password)
-               .Create();
+               .Build();
         }
 
         [Test]

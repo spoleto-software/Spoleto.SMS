@@ -46,6 +46,6 @@ namespace Spoleto.SMS
         /// Creates the SMS service instance.
         /// </summary>
         /// <returns>Instance of <see cref="SmsService"/>.</returns>
-        public ISmsService Create() => new SmsService(_providers, _options);
+        public ISmsService Build() => new SmsService(_providers, _options);
     }
 }

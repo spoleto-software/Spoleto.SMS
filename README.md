@@ -67,7 +67,7 @@ var smsService = new SmsServiceFactory()
     })
     .AddSmsc("SMSC_LOGIN", "SMSC_PASSWORD")
     .AddGetSms("GetSmsLogin", "GetSmsPassword")
-    .Create();
+    .Build();
 ```
 
 #### SmsService Overview
@@ -78,14 +78,14 @@ The factory provides you with three essential methods:
   - **DefaultFrom**: This setting allows you to assign a default sender phone number or another ID, so you do not need to to specify it for each individual message. Note that this default is overridden if a sender phone number is explicitly provided in the SmsMessage.
   - **DefaultProvider**: This is where you specify the default SMS provider for sending SMS messages. Since it's possible to set up multiple SMS providers, it's important to point out which one you prefer for default use.
 - **AddProvider()**: With this method, you can add the SMS provider that will be utilized for SMS message transmission.
-- **Create()**: This method is used to generate a new instance of the ``SmsService``.
+- **Build()**: This method is used to generate a new instance of the ``SmsService``.
 
 
 For ``AddProvider()``, the method expects a SMS provider instance, e.g.: ``AddProvider(new SmscProvider(options))``. 
 However, direct usage of this method is generally unnecessary since the SMS providers include extension methods for registration. 
 For instance, the SMSC provider provides the ``AddSmsc()`` extension method that simplifies its registration.
 
-The ``Create()`` function straightforwardly creates a new ``SmsService`` instance.
+The ``Build()`` function straightforwardly creates a new ``SmsService`` instance.
 
 It is only necessary to create the SMS service once and thereafter it can be reused throughout your application.
 
@@ -101,7 +101,7 @@ var smsService = new SmsServiceFactory()
     })
     .AddSmsc("SMSC_LOGIN", "SMSC_PASSWORD")
     .AddGetSms("GetSmsLogin", "GetSmsPassword")
-    .Create();
+    .Build();
 
 var smsMessage = new SmsMessage("SMS content", "Sender number/ID", "Recipients numbers");
 
