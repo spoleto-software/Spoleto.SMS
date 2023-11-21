@@ -208,10 +208,8 @@ ISmsProvider? GetProviderForPhoneNumber(this ISmsService smsService, string phon
 **Description:**  
 This extension method is designed for selecting a suitable SMS provider based on the provided phone number.
 
-Parameters:
-
-- ``smsService``: The instance of the ``ISmsService`` which this method extends.
-
+**Parameters:**  
+- ``smsService``: The instance of the ``ISmsService`` which this method extends.  
 - ``phoneNumber``: The target phone number for which an SMS provider needs to be picked. Must be provided as a non-null and non-empty string.
 
 - ``returnDefaultIfNotFound`` (optional): A boolean flag indicating whether to return the default provider in case none is found specifically for the given phone number. Defaults to true.
