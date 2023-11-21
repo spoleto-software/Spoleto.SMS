@@ -144,8 +144,8 @@ public void ConfigureServices(IServiceCollection services)
 
     // Register Spoleto.SMS as a scoped service:
     services.AddSMS(SmscProvider.ProviderName)
-        .AddGetSms(getSmsOptions.Login, getSmsOptions.Password)
-        .AddSmsc(smscOptions.SMSC_LOGIN, smscOptions.SMSC_PASSWORD);
+        .AddSmsc("SMSC_LOGIN", "SMSC_PASSWORD")
+        .AddGetSms("GetSmsLogin", "GetSmsPassword");
     
     // or:
     services.AddSMS(options =>
@@ -153,8 +153,8 @@ public void ConfigureServices(IServiceCollection services)
         options.DefaultFrom = "Default Sender ID";
         options.DefaultProvider = SmscProvider.ProviderName;
     })
-    .AddGetSms(getSmsOptions.Login, getSmsOptions.Password)
-    .AddSmsc(smscOptions.SMSC_LOGIN, smscOptions.SMSC_PASSWORD);
+    .AddSmsc("SMSC_LOGIN", "SMSC_PASSWORD")
+    .AddGetSms("GetSmsLogin", "GetSmsPassword");
 
     // Continue with the rest of your service configuration...
 }
