@@ -208,8 +208,10 @@ ISmsProvider? GetProviderForPhoneNumber(this ISmsService smsService, string phon
 **Description:**  
 This extension method is designed for selecting a suitable SMS provider based on the provided phone number.
 
-**Parameters:**  
-- ``smsService``: The instance of the ``ISmsService`` which this method extends.  
+**Parameters:**
+
+- ``smsService``: The instance of the ``ISmsService`` which this method extends.
+- 
 - ``phoneNumber``: The target phone number for which an SMS provider needs to be picked. Must be provided as a non-null and non-empty string.
 
 - ``returnDefaultIfNotFound`` (optional): A boolean flag indicating whether to return the default provider in case none is found specifically for the given phone number. Defaults to true.
@@ -241,6 +243,7 @@ void SendUsingSuitableProvider(this ISmsService smsService, SmsMessage message, 
 This extension method makes easier the sending of an SMS message using a suitable provider that is selected based on the phone number.
 
 **Parameters:**  
+
 - ``smsService``: The instance of the ``ISmsService`` which this method extends.
 
 - ``message``: An instance of SmsMessage that holds all necessary data for the SMS to be sent, such as the text content, the recipients and the sender.
@@ -265,5 +268,10 @@ This code sends the SMS using a suitable provider that is selected based on the 
 ### SendUsingSuitableProviderAsync Method
 
 **Description:**  
+
+```csharp
+Task SendUsingSuitableProviderAsync(this ISmsService smsService, string phoneNumber, SmsMessage message, bool sendUsingDefaultIfNotFound);
+```
+
 Asynchronous version for the method [SendUsingSuitableProvider](#sendusingsuitableprovider-method).  
 This method sends messages asynchronously.
