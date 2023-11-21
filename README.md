@@ -180,7 +180,7 @@ public class YourSmsSender
     public void Send(string from, string to, string content)
     {
         // create a SmsMessage
-        var smsMessage = new SmsMessage("SMS content", "Sender number/ID", "Recipients numbers");
+        var smsMessage = new SmsMessage(content, from, to);
 
         // send the SmsMessage using the default SMS provider:
         var result = await _smsService.SendAsync(message);
