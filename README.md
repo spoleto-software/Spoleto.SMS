@@ -273,4 +273,5 @@ This code sends the SMS using a suitable provider that is selected based on the 
 
 ### SendUsingSuitableProviderAsync Method
 
-Asynchronous version for the method [``SendUsingSuitableProvider](#sendusingsuitableprovider-method)``. This method sends messages asynchronously.
+Asynchronous version for the method [SendUsingSuitableProvider](#sendusingsuitableprovider-method).  
+This method sends messages asynchronously.
