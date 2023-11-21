@@ -239,7 +239,6 @@ void SendUsingSuitableProvider(this ISmsService smsService, SmsMessage message, 
 This extension method makes easier the sending of an SMS message using a suitable provider that is selected based on the phone number.
 
 **Parameters:**  
-
 - ``smsService``: The instance of the ``ISmsService`` which this method extends.
 - ``message``: An instance of SmsMessage that holds all necessary data for the SMS to be sent, such as the text content, the recipients and the sender.
 - ``sendUsingDefaultIfNotFound`` (optional): Specifies whether to send the message using the default provider if no suitable provider is found for the provided phone number. Defaults to true.
