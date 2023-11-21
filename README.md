@@ -263,7 +263,7 @@ This code sends the SMS using a suitable provider that is selected based on the 
 **Description:**  
 
 ```csharp
-Task SendUsingSuitableProviderAsync(this ISmsService smsService, string phoneNumber, SmsMessage message, bool sendUsingDefaultIfNotFound);
+Task SendUsingSuitableProviderAsync(this ISmsService smsService, SmsMessage message, bool sendUsingDefaultIfNotFound);
 ```
 
 Asynchronous version for the method [SendUsingSuitableProvider](#sendusingsuitableprovider-method).  

@@ -54,16 +54,15 @@ namespace Spoleto.SMS
         /// Finds a suitable SMS provider for the specified phone number and asynchronously send the message using this provider.
         /// </summary>
         /// <param name="smsService">The <see cref="ISmsService"/> instance.</param>
-        /// <param name="phoneNumber">The phone number.</param>
         /// <param name="message">The SMS message.</param>
         /// <param name="sendUsingDefaultIfNotFound"></param>
         /// <exception cref="ArgumentException">If a suitable SMS provider is not found.</exception>
-        public static Task SendUsingSuitableProviderAsync(this ISmsService smsService, string phoneNumber, SmsMessage message, bool sendUsingDefaultIfNotFound)
+        public static Task SendUsingSuitableProviderAsync(this ISmsService smsService, SmsMessage message, bool sendUsingDefaultIfNotFound)
         {
-            var provider = smsService.GetProviderForPhoneNumber(phoneNumber, sendUsingDefaultIfNotFound);
+            var provider = smsService.GetProviderForPhoneNumber(message.To, sendUsingDefaultIfNotFound);
             if (provider == null)
             {
-                throw new ArgumentException($"Couldn't find a suitable SMS provider for the phone number {phoneNumber}.");
+                throw new ArgumentException($"Couldn't find a suitable SMS provider for the phone number {message.To}.");
             }
 
             return provider.SendAsync(message);
