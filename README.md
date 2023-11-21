@@ -216,15 +216,13 @@ This extension method is designed for selecting a suitable SMS provider based on
 
 - ``isAllowSendToForeignNumbers`` (optional): A boolean flag indicating whether the message can be sent to international numbers. Defaults to false.
 
-Returns:
-
+**Returns:**  
 An instance of ``ISmsProvider`` that is suitable for the provided phone number. If no suitable provider is found and ``returnDefaultIfNotFound`` is set to true, the default provider will be returned. If set to false, the method returns null.
 
-Exceptions:
-
+**Exceptions:**  
 - ``ArgumentNullException``: If phoneNumber is null or an empty string.
 
-Usage Example:
+**Usage Example:**
 
 ```csharp
 // Assume smsService is an instance of ISmsService:
@@ -239,27 +237,23 @@ This code returns a suitable SMS provider or the default provider, if no suitabl
 void SendUsingSuitableProvider(this ISmsService smsService, SmsMessage message, bool sendUsingDefaultIfNotFound = true);
 ```
 
-Description:
-
+**Description:**  
 This extension method makes easier the sending of an SMS message using a suitable provider that is selected based on the phone number.
 
-Parameters:
-
+**Parameters:**  
 - ``smsService``: The instance of the ``ISmsService`` which this method extends.
 
 - ``message``: An instance of SmsMessage that holds all necessary data for the SMS to be sent, such as the text content, the recipients and the sender.
 
 - ``sendUsingDefaultIfNotFound`` (optional): Specifies whether to send the message using the default provider if no suitable provider is found for the provided phone number. Defaults to true.
 
-Returns:
-
+**Returns:**  
 This method does not return a value, indicating a void return type.
 
-Exceptions:
-
+**Exceptions:**  
 - ``ArgumentException``: If no suitable SMS provider is found for the provided phone number and ``sendUsingDefaultIfNotFound`` is set to false, an ``ArgumentException`` is thrown with a message indicating the inability to find a suitable provider.
 
-Usage Example:
+**Usage Example:**
 
 ```csharp
 // Assume smsService is an instance of ISmsService and message is an instance of SmsMessage:
@@ -270,5 +264,6 @@ This code sends the SMS using a suitable provider that is selected based on the 
 
 ### SendUsingSuitableProviderAsync Method
 
+**Description:**  
 Asynchronous version for the method [SendUsingSuitableProvider](#sendusingsuitableprovider-method).  
 This method sends messages asynchronously.
