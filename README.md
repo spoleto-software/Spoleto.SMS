@@ -161,10 +161,11 @@ public void ConfigureServices(IServiceCollection services)
 
 ```
 
-#### Injecting the SMS Service into Your Classes
+### Injecting the SMS Service into Your Classes
 Once Spoleto.SMS has been registered with your Dependency Injection framework, you can facilitate the injection of the SMS service into any class within your application.
 
 Inject the ``ISmsService`` interface into the constructors of the classes where you want to use SMS functionality:
+
 ```csharp
 public class YourSmsSender
 {
@@ -193,3 +194,83 @@ public class YourSmsSender
     }
 }
 ```
+
+## SmsService extensions
+
+There are several extensions for ``ISmsService`` that can help you to send messages.
+
+### GetProviderForPhoneNumber Method
+
+```csharp
+ISmsProvider? GetProviderForPhoneNumber(this ISmsService smsService, string phoneNumber, bool returnDefaultIfNotFound = true, bool isAllowSendToForeignNumbers = false);
+```
+
+Description:
+
+This extension method is designed for selecting a suitable SMS provider based on the provided phone number.
+
+Parameters:
+
+- ``smsService``: The instance of the ``ISmsService`` which this method extends.
+
+- ``phoneNumber``: The target phone number for which an SMS provider needs to be picked. Must be provided as a non-null string.
+
+- ``returnDefaultIfNotFound`` (optional): A boolean flag indicating whether to return the default provider in case none is found specifically for the given phone number. Defaults to true.
+
+- ``isAllowSendToForeignNumbers`` (optional): A boolean flag indicating whether the message can be sent to international numbers. Defaults to false.
+
+Returns:
+
+An instance of ``ISmsProvider`` that is suitable for the provided phone number. If no suitable provider is found and ``returnDefaultIfNotFound`` is set to true, the default provider will be returned. If set to false, the method returns null.
+
+Exceptions:
+
+- ``ArgumentNullException``: If phoneNumber is null or an empty string.
+
+Usage Example:
+
+```csharp
+// Assume smsService is an instance of ISmsService:
+var uzbekSmsprovider = smsService.GetProviderForPhoneNumber("+998111111111");
+```
+
+This code returns a suitable SMS provider or the default provider if no suitable provider is found for the provided phone number.
+
+### SendUsingSuitableProvider Method
+
+```csharp
+void SendUsingSuitableProvider(this ISmsService smsService, SmsMessage message, bool sendUsingDefaultIfNotFound = true);
+```
+
+Description:
+
+This extension method makes easier the sending of an SMS message using a suitable provider that is selected based on the phone number.
+
+Parameters:
+
+- ``smsService``: The instance of the ``ISmsService`` which this method extends.
+
+- ``message``: An instance of SmsMessage that holds all necessary data for the SMS to be sent, such as the text content, the recipients and the sender.
+
+- ``sendUsingDefaultIfNotFound`` (optional): Specifies whether to send the message using the default provider if no suitable provider is found for the provided phone number. Defaults to true.
+
+Returns:
+
+This method does not return a value, indicating a void return type.
+
+Exceptions:
+
+- ``ArgumentException``: If no suitable SMS provider is found for the provided phone number and ``sendUsingDefaultIfNotFound`` is set to false, an ``ArgumentException`` is thrown with a message indicating the inability to find a suitable provider.
+
+Usage Example:
+
+```csharp
+// Assume smsService is an instance of ISmsService and message is an instance of SmsMessage:
+smsService.SendUsingSuitableProvider("+71111111111", message);
+```
+
+This code sends the SMS with the ``sendUsingDefaultIfNotFound`` is set to its default value, true, which could be omitted in the method call.
+
+### SendUsingSuitableProviderAsync Method
+
+Asynchronous version for the method ``SendUsingSuitableProvider``. This method sends messages asynchronously.

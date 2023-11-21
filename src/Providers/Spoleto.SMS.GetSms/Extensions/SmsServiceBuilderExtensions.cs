@@ -1,6 +1,6 @@
 ﻿using Spoleto.SMS.Providers.GetSms;
 
-namespace Spoleto.SMS.DependencyInjection.GetSms
+namespace Spoleto.SMS
 {
     /// <summary>
     /// Extension methods to configure an <see cref="SmsServiceFactory"/> with <see cref="GetSmsProvider"/>.

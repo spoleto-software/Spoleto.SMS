@@ -1,4 +1,5 @@
-﻿using Spoleto.SMS.Exceptions;
+﻿using System.Collections.Specialized;
+using Spoleto.SMS.Exceptions;
 using Spoleto.SMS.Providers;
 
 namespace Spoleto.SMS
@@ -9,7 +10,7 @@ namespace Spoleto.SMS
     public class SmsService : ISmsService
     {
         private readonly ISmsProvider _defaultProvider;
-        private readonly IDictionary<string, ISmsProvider> _providers;
+        private readonly OrderedDictionary _providers;
 
         /// <summary>
         /// The constructor with parameters.
@@ -36,14 +37,18 @@ namespace Spoleto.SMS
             Options = options;
 
             // Inits the providers dictionary:
-            _providers = providers.ToDictionary(provider => provider.Name);
+            _providers = new OrderedDictionary(providers.Count());
+            foreach (var provider in providers)
+            {
+                _providers.Add(provider.Name, provider);
+            }
 
             // Checks if the default SMS provider exist:
-            if (!_providers.ContainsKey(options.DefaultProvider))
+            if (!TryGetSmsProvider(options.DefaultProvider, out var value))
                 throw new SmsProviderNotFoundException(options.DefaultProvider);
 
             // Sets the default provider:
-            _defaultProvider = _providers[options.DefaultProvider];
+            _defaultProvider = value;
         }
 
         /// <summary>
@@ -54,7 +59,14 @@ namespace Spoleto.SMS
         /// <summary>
         /// Gets the list of sms providers attached to this sms service.
         /// </summary>
-        public IEnumerable<ISmsProvider> Providers => _providers.Values;
+        public IEnumerable<ISmsProvider> Providers
+        {
+            get
+            {
+                foreach (ISmsProvider provider in _providers.Values)
+                    yield return provider;
+            }
+        }
 
         /// <summary>
         /// Gets the default sms provider attached to this sms service.
@@ -68,7 +80,7 @@ namespace Spoleto.SMS
         /// <inheritdoc/>
         public SmsSendingResult Send(string providerName, SmsMessage message)
         {
-            if (!_providers.TryGetValue(providerName, out var provider))
+            if (!TryGetSmsProvider(providerName, out var provider))
                 throw new SmsProviderNotFoundException(providerName);
 
             return Send(provider, message);
@@ -101,7 +113,7 @@ namespace Spoleto.SMS
         /// <inheritdoc/>
         public Task<SmsSendingResult> SendAsync(string providerName, SmsMessage message, CancellationToken cancellationToken = default)
         {
-            if (!_providers.TryGetValue(providerName, out var provider))
+            if (!TryGetSmsProvider(providerName, out var provider))
                 throw new SmsProviderNotFoundException(providerName);
 
             return SendAsync(provider, message, cancellationToken);
@@ -132,7 +144,7 @@ namespace Spoleto.SMS
         /// <inheritdoc/>
         public SmsStatusResult GetStatus(string providerName, string id, string? phoneNumber)
         {
-            if (!_providers.TryGetValue(providerName.ToString(), out var provider))
+            if (!TryGetSmsProvider(providerName.ToString(), out var provider))
                 throw new SmsProviderNotFoundException(providerName.ToString());
 
             return GetStatus(provider, id, phoneNumber);
@@ -161,7 +173,7 @@ namespace Spoleto.SMS
 
         public Task<SmsStatusResult> GetStatusAsync(string providerName, string id, string? phoneNumber, CancellationToken cancellationToken = default)
         {
-            if (!_providers.TryGetValue(providerName.ToString(), out var provider))
+            if (!TryGetSmsProvider(providerName.ToString(), out var provider))
                 throw new SmsProviderNotFoundException(providerName.ToString());
 
             return GetStatusAsync(provider, id, phoneNumber, cancellationToken);
@@ -190,6 +202,18 @@ namespace Spoleto.SMS
 
                 message.SetFrom(Options.DefaultFrom);
             }
+        }
+
+        private bool TryGetSmsProvider(string providerName, out ISmsProvider smsProvider)
+        {
+            if (_providers[providerName] is not ISmsProvider provider)
+            {
+                smsProvider = null;
+                return false;
+            }
+
+            smsProvider = provider;
+            return true;
         }
     }
 }

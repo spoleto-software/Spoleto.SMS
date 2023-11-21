@@ -1,6 +1,4 @@
-﻿using CIS.Service.Client.Tests;
-using Microsoft.Extensions.DependencyInjection;
-using Spoleto.SMS.Tests.Providers;
+﻿using Microsoft.Extensions.DependencyInjection;
 
 namespace Spoleto.SMS.Tests.Services
 {

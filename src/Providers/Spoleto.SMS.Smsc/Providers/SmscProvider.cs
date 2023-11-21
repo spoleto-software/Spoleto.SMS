@@ -18,6 +18,10 @@ namespace Spoleto.SMS.Providers.Smsc
 
         private readonly SmscOptions _options;
 
+        /// <summary>
+        /// Creates an instanse of <see cref="SmscProvider"/>.
+        /// </summary>
+        /// <param name="options">The provider options.</param>
         public SmscProvider(SmscOptions options)
         {
             // Validates if the options are valid
@@ -36,29 +40,13 @@ namespace Spoleto.SMS.Providers.Smsc
             SMTP_PASSWORD = _options.SMTP_PASSWORD;
         }
 
-        //public SmscProvider(IOptions<SmscOptions> options)
-        //{
-        //    _options = options?.Value ?? throw new ArgumentNullException(nameof(SmscOptions));
-
-        //    SMSC_LOGIN = _options.SMSC_LOGIN;
-        //    SMSC_PASSWORD = _options.SMSC_PASSWORD;
-        //    SMSC_POST = _options.SMSC_POST;
-        //    SMSC_HTTPS = _options.SMSC_HTTPS;
-        //    SMSC_CHARSET = _options.SMSC_CHARSET;
-        //    SMSC_DEBUG = _options.SMSC_DEBUG;
-        //    SMTP_FROM = _options.SMTP_FROM;
-        //    SMTP_SERVER = _options.SMTP_SERVER;
-        //    SMTP_LOGIN = _options.SMTP_LOGIN;
-        //    SMTP_PASSWORD = _options.SMTP_PASSWORD;
-        //}
-
         /// <inheritdoc/>
         public override string Name => ProviderName;
 
         /// <inheritdoc/>
         public override bool IsAllowNullFrom => false;
 
-        protected override List<string> LocalPrefixPhoneNumbers { get; } = new List<string> { "7", "8" };
+        protected override List<string> LocalPrefixPhoneNumbers { get; } = ["7", "8"];
 
         /// <inheritdoc/>
         public override SmsSendingResult Send(SmsMessage message)
@@ -142,12 +130,12 @@ namespace Spoleto.SMS.Providers.Smsc
             return get_balance();
         }
 
-        protected override void ValidatePhoneNumber(string phoneNumber, bool isAllowSendToForeignNumbers = false)
+        protected override sealed void ValidatePhoneNumber(string phoneNumber, bool isAllowSendToForeignNumbers = false)
         {
             if (string.IsNullOrWhiteSpace(phoneNumber))
                 throw new ArgumentNullException(nameof(phoneNumber));
 
-            phoneNumber = phoneNumber.Replace("(", "").Replace(")", "").Replace(" ", "").Replace("-", "").Replace("+", "");
+            phoneNumber = CleanPhoneNumber(phoneNumber);
             if (string.IsNullOrWhiteSpace(phoneNumber) || phoneNumber.Length < 11 || phoneNumber.Length > 15)
             {
                 throw new ArgumentException($"The phone number {phoneNumber} is not in the correct format.");

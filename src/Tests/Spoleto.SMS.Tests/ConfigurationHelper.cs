@@ -1,8 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Spoleto.SMS;
-using Spoleto.SMS.Tests;
 
-namespace CIS.Service.Client.Tests
+namespace Spoleto.SMS.Tests
 {
     internal static class ConfigurationHelper
     {

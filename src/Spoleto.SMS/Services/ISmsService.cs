@@ -9,6 +9,16 @@ namespace Spoleto.SMS
     public interface ISmsService
     {
         /// <summary>
+        /// Gets the list of sms providers attached to this sms service.
+        /// </summary>
+        IEnumerable<ISmsProvider> Providers { get; }
+
+        /// <summary>
+        /// Gets the default sms provider attached to this sms service.
+        /// </summary>
+        ISmsProvider DefaultProvider { get; }
+
+        /// <summary>
         /// Sends the specified SMS message using the default <see cref="ISmsProvider"/>.
         /// </summary>
         /// <param name="message">The SMS message to be send.</param>

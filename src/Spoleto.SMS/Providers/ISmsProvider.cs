@@ -16,6 +16,14 @@
         bool IsAllowNullFrom { get; }
 
         /// <summary>
+        /// Determines whether the SMS provider can send a message to the specified phone number.
+        /// </summary>
+        /// <param name="phoneNumber">The phome number is checked as to whether it can be used with the SMS provider.</param>
+        /// <param name="isAllowSendToForeignNumbers">The flag indicating whether the message can be sent to international numbers.</param>
+        /// <returns>True if the phone number can be used with the SMS provider, false otherwise.</returns>
+        bool CanSend(string phoneNumber, bool isAllowSendToForeignNumbers = false);
+
+        /// <summary>
         /// Sends the SMS message.
         /// </summary>
         /// <param name="message">The SMS message to be send</param>

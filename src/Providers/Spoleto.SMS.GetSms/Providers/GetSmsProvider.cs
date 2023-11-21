@@ -62,7 +62,19 @@ namespace Spoleto.SMS.Providers.GetSms
         /// <inheritdoc/>
         public override bool IsAllowNullFrom => true;
 
-        protected override List<string> LocalPrefixPhoneNumbers { get; } = new List<string> { "998" };
+        protected override List<string> LocalPrefixPhoneNumbers { get; } = ["998"];
+
+        /// <inheritdoc/>
+        public override sealed bool CanSend(string phoneNumber, bool isAllowSendToForeignNumbers = false)
+        {
+            phoneNumber = CleanPhoneNumber(phoneNumber);
+            if (!LocalPrefixPhoneNumbers.Any(phoneNumber.StartsWith))
+            {
+                return false;
+            }
+
+            return true;
+        }
 
         /// <inheritdoc/>
         public override SmsSendingResult Send(SmsMessage message)

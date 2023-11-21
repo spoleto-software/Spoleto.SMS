@@ -2,19 +2,15 @@
 using Spoleto.SMS.Providers.GetSms;
 using Spoleto.SMS.Providers.Smsc;
 
-namespace Spoleto.SMS.Tests.Factories
+namespace Spoleto.SMS.Tests.Services
 {
-    public class SmsServiceFactoryTests
+    public class SmsServiceExtensionsTests
     {
-        private SmsMessage _sms;
-        private SentSmsMessage _sentSms;
         private ISmsService _smsService;
 
         [OneTimeSetUp]
         public void Setup()
         {
-            _sms = ConfigurationHelper.GetSmsMessageSmsc();
-            _sentSms = ConfigurationHelper.GetSentSmsMessageSmsc();
             var smscOptions = ConfigurationHelper.Configuration.GetSection(nameof(SmscOptions)).Get<SmscOptions>()!;
             var getSmsOptions = ConfigurationHelper.Configuration.GetSection(nameof(GetSmsOptions)).Get<GetSmsOptions>()!;
 
@@ -30,16 +26,31 @@ namespace Spoleto.SMS.Tests.Factories
         }
 
         [Test]
-        public void SendSms()
+        public void GetProviderForPhoneNumberUz()
         {
             // Arrange
             var smsService = _smsService;
 
             // Act
-            var result = smsService.Send(_sms);
+            var provider = smsService.GetProviderForPhoneNumber("+998111111111");
 
             // Assert
-            Assert.That(result.Success, Is.True);
+            Assert.That(provider, Is.Not.Null);
+            Assert.That(provider.Name, Is.EqualTo(GetSmsProvider.ProviderName));
+        }
+
+        [Test]
+        public void GetProviderForPhoneNumberRus()
+        {
+            // Arrange
+            var smsService = _smsService;
+
+            // Act
+            var provider = smsService.GetProviderForPhoneNumber("+71111111111");
+
+            // Assert
+            Assert.That(provider, Is.Not.Null);
+            Assert.That(provider.Name, Is.EqualTo(SmscProvider.ProviderName));
         }
     }
 }

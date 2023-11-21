@@ -29,7 +29,7 @@
         public string To { get; }
 
         /// <summary>
-        /// Gets whether sending to foreign numbers is allowed.
+        /// Gets whether sending this message to foreign numbers is allowed.
         /// </summary>
         public bool IsAllowSendToForeignNumbers { get; }
 

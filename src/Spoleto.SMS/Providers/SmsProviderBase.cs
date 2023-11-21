@@ -15,6 +15,21 @@ namespace Spoleto.SMS.Providers
         public abstract bool IsAllowNullFrom { get; }
 
         /// <inheritdoc/>
+        public virtual bool CanSend(string phoneNumber, bool isAllowSendToForeignNumbers = false)
+        {
+            if (!isAllowSendToForeignNumbers)
+            {
+                phoneNumber = CleanPhoneNumber(phoneNumber);
+                if (!LocalPrefixPhoneNumbers.Any(phoneNumber.StartsWith))
+                {
+                    return false;
+                }
+            }
+
+            return true;    
+        }
+
+        /// <inheritdoc/>
         public abstract SmsSendingResult Send(SmsMessage message);
 
         /// <inheritdoc/>
@@ -25,7 +40,6 @@ namespace Spoleto.SMS.Providers
 
         /// <inheritdoc/>
         public abstract Task<SmsStatusResult> GetStatusAsync(string id, string? phoneNumber, CancellationToken cancellationToken = default);
-
 
         protected void ValidateDataForSMS(string phoneNumber, string smsMessage, bool isAllowSendToForeignNumbers = false)
         {
@@ -39,13 +53,20 @@ namespace Spoleto.SMS.Providers
 
         protected virtual void ValidatePhoneNumber(string phoneNumber, bool isAllowSendToForeignNumbers = false)
         {
-            if (!isAllowSendToForeignNumbers)
+            if (string.IsNullOrWhiteSpace(phoneNumber))
+                throw new ArgumentNullException(nameof(phoneNumber));
+
+            if (CanSend(phoneNumber, isAllowSendToForeignNumbers))
             {
-                if (!LocalPrefixPhoneNumbers.Any(phoneNumber.StartsWith))
-                {
-                    throw new ArgumentException($"The phone number {phoneNumber} is not local number.");
-                }
+                throw new ArgumentException($"The phone number {phoneNumber} is not local number for the SMS provider {Name}.");
             }
+        }
+
+        protected static string CleanPhoneNumber(string phoneNumber)
+        {
+            phoneNumber = phoneNumber.Replace("(", "").Replace(")", "").Replace(" ", "").Replace("-", "").Replace("+", "");
+            
+            return phoneNumber;
         }
     }
 }
