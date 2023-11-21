@@ -205,8 +205,7 @@ There are several extensions for ``ISmsService`` that can help you to send messa
 ISmsProvider? GetProviderForPhoneNumber(this ISmsService smsService, string phoneNumber, bool returnDefaultIfNotFound = true, bool isAllowSendToForeignNumbers = false);
 ```
 
-Description:
-
+**Description:**  
 This extension method is designed for selecting a suitable SMS provider based on the provided phone number.
 
 Parameters:
