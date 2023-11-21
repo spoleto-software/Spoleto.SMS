@@ -211,11 +211,8 @@ This extension method is designed for selecting a suitable SMS provider based on
 **Parameters:**
 
 - ``smsService``: The instance of the ``ISmsService`` which this method extends.
-- 
 - ``phoneNumber``: The target phone number for which an SMS provider needs to be picked. Must be provided as a non-null and non-empty string.
-
 - ``returnDefaultIfNotFound`` (optional): A boolean flag indicating whether to return the default provider in case none is found specifically for the given phone number. Defaults to true.
-
 - ``isAllowSendToForeignNumbers`` (optional): A boolean flag indicating whether the message can be sent to international numbers. Defaults to false.
 
 **Returns:**  
@@ -245,9 +242,7 @@ This extension method makes easier the sending of an SMS message using a suitabl
 **Parameters:**  
 
 - ``smsService``: The instance of the ``ISmsService`` which this method extends.
-
 - ``message``: An instance of SmsMessage that holds all necessary data for the SMS to be sent, such as the text content, the recipients and the sender.
-
 - ``sendUsingDefaultIfNotFound`` (optional): Specifies whether to send the message using the default provider if no suitable provider is found for the provided phone number. Defaults to true.
 
 **Returns:**  
