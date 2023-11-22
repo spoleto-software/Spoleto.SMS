@@ -24,12 +24,12 @@
         /// <summary>
         /// Creates the SMS message with list of recipients.
         /// </summary>
-        public SmsMessage(string body, string from, List<string> to, bool isAllowSendToForeignNumbers = false)
+        public SmsMessage(string body, string from, List<string> listOfTo, bool isAllowSendToForeignNumbers = false)
             : this(body, from,
 #if NET5_0_OR_GREATER
-                  string.Join(PhoneNumberSeparator, to),
+                  string.Join(PhoneNumberSeparator, listOfTo),
 #else
-                  string.Join(PhoneNumberSeparator.ToString(), to),
+                  string.Join(PhoneNumberSeparator.ToString(), listOfTo),
 #endif
                   isAllowSendToForeignNumbers)
         {

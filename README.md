@@ -38,6 +38,10 @@ Example of SmsMessage:
 
 ```csharp
 var smsMessage = new SmsMessage("SMS content", "Sender number/ID", "Recipients numbers");
+
+// or with list of recipients:
+var listOfRecipients = new List<string> { "Recipient number #1", "Recipient number #2" };
+var smsMessage = new SmsMessage("SMS content", "Sender number/ID", listOfRecipients);
 ```
 
 ### SmsProvider

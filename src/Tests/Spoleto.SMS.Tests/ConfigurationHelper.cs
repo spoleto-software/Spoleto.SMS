@@ -18,14 +18,16 @@ namespace Spoleto.SMS.Tests
 
         public static SmsMessage GetSmsMessageSmsc()
         {
-            var sms = _config.GetSection("SmsMessageSmsc").Get<SmsMessage>()!;
+            var factory = new SmsMessageFactory();
+            var sms = factory.Create(_config.GetSection("SmsMessageSmsc"));
 
             return sms;
         }
 
         public static SmsMessage GetSmsMessageGetSms()
         {
-            var sms = _config.GetSection("SmsMessageGetSms").Get<SmsMessage>()!;
+            var factory = new SmsMessageFactory();
+            var sms = factory.Create(_config.GetSection("SmsMessageGetSms"));
 
             return sms;
         }
