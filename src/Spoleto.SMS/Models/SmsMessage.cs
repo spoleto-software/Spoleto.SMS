@@ -5,12 +5,34 @@
     /// </summary>
     public record SmsMessage
     {
+        /// <summary>
+        /// The phone number separator.
+        /// </summary>
+        public const char PhoneNumberSeparator = ';';
+
+        /// <summary>
+        /// Creates the SMS message.
+        /// </summary>
         public SmsMessage(string body, string from, string to, bool isAllowSendToForeignNumbers = false)
         {
             Body = body ?? throw new ArgumentNullException(nameof(body));
             To = to ?? throw new ArgumentNullException(nameof(to));
             IsAllowSendToForeignNumbers = isAllowSendToForeignNumbers;
             From = from;
+        }
+
+        /// <summary>
+        /// Creates the SMS message with list of recipients.
+        /// </summary>
+        public SmsMessage(string body, string from, List<string> to, bool isAllowSendToForeignNumbers = false)
+            : this(body, from,
+#if NET5_0_OR_GREATER
+                  string.Join(PhoneNumberSeparator, to),
+#else
+                  string.Join(PhoneNumberSeparator.ToString(), to),
+#endif
+                  isAllowSendToForeignNumbers)
+        {
         }
 
         /// <summary>

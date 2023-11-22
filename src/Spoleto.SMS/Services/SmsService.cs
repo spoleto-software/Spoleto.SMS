@@ -26,7 +26,7 @@ namespace Spoleto.SMS
                 throw new ArgumentNullException(nameof(providers));
 
             if (!providers.Any())
-                throw new ArgumentException("You must specify at least one sms provider, the list is empty.", nameof(providers));
+                throw new ArgumentException("You must specify at least one SMS provider, the SMS provider list is empty.", nameof(providers));
 
             if (options is null)
                 throw new ArgumentNullException(nameof(options));

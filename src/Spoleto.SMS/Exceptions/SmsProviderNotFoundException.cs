@@ -9,7 +9,7 @@
         private static readonly string _exceptionMessage = $"There is no SMS provider with the name <{{0}}>.{Environment.NewLine}Make sure you have registered the provider in the SMS service.";
 
         /// <summary>
-        /// the name of the SMS provider.
+        /// The SMS provider name.
         /// </summary>
         public string SmsProviderName { get; }
 

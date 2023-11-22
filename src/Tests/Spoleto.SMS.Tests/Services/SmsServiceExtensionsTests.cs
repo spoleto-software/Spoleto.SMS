@@ -6,11 +6,14 @@ namespace Spoleto.SMS.Tests.Services
 {
     public class SmsServiceExtensionsTests
     {
+        private SmsMessage _sms;
         private ISmsService _smsService;
 
         [OneTimeSetUp]
         public void Setup()
         {
+            _sms = ConfigurationHelper.GetSmsMessageSmsc();
+
             var smscOptions = ConfigurationHelper.Configuration.GetSection(nameof(SmscOptions)).Get<SmscOptions>()!;
             var getSmsOptions = ConfigurationHelper.Configuration.GetSection(nameof(GetSmsOptions)).Get<GetSmsOptions>()!;
 
@@ -51,6 +54,19 @@ namespace Spoleto.SMS.Tests.Services
             // Assert
             Assert.That(provider, Is.Not.Null);
             Assert.That(provider.Name, Is.EqualTo(SmscProvider.ProviderName));
+        }
+
+        [Test]
+        public void SendUsingSuitableProvider()
+        {
+            // Arrange
+            var smsService = _smsService;
+
+            // Act
+            var result = smsService.SendUsingSuitableProvider(_sms);
+
+            // Assert
+            Assert.That(result.Success, Is.True);
         }
     }
 }

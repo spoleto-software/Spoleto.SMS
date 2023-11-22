@@ -53,10 +53,10 @@ namespace Spoleto.SMS.Providers.Smsc
         {
             // Validate:
 #if NET5_0_OR_GREATER
-            message.To.Split(Separator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            message.To.Split(SmsMessage.PhoneNumberSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                 .ForEach(number => ValidateDataForSMS(number, message.Body, message.IsAllowSendToForeignNumbers));
 #else
-            message.To.Split(Separator)
+            message.To.Split(SmsMessage.PhoneNumberSeparator)
                 .ForEach(number => ValidateDataForSMS(number, message.Body, message.IsAllowSendToForeignNumbers));
 #endif
 
@@ -70,10 +70,10 @@ namespace Spoleto.SMS.Providers.Smsc
         {
             // Validate:
 #if NET5_0_OR_GREATER
-            message.To.Split(Separator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            message.To.Split(SmsMessage.PhoneNumberSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                 .ForEach(number => ValidateDataForSMS(number, message.Body, message.IsAllowSendToForeignNumbers));
 #else
-            message.To.Split(Separator)
+            message.To.Split(SmsMessage.PhoneNumberSeparator)
                 .ForEach(number => ValidateDataForSMS(number, message.Body, message.IsAllowSendToForeignNumbers));
 #endif
 
@@ -113,7 +113,7 @@ namespace Spoleto.SMS.Providers.Smsc
             if (string.IsNullOrWhiteSpace(sender))
                 throw new ArgumentNullException(nameof(sender));
 
-            phoneNumber.Split(Separator).ForEach(number => ValidatePhoneNumber(number, isAllowSendToForeignNumbers));
+            phoneNumber.Split(SmsMessage.PhoneNumberSeparator).ForEach(number => ValidatePhoneNumber(number, isAllowSendToForeignNumbers));
 
             var result = send_sms(phoneNumber, string.Empty, sender: sender, query: "hlr=1");
 

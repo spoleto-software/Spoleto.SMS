@@ -84,9 +84,9 @@ namespace Spoleto.SMS.Providers.GetSms
         public override async Task<SmsSendingResult> SendAsync(SmsMessage message, CancellationToken cancellationToken = default)
         {
 #if NET5_0_OR_GREATER
-            var phoneNumbers = message.To.Split(Separator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            var phoneNumbers = message.To.Split(SmsMessage.PhoneNumberSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 #else
-            var phoneNumbers = message.To.Split(Separator);
+            var phoneNumbers = message.To.Split(SmsMessage.PhoneNumberSeparator);
 #endif
 
             // Validate:

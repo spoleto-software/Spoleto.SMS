@@ -4,8 +4,6 @@ namespace Spoleto.SMS.Providers
 {
     public abstract class SmsProviderBase : ISmsProvider
     {
-        protected const char Separator = ';';
-
         protected abstract List<string> LocalPrefixPhoneNumbers { get; }
 
         /// <inheritdoc/>
@@ -56,7 +54,7 @@ namespace Spoleto.SMS.Providers
             if (string.IsNullOrWhiteSpace(phoneNumber))
                 throw new ArgumentNullException(nameof(phoneNumber));
 
-            if (CanSend(phoneNumber, isAllowSendToForeignNumbers))
+            if (!CanSend(phoneNumber, isAllowSendToForeignNumbers))
             {
                 throw new ArgumentException($"The phone number {phoneNumber} is not local number for the SMS provider {Name}.");
             }
