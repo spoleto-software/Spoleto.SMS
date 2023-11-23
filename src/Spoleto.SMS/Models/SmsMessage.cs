@@ -1,7 +1,7 @@
 ﻿namespace Spoleto.SMS
 {
     /// <summary>
-    /// SMS message.
+    /// The SMS message.
     /// </summary>
     public record SmsMessage
     {
@@ -56,10 +56,9 @@
         public bool IsAllowSendToForeignNumbers { get; }
 
         /// <summary>
-        /// Set the sender phone number or another ID.
+        /// Sets the sender phone number or another ID.
         /// </summary>
         /// <param name="from">The sender phone number or another ID.</param>
-        public void SetFrom(string from)
-            => From = from;
+        public void SetFrom(string from) => From = from;
     }
 }

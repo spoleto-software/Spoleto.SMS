@@ -61,8 +61,9 @@
         #endregion
 
         /// <summary>
-        /// validate if the options are all set correctly
+        /// Checks that all the settings within the options are configured properly.
         /// </summary>
+        /// <exception cref="ArgumentNullException">Thrown when <see cref="SMSC_LOGIN"/> or <see cref="SMSC_PASSWORD"/> are null.</exception>
         public void Validate()
         {
             if (string.IsNullOrWhiteSpace(SMSC_LOGIN))

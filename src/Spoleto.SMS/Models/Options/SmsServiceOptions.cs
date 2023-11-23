@@ -1,7 +1,7 @@
 ﻿namespace Spoleto.SMS
 {
     /// <summary>
-    /// Options for configuring the SMS service
+    /// The options for configuring the SMS service
     /// </summary>
     public record SmsServiceOptions
     {
@@ -16,13 +16,13 @@
         public string DefaultProvider { get; set; }
 
         /// <summary>
-        /// Validates if the options are all set correctly
+        /// Checks that all the settings within the options are configured properly.
         /// </summary>
-        /// <exception cref="ArgumentException">If the required options are not specified</exception>
+        /// <exception cref="ArgumentException">Thrown when <see cref="DefaultProvider"/> is not specified.</exception>
         public void Validate()
         {
             if (String.IsNullOrWhiteSpace(DefaultProvider))
-                throw new ArgumentException("You must specify a valid SMS provider to be used as the default.", nameof(DefaultProvider));
+                throw new ArgumentException("You have to specify a valid SMS provider to be used as the default.", nameof(DefaultProvider));
         }
     }
 }

@@ -2,6 +2,9 @@
 
 namespace Spoleto.SMS.Providers
 {
+    /// <summary>
+    /// The abstract SMS provider.
+    /// </summary>
     public abstract class SmsProviderBase : ISmsProvider
     {
         protected abstract List<string> LocalPrefixPhoneNumbers { get; }

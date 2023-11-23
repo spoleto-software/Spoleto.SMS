@@ -4,7 +4,7 @@ using Spoleto.SMS.Converters;
 namespace Spoleto.SMS
 {
     /// <summary>
-    /// SMS sending errors.
+    /// The SMS sending errors.
     /// </summary>
     public record SmsSendingError
     {

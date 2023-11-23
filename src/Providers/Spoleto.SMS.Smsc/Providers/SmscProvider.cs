@@ -22,8 +22,12 @@ namespace Spoleto.SMS.Providers.Smsc
         /// Creates an instanse of <see cref="SmscProvider"/>.
         /// </summary>
         /// <param name="options">The provider options.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="options"/> is null.</exception>
         public SmscProvider(SmscOptions options)
         {
+            if (options is null)
+                throw new ArgumentNullException(nameof(options));
+
             // Validates if the options are valid
             options.Validate();
             _options = options;
@@ -49,8 +53,39 @@ namespace Spoleto.SMS.Providers.Smsc
         protected override List<string> LocalPrefixPhoneNumbers { get; } = ["7", "8"];
 
         /// <inheritdoc/>
+        public override SmsStatusResult GetStatus(string id, string? phoneNumber)
+        {
+            if (id == null)
+                throw new ArgumentNullException(nameof(id));
+
+            if (phoneNumber == null)
+                throw new ArgumentNullException(nameof(phoneNumber));
+
+            var result = get_status(id, phoneNumber);
+
+            return GetSmsStatusResult(result);
+        }
+
+        /// <inheritdoc/>
+        public override async Task<SmsStatusResult> GetStatusAsync(string id, string? phoneNumber, CancellationToken cancellationToken = default)
+        {
+            if (id == null)
+                throw new ArgumentNullException(nameof(id));
+
+            if (phoneNumber == null)
+                throw new ArgumentNullException(nameof(phoneNumber));
+
+            var result = await get_statusAsync(id, phoneNumber).ConfigureAwait(false);
+
+            return GetSmsStatusResult(result);
+        }
+
+        /// <inheritdoc/>
         public override SmsSendingResult Send(SmsMessage message)
         {
+            if (message is null)
+                throw new ArgumentNullException(nameof(message));
+
             // Validate:
 #if NET5_0_OR_GREATER
             message.To.Split(SmsMessage.PhoneNumberSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
@@ -68,6 +103,9 @@ namespace Spoleto.SMS.Providers.Smsc
         /// <inheritdoc/>
         public override async Task<SmsSendingResult> SendAsync(SmsMessage message, CancellationToken cancellationToken = default)
         {
+            if (message is null)
+                throw new ArgumentNullException(nameof(message));
+
             // Validate:
 #if NET5_0_OR_GREATER
             message.To.Split(SmsMessage.PhoneNumberSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
@@ -80,28 +118,6 @@ namespace Spoleto.SMS.Providers.Smsc
             var result = await send_smsAsync(message.To, message.Body, sender: message.From).ConfigureAwait(false);
 
             return GetSmsSendingResult(result);
-        }
-
-        /// <inheritdoc/>
-        public override SmsStatusResult GetStatus(string id, string? phoneNumber)
-        {
-            if (phoneNumber == null)
-                throw new ArgumentNullException(nameof(phoneNumber));
-
-            var result = get_status(id, phoneNumber);
-
-            return GetSmsStatusResult(result);
-        }
-
-        /// <inheritdoc/>
-        public override async Task<SmsStatusResult> GetStatusAsync(string id, string? phoneNumber, CancellationToken cancellationToken = default)
-        {
-            if (phoneNumber == null)
-                throw new ArgumentNullException(nameof(phoneNumber));
-
-            var result = await get_statusAsync(id, phoneNumber).ConfigureAwait(false);
-
-            return GetSmsStatusResult(result);
         }
 
         /// <inheritdoc/>

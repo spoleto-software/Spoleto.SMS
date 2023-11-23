@@ -6,10 +6,10 @@
     [Serializable]
     public class SmsProviderNotFoundException : Exception
     {
-        private static readonly string _exceptionMessage = $"There is no SMS provider with the name <{{0}}>.{Environment.NewLine}Make sure you have registered the provider in the SMS service.";
+        private static readonly string _exceptionMessage = $"There is no SMS provider with the name <{{0}}>.{Environment.NewLine}Make sure you have registered this provider in the SMS service.";
 
         /// <summary>
-        /// The SMS provider name.
+        /// Gets the SMS provider name.
         /// </summary>
         public string SmsProviderName { get; }
 

@@ -19,7 +19,7 @@ namespace Spoleto.SMS.Extensions.GetSms
         /// <param name="builder">The <see cref="SmsServiceBuilder"/> instance.</param>
         /// <param name="login">Login.</param>
         /// <param name="password">Password.</param>
-        /// <returns>The instance of <see cref="SmsServiceBuilder"/> to enable methods chaining.</returns>
+        /// <returns>The <see cref="SmsServiceBuilder"/> instance is provided to support method chaining capabilities.</returns>
         public static SmsServiceBuilder AddGetSms(this SmsServiceBuilder builder, string login, string password)
            => builder.AddGetSms(x =>
            {
@@ -35,10 +35,14 @@ namespace Spoleto.SMS.Extensions.GetSms
         /// <see href="https://getsms.uz/page/index/16"/>
         /// </remarks>
         /// <param name="builder">The <see cref="SmsServiceBuilder"/> instance.</param>
-        /// <param name="config">The configuration builder instance.</param>
-        /// <returns>The instance of <see cref="SmsServiceBuilder"/> to enable methods chaining.</returns>
+        /// <param name="config">The action to configure the <see cref="GetSmsOptions"/> for the GetSms provider.</param>
+        /// <returns>The <see cref="SmsServiceBuilder"/> instance is provided to support method chaining capabilities.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="config"/> is null.</exception>
         public static SmsServiceBuilder AddGetSms(this SmsServiceBuilder builder, Action<GetSmsOptions> config)
         {
+            if (config is null)
+                throw new ArgumentNullException(nameof(config));
+
             // loads the options
             var options = new GetSmsOptions();
             config(options);
@@ -61,9 +65,13 @@ namespace Spoleto.SMS.Extensions.GetSms
         /// </remarks>
         /// <param name="builder">The <see cref="SmsServiceBuilder"/> instance.</param>
         /// <param name="provider">The <see cref="GetSmsProvider"/> instance.</param>
-        /// <returns>The instance of <see cref="SmsServiceBuilder"/> to enable methods chaining.</returns>
+        /// <returns>The <see cref="SmsServiceBuilder"/> instance is provided to support method chaining capabilities.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="provider"/> is null.</exception>
         public static SmsServiceBuilder AddGetSms(this SmsServiceBuilder builder, GetSmsProvider provider)
         {
+            if (provider is null)
+                throw new ArgumentNullException(nameof(provider));
+
             builder.ServiceCollection.AddScoped<ISmsProvider>(x => provider);
 
             return builder;

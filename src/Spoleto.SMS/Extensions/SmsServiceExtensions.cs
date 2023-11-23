@@ -38,7 +38,7 @@ namespace Spoleto.SMS
         /// <param name="smsService">The <see cref="ISmsService"/> instance.</param>
         /// <param name="message">The SMS message.</param>
         /// <param name="sendUsingDefaultIfNotFound">The flag indicating whether the default SMS provider will be used, if a suitable SMS provider cannot be found.</param>
-        /// <exception cref="ArgumentException">If a suitable SMS provider is not found.</exception>
+        /// <exception cref="ArgumentException">Thrown when a suitable SMS provider is not found.</exception>
         public static SmsSendingResult SendUsingSuitableProvider(this ISmsService smsService, SmsMessage message, bool sendUsingDefaultIfNotFound = true)
         {
             var provider = smsService.GetProviderForPhoneNumber(message.To, sendUsingDefaultIfNotFound, message.IsAllowSendToForeignNumbers);
@@ -56,7 +56,7 @@ namespace Spoleto.SMS
         /// <param name="smsService">The <see cref="ISmsService"/> instance.</param>
         /// <param name="message">The SMS message.</param>
         /// <param name="sendUsingDefaultIfNotFound"></param>
-        /// <exception cref="ArgumentException">If a suitable SMS provider is not found.</exception>
+        /// <exception cref="ArgumentException">Thrown when a suitable SMS provider is not found.</exception>
         public static Task<SmsSendingResult> SendUsingSuitableProviderAsync(this ISmsService smsService, SmsMessage message, bool sendUsingDefaultIfNotFound)
         {
             var provider = smsService.GetProviderForPhoneNumber(message.To, sendUsingDefaultIfNotFound);

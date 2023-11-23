@@ -1,7 +1,7 @@
 ﻿namespace Spoleto.SMS
 {
     /// <summary>
-    /// The SMS sending result
+    /// The SMS sending result.
     /// </summary>
     public record SmsSendingResult
     {

@@ -28,7 +28,7 @@ namespace Spoleto.SMS.Providers.GetSms
         /// </summary>
         /// <param name="httpClient">The <see cref="HttpClient"/> instance.</param>
         /// <param name="options">The options instance.</param>
-        /// <exception cref="ArgumentNullException">If the given provider options is null.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="options"/> is null.</exception>
         public GetSmsProvider(GetSmsOptions options)
             : this(new HttpClient(), options)
         {
@@ -39,7 +39,7 @@ namespace Spoleto.SMS.Providers.GetSms
         /// </summary>
         /// <param name="httpClient">The <see cref="HttpClient"/> instance<./param>
         /// <param name="options">The options instance.</param>
-        /// <exception cref="ArgumentNullException">If the given http client or provider options are null.</exception>
+        /// <exception cref="ArgumentNullException">When <paramref name="httpClient"/> or <paramref name="options"/> are null.</exception>
         public GetSmsProvider(HttpClient httpClient, GetSmsOptions options)
         {
             if (httpClient is null)
@@ -77,12 +77,122 @@ namespace Spoleto.SMS.Providers.GetSms
         }
 
         /// <inheritdoc/>
+        public override SmsStatusResult GetStatus(string id, string? phoneNumber)
+            => GetStatusAsync(id, phoneNumber).GetAwaiter().GetResult();
+
+        /// <inheritdoc/>
+        public override async Task<SmsStatusResult> GetStatusAsync(string id, string? phoneNumber, CancellationToken cancellationToken = default)
+        {
+            if (id == null)
+                throw new ArgumentNullException(nameof(id));
+
+            var requestIdData = new List<Dictionary<string, string>>
+            {
+                new Dictionary<string, string>
+                {
+                    { "request_id", id }
+                }
+            };
+
+            var requestData = new Dictionary<string, string>
+            {
+                { "login", _options.Login },
+                { "password", _options.Password },
+                { "data", JsonHelper.ToJson(requestIdData) }
+            };
+
+            var content = new FormUrlEncodedContent(requestData);
+
+            var url = new Uri(new Uri(_options.ServiceUrl), "status/");
+            var response = await _httpClient.PostAsync(url, content, cancellationToken).ConfigureAwait(false);
+#if NET5_0_OR_GREATER
+            var responseString = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+#else
+            var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+#endif
+
+            if (response.IsSuccessStatusCode)
+            {
+                using var jsonDocument = JsonDocument.Parse(responseString);
+                var rootElement = jsonDocument.RootElement;
+
+                // Check if the returned JSON is an object
+                if (rootElement.ValueKind == JsonValueKind.Object)
+                {
+                    // Check for a distinct property that's only in one of the JSON types
+                    if (rootElement.TryGetProperty(GetJsonPropertyName<SmsSendingError>(nameof(SmsSendingError.Error)), out var _))
+                    {
+                        // Handle the error case when JSON is an object
+                        var error = JsonHelper.FromJson<SmsSendingError>(responseString);
+                        return new SmsStatusResult
+                        {
+                            ProviderName = Name,
+                            Success = false,
+                            Errors = new List<SmsSendingError> { error }
+                        };
+                    }
+
+                    // Handle the success case when JSON is an object
+                    var statusData = JsonHelper.FromJson<SmsStatusData>(responseString);
+                    return new SmsStatusResult
+                    {
+                        ProviderName = Name,
+                        Success = true,
+                        SmsStatusData = new List<SmsStatusData> { statusData }
+                    };
+                }
+                // Check if the returned JSON is an array
+                else if (rootElement.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (var item in rootElement.EnumerateArray())
+                    {
+                        // Assuming the array items are objects and have at least one property
+                        if (item.ValueKind == JsonValueKind.Object)
+                        {
+                            // Check for a distinct property that's only in one of the JSON types
+                            if (item.TryGetProperty(GetJsonPropertyName<SmsSendingError>(nameof(SmsSendingError.Error)), out var _))
+                            {
+                                // Handle the error case when JSON is an object
+                                var errors = JsonHelper.FromJson<List<SmsSendingError>>(responseString);
+                                return new SmsStatusResult
+                                {
+                                    ProviderName = Name,
+                                    Success = false,
+                                    Errors = errors
+                                };
+                            }
+
+                            // Handle the success case when JSON is an object
+                            var statusData = JsonHelper.FromJson<List<SmsStatusData>>(responseString);
+                            return new SmsStatusResult
+                            {
+                                ProviderName = Name,
+                                Success = true,
+                                SmsStatusData = statusData
+                            };
+                        }
+                    }
+                }
+            }
+
+            return new SmsStatusResult
+            {
+                ProviderName = Name,
+                Success = false,
+                Errors = new List<SmsSendingError> { new() { Message = responseString } }
+            };
+        }
+
+        /// <inheritdoc/>
         public override SmsSendingResult Send(SmsMessage message)
             => SendAsync(message).GetAwaiter().GetResult();
 
         /// <inheritdoc/>
         public override async Task<SmsSendingResult> SendAsync(SmsMessage message, CancellationToken cancellationToken = default)
         {
+            if (message is null)
+                throw new ArgumentNullException(nameof(message));
+
 #if NET5_0_OR_GREATER
             var phoneNumbers = message.To.Split(SmsMessage.PhoneNumberSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 #else
@@ -188,110 +298,6 @@ namespace Spoleto.SMS.Providers.GetSms
             }
 
             return new SmsSendingResult
-            {
-                ProviderName = Name,
-                Success = false,
-                Errors = new List<SmsSendingError> { new() { Message = responseString } }
-            };
-        }
-
-        /// <inheritdoc/>
-        public override SmsStatusResult GetStatus(string id, string? phoneNumber)
-            => GetStatusAsync(id, phoneNumber).GetAwaiter().GetResult();
-
-        /// <inheritdoc/>
-        public override async Task<SmsStatusResult> GetStatusAsync(string id, string? phoneNumber, CancellationToken cancellationToken = default)
-        {
-            var requestIdData = new List<Dictionary<string, string>>
-            {
-                new Dictionary<string, string>
-                {
-                    { "request_id", id }
-                }
-            };
-
-            var requestData = new Dictionary<string, string>
-            {
-                { "login", _options.Login },
-                { "password", _options.Password },
-                { "data", JsonHelper.ToJson(requestIdData) }
-            };
-
-            var content = new FormUrlEncodedContent(requestData);
-
-            var url = new Uri(new Uri(_options.ServiceUrl), "status/");
-            var response = await _httpClient.PostAsync(url, content, cancellationToken).ConfigureAwait(false);
-#if NET5_0_OR_GREATER
-            var responseString = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
-#else
-            var responseString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
-#endif
-
-            if (response.IsSuccessStatusCode)
-            {
-                using var jsonDocument = JsonDocument.Parse(responseString);
-                var rootElement = jsonDocument.RootElement;
-
-                // Check if the returned JSON is an object
-                if (rootElement.ValueKind == JsonValueKind.Object)
-                {
-                    // Check for a distinct property that's only in one of the JSON types
-                    if (rootElement.TryGetProperty(GetJsonPropertyName<SmsSendingError>(nameof(SmsSendingError.Error)), out var _))
-                    {
-                        // Handle the error case when JSON is an object
-                        var error = JsonHelper.FromJson<SmsSendingError>(responseString);
-                        return new SmsStatusResult
-                        {
-                            ProviderName = Name,
-                            Success = false,
-                            Errors = new List<SmsSendingError> { error }
-                        };
-                    }
-
-                    // Handle the success case when JSON is an object
-                    var statusData = JsonHelper.FromJson<SmsStatusData>(responseString);
-                    return new SmsStatusResult
-                    {
-                        ProviderName = Name,
-                        Success = true,
-                        SmsStatusData = new List<SmsStatusData> { statusData }
-                    };
-                }
-                // Check if the returned JSON is an array
-                else if (rootElement.ValueKind == JsonValueKind.Array)
-                {
-                    foreach (var item in rootElement.EnumerateArray())
-                    {
-                        // Assuming the array items are objects and have at least one property
-                        if (item.ValueKind == JsonValueKind.Object)
-                        {
-                            // Check for a distinct property that's only in one of the JSON types
-                            if (item.TryGetProperty(GetJsonPropertyName<SmsSendingError>(nameof(SmsSendingError.Error)), out var _))
-                            {
-                                // Handle the error case when JSON is an object
-                                var errors = JsonHelper.FromJson<List<SmsSendingError>>(responseString);
-                                return new SmsStatusResult
-                                {
-                                    ProviderName = Name,
-                                    Success = false,
-                                    Errors = errors
-                                };
-                            }
-
-                            // Handle the success case when JSON is an object
-                            var statusData = JsonHelper.FromJson<List<SmsStatusData>>(responseString);
-                            return new SmsStatusResult
-                            {
-                                ProviderName = Name,
-                                Success = true,
-                                SmsStatusData = statusData
-                            };
-                        }
-                    }
-                }
-            }
-
-            return new SmsStatusResult
             {
                 ProviderName = Name,
                 Success = false,

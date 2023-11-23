@@ -3,6 +3,9 @@ using Spoleto.SMS.Converters;
 
 namespace Spoleto.SMS
 {
+    /// <summary>
+    /// The SMS sending data.
+    /// </summary>
     public record SmdSendingData
     {
         [JsonPropertyName("recipient")]

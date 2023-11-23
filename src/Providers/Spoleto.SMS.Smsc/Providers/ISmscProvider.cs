@@ -8,8 +8,6 @@
     /// </remarks>
     public interface ISmscProvider : ISmsProvider
     {
-        //void ValidateDataForSMS(string phoneNumber, string smsMessage, bool isAllowSendToForeignNumbers = false);
-
         string GetBalance();
 
         void CheckPhoneNumber(string phoneNumber, string sender, bool isAllowSendToForeignNumbers = false);

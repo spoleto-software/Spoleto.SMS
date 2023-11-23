@@ -9,8 +9,9 @@
         public string ServiceUrl { get; set; } = "http://185.8.212.184/smsgateway/";
 
         /// <summary>
-        /// validate if the options are all set correctly
+        /// Checks that all the settings within the options are configured properly.
         /// </summary>
+        /// <exception cref="ArgumentNullException">Thrown when <see cref="Login"/> or <see cref="Password"/> or <see cref="ServiceUrl"/> are null.</exception>
         public void Validate()
         {
             if (string.IsNullOrWhiteSpace(Login))

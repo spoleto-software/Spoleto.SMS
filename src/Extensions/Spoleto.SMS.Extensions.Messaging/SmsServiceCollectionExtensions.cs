@@ -19,7 +19,8 @@ namespace Spoleto.SMS.Extensions.Messaging
         /// Adds the Spoleto.SMS service.
         /// </summary>
         /// <param name="serviceCollection">The service collection instance.</param>
-        /// <param name="config">The configuration initializer.</param>
+        /// <param name="config">The action to configure the <see cref="SmsServiceOptions"/> for the SmsService.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="config"/> is null.</exception>
         public static SmsServiceBuilder AddSMS(this IServiceCollection serviceCollection, Action<SmsServiceOptions> config)
         {
             if (config is null)
