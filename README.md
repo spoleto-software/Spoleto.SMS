@@ -195,7 +195,7 @@ public class YourSmsSender
         var result = await _smsService.SendAsync(SmsProviderName.GetSMS, message);
 
         // log the result:
-        _logger.LogInformation("Sent to {to} with result: {result}", message.To, result.IsSuccess);
+        _logger.LogInformation("Sent to {to} with result: {result}", message.To, result.Success);
     }
 }
 ```
