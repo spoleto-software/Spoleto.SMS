@@ -17,7 +17,7 @@
         /// <summary>
         /// использовать метод POST
         /// </summary>
-        public bool SMSC_POST { get;  set; }
+        public bool SMSC_POST { get; set; } = true;
 
         /// <summary>
         /// использовать HTTPS протокол
