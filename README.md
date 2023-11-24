@@ -257,8 +257,10 @@ This method does not return a value, indicating a void return type.
 **Usage Example:**
 
 ```csharp
-// Assume smsService is an instance of ISmsService and message is an instance of SmsMessage:
-smsService.SendUsingSuitableProvider("+71111111111", message);
+var message = new SmsMessage("SMS content", "Sender number/ID", "Recipients numbers");
+
+// Assume smsService is an instance of ISmsService:
+var result = smsService.SendUsingSuitableProvider(message);
 ```
 
 This code sends the SMS using a suitable provider that is selected based on the phone number with the flag ``sendUsingDefaultIfNotFound`` is set to its default value, true, which could be omitted in the method call.
