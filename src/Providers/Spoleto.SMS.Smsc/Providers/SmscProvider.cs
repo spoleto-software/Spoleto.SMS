@@ -162,25 +162,29 @@ namespace Spoleto.SMS.Providers.Smsc
 
         private SmsSendingResult GetSmsSendingResult(string[] result)
         {
-            if (Convert.ToInt32(result[1]) > 0)
+            if (result.Length >= 2
+                && Int32.TryParse(result[1], out var res)
+                && res > 0)
             {
-                return new SmsSendingResult
+                return new()
                 {
                     ProviderName = Name,
                     Success = true
                 };
             }
 
-            return new SmsSendingResult
+            var errorCode = result.Length >= 2 ? result[1] : string.Join(",", result);
+
+            return new()
             {
                 ProviderName = Name,
                 Success = false,
                 Errors = new List<SmsSendingError>
                 {
-                    new SmsSendingError
+                    new ()
                     {
-                        Code = result[1],
-                        Message= GetErrorMessage(result[1])
+                        Code = errorCode,
+                        Message= GetSendErrorMessage(errorCode)
                     }
                 }
             };
@@ -188,23 +192,54 @@ namespace Spoleto.SMS.Providers.Smsc
 
         private SmsStatusResult GetSmsStatusResult(string[] result)
         {
-            if (Convert.ToInt32(result[0]) > 0)
+            if (result.Length >= 2
+                && Int32.TryParse(result[1], out var res)
+                && res < 0)
             {
-                return new SmsStatusResult
+                return new()
                 {
                     ProviderName = Name,
-                    Success = true
+                    Success = false,
+                    Errors = new List<SmsSendingError>
+                    {
+                        new()
+                        {
+                            Code = result[1],
+                            Message= GetStatusErrorMessage(result[1])
+                        }
+                    }
                 };
             }
 
-            return new SmsStatusResult
+            if (result.Length >= 1
+                && Int32.TryParse(result[0], out var _))
+            {
+                return new()
+                {
+                    ProviderName = Name,
+                    Success = true,
+                    SmsStatusData = new List<SmsStatusData>
+                    {
+                        GetStatusData(result[0])
+                    }
+                };
+            }
+
+            return new()
             {
                 ProviderName = Name,
-                Success = false
+                Success = false,
+                Errors = new List<SmsSendingError>
+                {
+                    new ()
+                    {
+                        Message=  string.Join(",", result)
+                    }
+                }
             };
         }
 
-        private static string GetErrorMessage(string code)
+        private static string GetSendErrorMessage(string code)
             => code switch
             {
                 "-1" => "Ошибка в параметрах.",
@@ -217,6 +252,105 @@ namespace Spoleto.SMS.Providers.Smsc
                 "-8" => "Сообщение на указанный номер не может быть доставлено.",
                 "-9" => "Отправка более одного одинакового запроса на передачу SMS-сообщения либо более пяти одинаковых запросов на получение стоимости сообщения в течение минуты.",
                 _ => $"Неизвестная ошибка. Свяжитесь с ИТ отделом. Код ошибки : {code}.",
+            };
+
+        private static string GetStatusErrorMessage(string code)
+            => code switch
+            {
+                "-1" => "Ошибка в параметрах.",
+                "-2" => "Неверный логин или пароль. Также возникает при попытке отправки сообщения с IP - адреса, не входящего в список разрешенных Клиентом (если такой список был настроен Клиентом ранее).",
+                "-4" => "IP - адрес временно заблокирован.",
+                "-5" => "Ошибка удаления сообщения.",
+                "-9" => "Попытка отправки более пяти запросов на получение статуса одного и того же сообщения или более одного массового запроса в течение минуты. Данная ошибка возникает также при попытке отправки пяти и более запросов одновременно с разных подключений под одним логином(too many concurrent requests).",
+                _ => $"Неизвестная ошибка. Свяжитесь с ИТ отделом. Код ошибки : {code}.",
+            };
+
+        private static SmsStatusData GetStatusData(string code)
+            => code switch
+            {
+                "-3" => new()
+                {
+                    Status = "-3",
+                    Text = "Сообщение не найдено.",
+                    Description = "Возникает, если для указанного номера телефона и ID сообщение не найдено."
+                },
+                "-2" => new()
+                {
+                    Status = "-2",
+                    Text = "Остановлено",
+                    Description = "Возникает у сообщений из рассылки, которые не успели уйти оператору до момента временной остановки данной рассылки на странице Рассылки и задания."
+                },
+                "-1" => new()
+                {
+                    Status = "-1",
+                    Text = "Ожидает отправки",
+                    Description = "Если при отправке сообщения было задано время получения абонентом, то до этого времени сообщение будет находиться в данном статусе, в других случаях сообщение в этом статусе находится непродолжительное время перед отправкой на SMS-центр."
+                },
+                "0" => new()
+                {
+                    Status = "0",
+                    Text = "Передано оператору",
+                    Description = "Сообщение было передано на SMS - центр оператора для доставки."
+                },
+                "1" => new()
+                {
+                    Status = "1",
+                    Text = "Доставлено",
+                    Description = "Сообщение было успешно доставлено абоненту."
+                },
+                "2" => new()
+                {
+                    Status = "2",
+                    Text = "Прочитано",
+                    Description = "Сообщение было прочитано (открыто) абонентом. Данный статус возможен для e-mail - сообщений, имеющих формат html - документа."
+                },
+                "3" => new()
+                {
+                    Status = "3",
+                    Text = "Просрочено",
+                    Description = "Возникает, если время \"жизни\" сообщения истекло, а оно так и не было доставлено получателю, например, если абонент не был доступен в течение определенного времени или в его телефоне был переполнен буфер сообщений."
+                },
+                "4" => new()
+                {
+                    Status = "4",
+                    Text = "Нажата ссылка",
+                    Description = "Сообщение было доставлено, и абонентом была нажата короткая ссылка, переданная в сообщении. Данный статус возможен при включенных в настройках опциях \"Автоматически сокращать ссылки в сообщениях\" и \"отслеживать номера абонентов\"."
+                },
+                "20" => new()
+                {
+                    Status = "20",
+                    Text = "Невозможно доставить",
+                    Description = "Попытка доставить сообщение закончилась неудачно, это может быть вызвано разными причинами, например, абонент заблокирован, не существует, находится в роуминге без поддержки обмена SMS, или на его телефоне не поддерживается прием SMS-сообщений."
+                },
+                "22" => new()
+                {
+                    Status = "22",
+                    Text = "Неверный номер",
+                    Description = "Неправильный формат номера телефона."
+                },
+                "23" => new()
+                {
+                    Status = "23",
+                    Text = "Запрещено",
+                    Description = "Возникает при срабатывании ограничений на отправку дублей, на частые сообщения на один номер (флуд), на номера из черного списка, на запрещенные спам фильтром тексты или имена отправителей (Sender ID)."
+                },
+                "24" => new()
+                {
+                    Status = "24",
+                    Text = "Недостаточно средств",
+                    Description = "На счете Клиента недостаточная сумма для отправки сообщения."
+                },
+                "25" => new()
+                {
+                    Status = "25",
+                    Text = "Недоступный номер.",
+                    Description = "Телефонный номер не принимает SMS-сообщения, или на этого оператора нет рабочего маршрута."
+                },
+                _ => new()
+                {
+                    Status = code,
+                    Text = $"Неизвестный статус. Свяжитесь с ИТ отделом. Код ошибки : {code}."
+                },
             };
     }
 }

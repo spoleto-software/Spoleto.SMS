@@ -148,5 +148,7 @@ namespace Spoleto.SMS
             set;
 #endif
         }
+
+        public override string ToString() => $"{nameof(Status)}: {Status}; {nameof(Text)}: {Text}";
     }
 }
