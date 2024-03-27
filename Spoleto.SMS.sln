@@ -40,6 +40,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spoleto.SMS.Extensions.Smsc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Spoleto.SMS.SmsTraffic", "src\Providers\Spoleto.SMS.SmsTraffic\Spoleto.SMS.SmsTraffic.csproj", "{71156AC7-BAD3-426B-A5B3-588D058F6E0E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Spoleto.SMS.Extensions.SmsTraffic", "src\Extensions\Spoleto.SMS.Extensions.SmsTraffic\Spoleto.SMS.Extensions.SmsTraffic.csproj", "{37ADA75E-EA93-4F44-B6BB-9B3EDC9D5D52}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,6 +80,10 @@ Global
 		{71156AC7-BAD3-426B-A5B3-588D058F6E0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71156AC7-BAD3-426B-A5B3-588D058F6E0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71156AC7-BAD3-426B-A5B3-588D058F6E0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37ADA75E-EA93-4F44-B6BB-9B3EDC9D5D52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37ADA75E-EA93-4F44-B6BB-9B3EDC9D5D52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37ADA75E-EA93-4F44-B6BB-9B3EDC9D5D52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37ADA75E-EA93-4F44-B6BB-9B3EDC9D5D52}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -90,6 +96,7 @@ Global
 		{5353AFAB-4F7A-4E3A-B163-78DF39DF25FA} = {4F9CB045-D843-4E58-A862-7E14E9165317}
 		{EFDBD794-B790-436C-9ABC-61E91302ABA6} = {4F9CB045-D843-4E58-A862-7E14E9165317}
 		{71156AC7-BAD3-426B-A5B3-588D058F6E0E} = {35B21F9B-0AB9-4D49-B1BF-9C1038979063}
+		{37ADA75E-EA93-4F44-B6BB-9B3EDC9D5D52} = {4F9CB045-D843-4E58-A862-7E14E9165317}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {E78F0DB7-5080-45F0-B6F0-2AF0FB821A7B}

@@ -51,6 +51,7 @@ namespace Spoleto.SMS.Extensions.Smsc
 
             builder.ServiceCollection.AddSingleton(s => options);
             builder.ServiceCollection.AddScoped<ISmsProvider, SmscProvider>();
+            builder.ServiceCollection.AddScoped<ISmscProvider, SmscProvider>();
 
             return builder;
         }
@@ -71,6 +72,7 @@ namespace Spoleto.SMS.Extensions.Smsc
                 throw new ArgumentNullException(nameof(provider));
 
             builder.ServiceCollection.AddScoped<ISmsProvider>(x => provider);
+            builder.ServiceCollection.AddScoped<ISmscProvider>(x => provider);
 
             return builder;
         }

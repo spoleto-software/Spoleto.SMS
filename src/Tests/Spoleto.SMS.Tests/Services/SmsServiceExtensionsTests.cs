@@ -1,21 +1,24 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Spoleto.SMS.Providers.GetSms;
 using Spoleto.SMS.Providers.Smsc;
+using Spoleto.SMS.Providers.SmsTraffic;
 
 namespace Spoleto.SMS.Tests.Services
 {
     public class SmsServiceExtensionsTests
     {
-        private SmsMessage _sms;
+        private SmsMessage _smscMessage;
+
         private ISmsService _smsService;
 
         [OneTimeSetUp]
         public void Setup()
         {
-            _sms = ConfigurationHelper.GetSmsMessageSmsc();
+            _smscMessage = ConfigurationHelper.GetSmsMessageSmsc();
 
             var smscOptions = ConfigurationHelper.Configuration.GetSection(nameof(SmscOptions)).Get<SmscOptions>()!;
             var getSmsOptions = ConfigurationHelper.Configuration.GetSection(nameof(GetSmsOptions)).Get<GetSmsOptions>()!;
+            var smsTrafficOptions = ConfigurationHelper.Configuration.GetSection(nameof(SmsTrafficOptions)).Get<SmsTrafficOptions>()!;
 
             _smsService = new SmsServiceFactory()
                .WithOptions(options =>
@@ -25,6 +28,7 @@ namespace Spoleto.SMS.Tests.Services
                })
                .AddSmsc(smscOptions.SMSC_LOGIN, smscOptions.SMSC_PASSWORD)
                .AddGetSms(getSmsOptions.Login, getSmsOptions.Password)
+               .AddSmsTraffic(smsTrafficOptions.Login, smsTrafficOptions.Password)
                .Build();
         }
 
@@ -63,7 +67,7 @@ namespace Spoleto.SMS.Tests.Services
             var smsService = _smsService;
 
             // Act
-            var result = smsService.SendUsingSuitableProvider(_sms);
+            var result = smsService.SendUsingSuitableProvider(_smscMessage);
 
             // Assert
             Assert.That(result.Success, Is.True);

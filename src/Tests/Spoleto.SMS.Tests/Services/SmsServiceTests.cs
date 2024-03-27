@@ -4,13 +4,19 @@ namespace Spoleto.SMS.Tests.Services
 {
     public class SmsServiceTests : BaseTest
     {
-        private SmsMessage _sms;
+        private SmsMessage _smscMessage;
+        private SmsMessage _smsTrafficMessage;
+        private SmsMessage _getSmsMessage;
+
         private SentSmsMessage _sentSms;
 
         [OneTimeSetUp]
         public void Setup()
         {
-            _sms = ConfigurationHelper.GetSmsMessageSmsc();
+            _smscMessage = ConfigurationHelper.GetSmsMessageSmsc();
+            _smsTrafficMessage = ConfigurationHelper.GetSmsMessageSmsTraffic();
+            _getSmsMessage = ConfigurationHelper.GetSmsMessageGetSms();
+
             _sentSms = ConfigurationHelper.GetSentSmsMessageSmsc();
         }
 
@@ -21,7 +27,7 @@ namespace Spoleto.SMS.Tests.Services
             var smsService = ServiceProvider.GetRequiredService<ISmsService>();
 
             // Act
-            var result = smsService.Send(_sms);
+            var result = smsService.Send(_smscMessage);
 
             // Assert
             Assert.That(result.Success, Is.True);
@@ -34,7 +40,7 @@ namespace Spoleto.SMS.Tests.Services
             var smsService = ServiceProvider.GetRequiredService<ISmsService>();
 
             // Act
-            var result = await smsService.SendAsync(_sms);
+            var result = await smsService.SendAsync(_smscMessage);
 
             // Assert
             Assert.That(result.Success, Is.True);
@@ -67,26 +73,52 @@ namespace Spoleto.SMS.Tests.Services
         }
 
         [Test]
-        public void SendSms()
+        public void SendSmsWithGetSms()
         {
             // Arrange
             var smsService = ServiceProvider.GetRequiredService<ISmsService>();
 
             // Act
-            var result = smsService.Send(SmsProviderName.GetSMS, _sms);
+            var result = smsService.Send(SmsProviderName.GetSMS, _getSmsMessage);
 
             // Assert
             Assert.That(result.Success, Is.True);
         }
 
         [Test]
-        public async Task SendSmsAsync()
+        public async Task SendSmsWithGetSmsAsync()
         {
             // Arrange
             var smsService = ServiceProvider.GetRequiredService<ISmsService>();
 
             // Act
-            var result = await smsService.SendAsync(SmsProviderName.GetSMS, _sms);
+            var result = await smsService.SendAsync(SmsProviderName.GetSMS, _getSmsMessage);
+
+            // Assert
+            Assert.That(result.Success, Is.True);
+        }
+
+        [Test]
+        public void SendSmsWithSmsTraffic()
+        {
+            // Arrange
+            var smsService = ServiceProvider.GetRequiredService<ISmsService>();
+
+            // Act
+            var result = smsService.Send(SmsProviderName.SmsTraffic, _smsTrafficMessage);
+
+            // Assert
+            Assert.That(result.Success, Is.True);
+        }
+
+        [Test]
+        public async Task SendSmsWithSmsTrafficAsync()
+        {
+            // Arrange
+            var smsService = ServiceProvider.GetRequiredService<ISmsService>();
+
+            // Act
+            var result = await smsService.SendAsync(SmsProviderName.SmsTraffic, _smsTrafficMessage);
 
             // Assert
             Assert.That(result.Success, Is.True);

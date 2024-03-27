@@ -6,9 +6,9 @@
 
         public string Password { get; set; }
 
-        public string ServiceUrl { get; set; }
+        public string ServiceUrl { get; set; } = "https://api.smstraffic.ru/";
 
-        public string DuplicateServiceUrl { get; set; }
+        public string DuplicateServiceUrl { get; set; } = "https://api2.smstraffic.ru/";
 
         /// <summary>
         /// Checks that all the settings within the options are configured properly.

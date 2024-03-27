@@ -45,6 +45,7 @@
       <ProjectReference Include="..\..\Extensions\Spoleto.SMS.Extensions.GetSms\Spoleto.SMS.Extensions.GetSms.csproj" />
       <ProjectReference Include="..\..\Extensions\Spoleto.SMS.Extensions.Messaging\Spoleto.SMS.Extensions.Messaging.csproj" />
       <ProjectReference Include="..\..\Extensions\Spoleto.SMS.Extensions.Smsc\Spoleto.SMS.Extensions.Smsc.csproj" />
+      <ProjectReference Include="..\..\Extensions\Spoleto.SMS.Extensions.SmsTraffic\Spoleto.SMS.Extensions.SmsTraffic.csproj" />
       <ProjectReference Include="..\..\Providers\Spoleto.SMS.GetSms\Spoleto.SMS.GetSms.csproj" />
       <ProjectReference Include="..\..\Providers\Spoleto.SMS.Smsc\Spoleto.SMS.Smsc.csproj" />
       <ProjectReference Include="..\..\Providers\Spoleto.SMS.SmsTraffic\Spoleto.SMS.SmsTraffic.csproj" />

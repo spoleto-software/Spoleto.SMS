@@ -68,6 +68,16 @@
         public List<SmsProviderData> ProviderData { get; }
 
         /// <summary>
+        /// Add the additional provider data.
+        /// </summary>
+        public SmsMessage WithProviderData(string name, object value)
+        {
+            ProviderData.Add(new(name, value));
+
+            return this;
+        }
+
+        /// <summary>
         /// Sets the sender phone number or another ID.
         /// </summary>
         /// <param name="from">The sender phone number or another ID.</param>
