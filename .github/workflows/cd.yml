@@ -32,6 +32,9 @@ jobs:
       - name: Pack Spoleto.SMS.Smsc
         run: dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg --no-build -c Release src/Providers/Spoleto.SMS.Smsc/Spoleto.SMS.Smsc.csproj -o .
         
+      - name: Pack Spoleto.SMS.SmsTraffic
+        run: dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg --no-build -c Release src/Providers/Spoleto.SMS.SmsTraffic/Spoleto.SMS.SmsTraffic.csproj -o .
+
       - name: Pack Spoleto.SMS.Extensions.Messaging
         run: dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg --no-build -c Release src/Extensions/Spoleto.SMS.Extensions.Messaging/Spoleto.SMS.Extensions.Messaging.csproj -o .
 
@@ -40,6 +43,9 @@ jobs:
 
       - name: Pack Spoleto.SMS.Extensions.Smsc
         run: dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg --no-build -c Release src/Extensions/Spoleto.SMS.Extensions.Smsc/Spoleto.SMS.Extensions.Smsc.csproj -o .
+
+      - name: Pack Spoleto.SMS.Extensions.SmsTraffic
+        run: dotnet pack --include-symbols -p:SymbolPackageFormat=snupkg --no-build -c Release src/Extensions/Spoleto.SMS.Extensions.SmsTraffic/Spoleto.SMS.Extensions.SmsTraffic.csproj -o .
 
         # Push packages to Nuget
       - name: Push packages
