@@ -13,7 +13,7 @@ namespace Spoleto.SMS.Providers.GetSms
     /// <remarks>
     /// <see href="https://getsms.uz/page/index/16"/>.
     /// </remarks>
-    public class GetSmsProvider : SmsProviderBase, IGetSmsProvider
+    public class GetSmsProvider : SmsProviderBase<SmsMessage>, IGetSmsProvider
     {
         /// <summary>
         /// The name of the SMS provider.
@@ -193,20 +193,22 @@ namespace Spoleto.SMS.Providers.GetSms
             if (message is null)
                 throw new ArgumentNullException(nameof(message));
 
+            var getSmsMessage = CreateMessage(message);
+
 #if NET5_0_OR_GREATER
-            var phoneNumbers = message.To.Split(SmsMessage.PhoneNumberSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            var phoneNumbers = getSmsMessage.To.Split(getSmsMessage.PhoneNumberSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 #else
-            var phoneNumbers = message.To.Split(SmsMessage.PhoneNumberSeparator);
+            var phoneNumbers = getSmsMessage.To.Split(getSmsMessage.PhoneNumberSeparator);
 #endif
 
             // Validate:
-            phoneNumbers.ForEach(number => ValidateDataForSMS(number, message.Body, message.IsAllowSendToForeignNumbers));
+            phoneNumbers.ForEach(number => ValidateDataForSMS(number, getSmsMessage.Body, getSmsMessage.IsAllowSendToForeignNumbers));
 
             var smsList = phoneNumbers
                 .Select(x => new Dictionary<string, string>()
                 {
                     {"phone", x},
-                    {"text", message.Body}
+                    {"text", getSmsMessage.Body}
                 }).ToList();
 
             var requestData = new Dictionary<string, string>
@@ -215,9 +217,9 @@ namespace Spoleto.SMS.Providers.GetSms
                 { "password", _options.Password }
             };
 
-            if (!string.IsNullOrEmpty(message.From))
+            if (!string.IsNullOrEmpty(getSmsMessage.From))
             {
-                requestData.Add("nickname", message.From);
+                requestData.Add("nickname", getSmsMessage.From);
             }
 
             requestData.Add("data", JsonHelper.ToJson(smsList));

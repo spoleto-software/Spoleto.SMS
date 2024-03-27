@@ -35,5 +35,14 @@
                 enumerator?.Dispose();
             }
         }
+
+        /// <summary>
+        /// Gets the data with the given name.
+        /// </summary>
+        /// <param name="data">The source data list.</param>
+        /// <param name="key">The data name</param>
+        /// <returns>The <see cref="SmsProviderData"/> instance</returns>
+        public static SmsProviderData GetData(this IEnumerable<SmsProviderData> data, string name)
+            => data.FirstOrDefault(e => e.Name == name);
     }
 }

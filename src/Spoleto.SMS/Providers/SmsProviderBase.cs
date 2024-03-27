@@ -5,7 +5,8 @@ namespace Spoleto.SMS.Providers
     /// <summary>
     /// The abstract SMS provider.
     /// </summary>
-    public abstract class SmsProviderBase : ISmsProvider
+    /// <typeparam name="TMessage">The type of SMS used in the provider.</typeparam>
+    public abstract class SmsProviderBase<TMessage> : ISmsProvider where TMessage : SmsMessage
     {
         protected abstract List<string> LocalPrefixPhoneNumbers { get; }
 
@@ -69,5 +70,10 @@ namespace Spoleto.SMS.Providers
             
             return phoneNumber;
         }
+
+        protected virtual TMessage CreateMessage(SmsMessage originalMessage)
+            => originalMessage is TMessage message
+            ? message
+            : throw new NotSupportedException($"The message type '{originalMessage?.GetType().Name}' is not supported in the SMS provider '{GetType().Name}");
     }
 }

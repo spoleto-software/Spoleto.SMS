@@ -32,6 +32,14 @@ namespace Spoleto.SMS.Tests
             return sms;
         }
 
+        public static SmsMessage GetSmsMessageSmsTraffic()
+        {
+            var factory = new SmsMessageFactory();
+            var sms = factory.Create(_config.GetSection("SmsMessageSmsTraffic"));
+
+            return sms;
+        }
+
         public static SentSmsMessage GetSentSmsMessageSmsc()
         {
             var sms = _config.GetSection("SentSmsMessageSmsc").Get<SentSmsMessage>()!;
@@ -44,6 +52,20 @@ namespace Spoleto.SMS.Tests
             var sms = _config.GetSection("SentSmsMessageGetSms").Get<SentSmsMessage>()!;
 
             return sms;
+        }
+
+        public static SentSmsMessage GetSentSmsMessageSmsTraffic()
+        {
+            var sms = _config.GetSection("SentSmsMessageSmsTraffic").Get<SentSmsMessage>()!;
+
+            return sms;
+        }
+
+        public static SmsTrafficTestGroup GetSmsTrafficTestGroup()
+        {
+            var testGroup = _config.GetSection(nameof(SmsTrafficTestGroup)).Get<SmsTrafficTestGroup>()!;
+
+            return testGroup;
         }
     }
 }

@@ -22,7 +22,7 @@ namespace Spoleto.SMS.Tests
             }
 
             // Otherwise, use the constructor that operates on a single 'To'
-            return new SmsMessage(body, from, to);
+            return new SmsMessage(body, from, to, false);
         }
     }
 }

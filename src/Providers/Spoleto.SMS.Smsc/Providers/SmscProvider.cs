@@ -9,7 +9,7 @@ namespace Spoleto.SMS.Providers.Smsc
     /// <remarks>
     /// <see href="https://smsc.ru/api/code/libraries/http_smtp/cs/#menu"/>.
     /// </remarks>
-    public partial class SmscProvider : SmsProviderBase, ISmscProvider
+    public partial class SmscProvider : SmsProviderBase<SmsMessage>, ISmscProvider
     {
         /// <summary>
         /// The name of the SMS provider.
@@ -17,6 +17,7 @@ namespace Spoleto.SMS.Providers.Smsc
         public const string ProviderName = nameof(SmsProviderName.SMSC);
 
         private readonly SmscOptions _options;
+        private static readonly char _phoneNumberSeparator = new SmsMessage("body", "from", "to").PhoneNumberSeparator;
 
         /// <summary>
         /// Creates an instanse of <see cref="SmscProvider"/>.
@@ -86,16 +87,18 @@ namespace Spoleto.SMS.Providers.Smsc
             if (message is null)
                 throw new ArgumentNullException(nameof(message));
 
+            var smscMessage = CreateMessage(message);
+
             // Validate:
 #if NET5_0_OR_GREATER
-            message.To.Split(SmsMessage.PhoneNumberSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                .ForEach(number => ValidateDataForSMS(number, message.Body, message.IsAllowSendToForeignNumbers));
+            smscMessage.To.Split(smscMessage.PhoneNumberSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .ForEach(number => ValidateDataForSMS(number, smscMessage.Body, smscMessage.IsAllowSendToForeignNumbers));
 #else
-            message.To.Split(SmsMessage.PhoneNumberSeparator)
-                .ForEach(number => ValidateDataForSMS(number, message.Body, message.IsAllowSendToForeignNumbers));
+            smscMessage.To.Split(smscMessage.PhoneNumberSeparator)
+                .ForEach(number => ValidateDataForSMS(number, smscMessage.Body, smscMessage.IsAllowSendToForeignNumbers));
 #endif
 
-            var result = send_sms(message.To, message.Body, sender: message.From);
+            var result = send_sms(smscMessage.To, smscMessage.Body, sender: smscMessage.From);
 
             return GetSmsSendingResult(result);
         }
@@ -106,16 +109,18 @@ namespace Spoleto.SMS.Providers.Smsc
             if (message is null)
                 throw new ArgumentNullException(nameof(message));
 
+            var smscMessage = CreateMessage(message);
+
             // Validate:
 #if NET5_0_OR_GREATER
-            message.To.Split(SmsMessage.PhoneNumberSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                .ForEach(number => ValidateDataForSMS(number, message.Body, message.IsAllowSendToForeignNumbers));
+            smscMessage.To.Split(smscMessage.PhoneNumberSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .ForEach(number => ValidateDataForSMS(number, smscMessage.Body, smscMessage.IsAllowSendToForeignNumbers));
 #else
-            message.To.Split(SmsMessage.PhoneNumberSeparator)
-                .ForEach(number => ValidateDataForSMS(number, message.Body, message.IsAllowSendToForeignNumbers));
+            smscMessage.To.Split(smscMessage.PhoneNumberSeparator)
+                .ForEach(number => ValidateDataForSMS(number, smscMessage.Body, smscMessage.IsAllowSendToForeignNumbers));
 #endif
 
-            var result = await send_smsAsync(message.To, message.Body, sender: message.From).ConfigureAwait(false);
+            var result = await send_smsAsync(smscMessage.To, smscMessage.Body, sender: smscMessage.From).ConfigureAwait(false);
 
             return GetSmsSendingResult(result);
         }
@@ -129,7 +134,7 @@ namespace Spoleto.SMS.Providers.Smsc
             if (string.IsNullOrWhiteSpace(sender))
                 throw new ArgumentNullException(nameof(sender));
 
-            phoneNumber.Split(SmsMessage.PhoneNumberSeparator).ForEach(number => ValidatePhoneNumber(number, isAllowSendToForeignNumbers));
+            phoneNumber.Split(_phoneNumberSeparator).ForEach(number => ValidatePhoneNumber(number, isAllowSendToForeignNumbers));
 
             var result = send_sms(phoneNumber, string.Empty, sender: sender, query: "hlr=1");
 

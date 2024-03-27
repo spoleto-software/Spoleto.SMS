@@ -12,7 +12,7 @@
             var smsMessage = new SmsMessage("SMS body", "from", listOfRecipients);
 
             // Assert
-            Assert.That(smsMessage.To, Is.EqualTo(String.Join(SmsMessage.PhoneNumberSeparator, listOfRecipients)));
+            Assert.That(smsMessage.To, Is.EqualTo(String.Join(smsMessage.PhoneNumberSeparator, listOfRecipients)));
         }
     }
 }

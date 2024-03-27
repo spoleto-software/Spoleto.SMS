@@ -54,7 +54,7 @@ namespace Spoleto.SMS
         }
 
         [JsonPropertyName("message_id")]
-        public int MessageId
+        public long MessageId
         {
             get;
 #if NET5_0_OR_GREATER

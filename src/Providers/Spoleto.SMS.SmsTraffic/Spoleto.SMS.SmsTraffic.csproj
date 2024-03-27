@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+      <TargetFrameworks>net7.0;net8.0;netstandard2.0</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+    
+    <!-- Package info -->
+    <PropertyGroup>
+        <Title>Spoleto.SMS.SmsTraffic - SmsTraffic provider</Title>
+        <PackageId>Spoleto.SMS.SmsTraffic</PackageId>
+        <PackageTags>Spoleto.SMS; Messaging; SMS; SmsTraffic; СМСТрафик</PackageTags>
+        <Description>SmsTraffic provider for Spoleto.SMS</Description>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\Spoleto.SMS\Spoleto.SMS.csproj" />
+    </ItemGroup>
+
+    <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+        <PackageReference Include="System.Text.Encoding.CodePages" Version="8.0.0" />
+    </ItemGroup>
+
+</Project>

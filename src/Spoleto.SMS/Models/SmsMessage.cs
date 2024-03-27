@@ -3,37 +3,44 @@
     /// <summary>
     /// The SMS message.
     /// </summary>
-    public record SmsMessage
+    public record SmsMessage : ISmsMessage
     {
-        /// <summary>
-        /// The phone number separator.
-        /// </summary>
-        public const char PhoneNumberSeparator = ';';
-
         /// <summary>
         /// Creates the SMS message.
         /// </summary>
-        public SmsMessage(string body, string from, string to, bool isAllowSendToForeignNumbers = false)
+        public SmsMessage(string body, string? from, string to, bool isAllowSendToForeignNumbers = false, List<SmsProviderData>? providerData = null)
         {
             Body = body ?? throw new ArgumentNullException(nameof(body));
             To = to ?? throw new ArgumentNullException(nameof(to));
             IsAllowSendToForeignNumbers = isAllowSendToForeignNumbers;
             From = from;
+            ProviderData = providerData ?? [];
         }
 
         /// <summary>
         /// Creates the SMS message with list of recipients.
         /// </summary>
-        public SmsMessage(string body, string from, List<string> listOfTo, bool isAllowSendToForeignNumbers = false)
-            : this(body, from,
-#if NET5_0_OR_GREATER
-                  string.Join(PhoneNumberSeparator, listOfTo),
-#else
-                  string.Join(PhoneNumberSeparator.ToString(), listOfTo),
-#endif
-                  isAllowSendToForeignNumbers)
+        public SmsMessage(string body, string? from, List<string> listOfTo, bool isAllowSendToForeignNumbers = false, List<SmsProviderData>? providerData = null)
         {
+            if (listOfTo == null)
+                throw new ArgumentNullException(nameof(listOfTo));
+
+            Body = body ?? throw new ArgumentNullException(nameof(body));
+            To =
+#if NET5_0_OR_GREATER
+                  string.Join(PhoneNumberSeparator, listOfTo);
+#else
+                  string.Join(PhoneNumberSeparator.ToString(), listOfTo);
+#endif
+            IsAllowSendToForeignNumbers = isAllowSendToForeignNumbers;
+            From = from;
+            ProviderData = providerData ?? [];
         }
+
+        /// <summary>
+        /// The phone number separator.
+        /// </summary>
+        public virtual char PhoneNumberSeparator => ';';
 
         /// <summary>
         /// Gets the message body.
@@ -54,6 +61,11 @@
         /// Gets whether sending this message to foreign numbers is allowed.
         /// </summary>
         public bool IsAllowSendToForeignNumbers { get; }
+
+        /// <summary>
+        /// Gets the additional provider data.
+        /// </summary>
+        public List<SmsProviderData> ProviderData { get; }
 
         /// <summary>
         /// Sets the sender phone number or another ID.
