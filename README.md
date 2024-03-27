@@ -34,6 +34,7 @@ SmsMessage contains your message details:
 - **To:** The phone numbers of the intended recipients (separated by semicolons ; if several);
 - **Body:** The content of the SMS message;
 - **IsAllowSendToForeignNumbers:** A flag indicating whether the message can be sent to international numbers.
+- **ProviderData:** Additional data for the SMS provider.
 
 Example of SmsMessage:
 
@@ -43,6 +44,17 @@ var smsMessage = new SmsMessage("SMS content", "Sender number/ID", "Recipients n
 // or with list of recipients:
 var listOfRecipients = new List<string> { "Recipient number #1", "Recipient number #2" };
 var smsMessage = new SmsMessage("SMS content", "Sender number/ID", listOfRecipients);
+
+// or with additional provider data:
+var providerData = new List<SmsProviderData>
+{
+    new(SmsTrafficProviderData.IgnorePhoneFormat, true)
+};
+var smsMessage = new SmsMessage("SMS content", "Sender number/ID", "Recipients numbers", providerData: providerData);
+
+// or with additional provider data using WithProviderData method:
+var smsMessage = new SmsMessage("SMS content", "Sender number/ID", "Recipients numbers");
+smsMessage.WithProviderData(SmsTrafficProviderData.IgnorePhoneFormat, true);
 ```
 
 ### SmsProvider
@@ -53,6 +65,7 @@ The providers come as pre-configured NuGet packages:
 
 - **[Spoleto.SMS.GetSms](https://www.nuget.org/packages/Spoleto.SMS.GetSms/)**: Send SMS messages through GetSms https://getsms.uz/; 
 - **[Spoleto.SMS.Smsc](https://www.nuget.org/packages/Spoleto.SMS.Smsc/)**: Send SMS messages through SMSC https://smsc.ru/.
+- **[Spoleto.SMS.SmsTraffic](https://www.nuget.org/packages/Spoleto.SMS.SmsTraffic/)**: Send SMS messages through SmsTraffic https://www.smstraffic.ru/.
 
 
 If you wish to add a custom provider, you can do it by implementing the interface ``Spoleto.SMS.Providers.ISmsProvider`` or the abstract class ``Spoleto.SMS.Providers.SmsProviderBase``.
@@ -72,6 +85,7 @@ var smsService = new SmsServiceFactory()
     })
     .AddSmsc("SMSC_LOGIN", "SMSC_PASSWORD")
     .AddGetSms("GetSmsLogin", "GetSmsPassword")
+    .AddSmsTraffic("SmsTrafficLogin", "SmsTrafficPassword")
     .Build();
 ```
 
@@ -106,6 +120,7 @@ var smsService = new SmsServiceFactory()
     })
     .AddSmsc("SMSC_LOGIN", "SMSC_PASSWORD")
     .AddGetSms("GetSmsLogin", "GetSmsPassword")
+    .AddSmsTraffic("SmsTrafficLogin", "SmsTrafficPassword")
     .Build();
 
 var smsMessage = new SmsMessage("SMS content", "Sender number/ID", "Recipients numbers");
@@ -125,10 +140,12 @@ var status = await smsService.GetStatusAsync("id", "phoneNumber");
 If you want to send message through the particular SMS provider, you need to specify it as the first argument:
 
 ```csharp
-var result = smsService.Send(SmsProviderName.GetSMS, smsMessage);
+var result1 = smsService.Send(SmsProviderName.GetSMS, smsMessage);
+var result2 = smsService.Send(SmsProviderName.SmsTraffic, smsMessage);
 
 // or async:
-var result = await smsService.SendAsync(SmsProviderName.GetSMS, smsMessage);
+var result1 = await smsService.SendAsync(SmsProviderName.GetSMS, smsMessage);
+var result2 = await smsService.SendAsync(SmsProviderName.SmsTraffic, smsMessage);
 ```
 
 ## Dependency Injection
@@ -139,6 +156,7 @@ The extentions for SMS providers come as pre-configured NuGet packages:
 
 - **[Spoleto.SMS.Extensions.GetSms](https://www.nuget.org/packages/Spoleto.SMS.Extensions.GetSms/)**: GetSms registration; 
 - **[Spoleto.SMS.Extensions.Smsc](https://www.nuget.org/packages/Spoleto.SMS.Extensions.Smsc/)**: SMSC registration.
+- **[Spoleto.SMS.Extensions.SmsTraffic](https://www.nuget.org/packages/Spoleto.SMS.Extensions.SmsTraffic/)**: SmsTraffic registration.
 
 After ensuring that the ``Spoleto.SMS.Extensions.Messaging`` package with at least one SMS provider package are installed from NuGet, you can proceed with the registration of Spoleto.SMS within the ``Startup.cs`` or your DI configuration file in the following manner:
 
@@ -150,7 +168,8 @@ public void ConfigureServices(IServiceCollection services)
     // Register Spoleto.SMS as a scoped service:
     services.AddSMS(SmscProvider.ProviderName)
         .AddSmsc("SMSC_LOGIN", "SMSC_PASSWORD")
-        .AddGetSms("GetSmsLogin", "GetSmsPassword");
+        .AddGetSms("GetSmsLogin", "GetSmsPassword")
+        .AddSmsTraffic("SmsTrafficLogin", "SmsTrafficPassword");
     
     // or:
     services.AddSMS(options =>
@@ -159,7 +178,8 @@ public void ConfigureServices(IServiceCollection services)
         options.DefaultProvider = SmscProvider.ProviderName;
     })
     .AddSmsc("SMSC_LOGIN", "SMSC_PASSWORD")
-    .AddGetSms("GetSmsLogin", "GetSmsPassword");
+    .AddGetSms("GetSmsLogin", "GetSmsPassword")
+    .AddSmsTraffic("SmsTrafficLogin", "SmsTrafficPassword");
 
     // Continue with the rest of your service configuration...
 }
@@ -192,7 +212,8 @@ public class YourSmsSender
         var result = await _smsService.SendAsync(message);
 
         // or send the SmsMessage using the specified SMS provider:
-        var result = await _smsService.SendAsync(SmsProviderName.GetSMS, message);
+        var result1 = await _smsService.SendAsync(SmsProviderName.GetSMS, message);
+        var result2 = await _smsService.SendAsync(SmsProviderName.SmsProviderName, message);
 
         // log the result:
         _logger.LogInformation("Sent to {to} with result: {result}", message.To, result.Success);
