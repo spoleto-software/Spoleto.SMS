@@ -37,7 +37,7 @@ namespace Spoleto.SMS.Providers.GetSms
         /// <summary>
         /// Creates an instance of <see cref="GetSmsProvider"/>.
         /// </summary>
-        /// <param name="httpClient">The <see cref="HttpClient"/> instance<./param>
+        /// <param name="httpClient">The <see cref="HttpClient"/> instance.</param>
         /// <param name="options">The options instance.</param>
         /// <exception cref="ArgumentNullException">When <paramref name="httpClient"/> or <paramref name="options"/> are null.</exception>
         public GetSmsProvider(HttpClient httpClient, GetSmsOptions options)
