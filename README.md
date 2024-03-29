@@ -203,7 +203,7 @@ public class YourSmsSender
         _smsService = smsService;
     }
 
-    public void Send(string from, string to, string content)
+    public async Task Send(string from, string to, string content)
     {
         // create a SmsMessage
         var smsMessage = new SmsMessage(content, from, to);
