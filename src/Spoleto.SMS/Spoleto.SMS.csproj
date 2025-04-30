@@ -15,6 +15,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Spoleto.Common" Version="2.9.17.1649" />
+        <PackageReference Include="Spoleto.Common" Version="3.4.14.1138" />
     </ItemGroup>
 </Project>
