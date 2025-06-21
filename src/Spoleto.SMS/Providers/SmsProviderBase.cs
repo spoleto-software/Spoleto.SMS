@@ -43,14 +43,11 @@ namespace Spoleto.SMS.Providers
         /// <inheritdoc/>
         public abstract Task<SmsStatusResult> GetStatusAsync(string id, string? phoneNumber, CancellationToken cancellationToken = default);
 
-        protected void ValidateDataForSMS(string phoneNumber, string smsMessage, bool isAllowSendToForeignNumbers = false)
+        protected void ValidateDataForSMS(string phoneNumber, SmsMessage smsMessage)
         {
-            ValidatePhoneNumber(phoneNumber, isAllowSendToForeignNumbers);
-
-            if (string.IsNullOrWhiteSpace(smsMessage))
-            {
-                throw new SmsBodyIsNullException("The SMS body is empty.");
-            }
+            ValidatePhoneNumber(phoneNumber, smsMessage.IsAllowSendToForeignNumbers);
+            
+            ValidateSmsMessage(smsMessage);
         }
 
         protected virtual void ValidatePhoneNumber(string phoneNumber, bool isAllowSendToForeignNumbers = false)
@@ -61,6 +58,14 @@ namespace Spoleto.SMS.Providers
             if (!CanSend(phoneNumber, isAllowSendToForeignNumbers))
             {
                 throw new ArgumentException($"The phone number {phoneNumber} is not local number for the SMS provider {Name}.");
+            }
+        }
+
+        protected virtual void ValidateSmsMessage(SmsMessage smsMessage)
+        {
+            if (string.IsNullOrWhiteSpace(smsMessage.Body))
+            {
+                throw new SmsBodyIsNullException("The SMS body is empty.");
             }
         }
 

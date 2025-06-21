@@ -92,10 +92,10 @@ namespace Spoleto.SMS.Providers.Smsc
             // Validate:
 #if NET5_0_OR_GREATER
             smscMessage.To.Split(smscMessage.PhoneNumberSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                .ForEach(number => ValidateDataForSMS(number, smscMessage.Body, smscMessage.IsAllowSendToForeignNumbers));
+                .ForEach(number => ValidateDataForSMS(number, smscMessage));
 #else
             smscMessage.To.Split(smscMessage.PhoneNumberSeparator)
-                .ForEach(number => ValidateDataForSMS(number, smscMessage.Body, smscMessage.IsAllowSendToForeignNumbers));
+                .ForEach(number => ValidateDataForSMS(number, smscMessage));
 #endif
 
             var result = send_sms(smscMessage.To, smscMessage.Body, sender: smscMessage.From);
@@ -114,10 +114,10 @@ namespace Spoleto.SMS.Providers.Smsc
             // Validate:
 #if NET5_0_OR_GREATER
             smscMessage.To.Split(smscMessage.PhoneNumberSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                .ForEach(number => ValidateDataForSMS(number, smscMessage.Body, smscMessage.IsAllowSendToForeignNumbers));
+                .ForEach(number => ValidateDataForSMS(number, smscMessage));
 #else
             smscMessage.To.Split(smscMessage.PhoneNumberSeparator)
-                .ForEach(number => ValidateDataForSMS(number, smscMessage.Body, smscMessage.IsAllowSendToForeignNumbers));
+                .ForEach(number => ValidateDataForSMS(number, smscMessage));
 #endif
 
             var result = await send_smsAsync(smscMessage.To, smscMessage.Body, sender: smscMessage.From).ConfigureAwait(false);

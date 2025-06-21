@@ -10,11 +10,13 @@
         /// </summary>
         public SmsMessage(string body, string? from, string to, bool isAllowSendToForeignNumbers = false, List<SmsProviderData>? providerData = null)
         {
-            Body = body ?? throw new ArgumentNullException(nameof(body));
+            Body = body;
             To = to ?? throw new ArgumentNullException(nameof(to));
             IsAllowSendToForeignNumbers = isAllowSendToForeignNumbers;
             From = from;
             ProviderData = providerData ?? [];
+
+            Validate();
         }
 
         /// <summary>
@@ -25,7 +27,7 @@
             if (listOfTo == null)
                 throw new ArgumentNullException(nameof(listOfTo));
 
-            Body = body ?? throw new ArgumentNullException(nameof(body));
+            Body = body;
             To =
 #if NET5_0_OR_GREATER
                   string.Join(PhoneNumberSeparator, listOfTo);
@@ -35,6 +37,8 @@
             IsAllowSendToForeignNumbers = isAllowSendToForeignNumbers;
             From = from;
             ProviderData = providerData ?? [];
+
+            Validate();
         }
 
         /// <summary>
@@ -82,5 +86,13 @@
         /// </summary>
         /// <param name="from">The sender phone number or another ID.</param>
         public void SetFrom(string from) => From = from;
+
+        protected virtual void Validate()
+        {
+            if (Body == null)
+            {
+                throw new ArgumentNullException(nameof(Body));
+            }
+        }
     }
 }

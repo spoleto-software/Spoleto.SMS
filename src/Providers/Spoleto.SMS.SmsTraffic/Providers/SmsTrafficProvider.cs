@@ -199,7 +199,7 @@ namespace Spoleto.SMS.Providers.SmsTraffic
 #endif
 
             // Validate:
-            phoneNumbers.ForEach(number => ValidateDataForSMS(number, message.Body, message.IsAllowSendToForeignNumbers));
+            phoneNumbers.ForEach(number => ValidateDataForSMS(number, message));
 
             var requestObject = ConvertToRequestObject(message);
             var json = JsonHelper.ToJson(requestObject);
@@ -515,11 +515,26 @@ namespace Spoleto.SMS.Providers.SmsTraffic
             return message;
         }
 
+        protected override void ValidateSmsMessage(SmsMessage smsMessage)
+        {
+            if (smsMessage is SmsTrafficMessage message)
+            {
+                if (message.SmsTrafficProviderData?.IndividualMessages == true
+                    && smsMessage.Body != null)
+                {
+                    throw new Exception($"The SMS body is not empty but <{nameof(message.SmsTrafficProviderData.IndividualMessages)}> flag is set.");
+                }
+            }
+
+            base.ValidateSmsMessage(smsMessage);
+        }
+
         private SmsTrafficRequest ConvertToRequestObject(SmsTrafficMessage smsTrafficMessage)
         {
             var additionalData = smsTrafficMessage.SmsTrafficProviderData;
             var rus = additionalData?.Rus.ToString() ?? Utf8Code;
-            var message = rus == Utf8Code ? smsTrafficMessage.Body : System.Web.HttpUtility.UrlEncode(smsTrafficMessage.Body, _windows1251Encoding);
+            var message = string.IsNullOrEmpty(smsTrafficMessage.Body) ? null
+                : rus == Utf8Code ? smsTrafficMessage.Body : System.Web.HttpUtility.UrlEncode(smsTrafficMessage.Body, _windows1251Encoding);
             var isToGroup = smsTrafficMessage.To.Any(char.IsLetter);
 
             return new SmsTrafficRequest
