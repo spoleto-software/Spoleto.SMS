@@ -520,13 +520,20 @@ namespace Spoleto.SMS.Providers.SmsTraffic
             if (smsMessage is SmsTrafficMessage message)
             {
                 if (message.SmsTrafficProviderData?.IndividualMessages == true
-                    && smsMessage.Body != null)
+                    && message.Body != null)
                 {
-                    throw new Exception($"The SMS body is not empty but <{nameof(message.SmsTrafficProviderData.IndividualMessages)}> flag is set.");
+                    throw new Exception($"The SMS body is not empty but <{nameof(SmsTrafficProviderData.IndividualMessages)}> flag is set.");
+                }
+                else if (message.Body == null
+                    && (message.SmsTrafficProviderData?.IndividualMessages ?? false) == false)
+                {
+                    throw new ArgumentNullException(nameof(message.Body));
                 }
             }
-
-            base.ValidateSmsMessage(smsMessage);
+            else
+            {
+                base.ValidateSmsMessage(smsMessage);
+            }
         }
 
         private SmsTrafficRequest ConvertToRequestObject(SmsTrafficMessage smsTrafficMessage)
