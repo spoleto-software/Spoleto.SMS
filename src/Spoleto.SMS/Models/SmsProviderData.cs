@@ -15,12 +15,12 @@
         }
 
         /// <summary>
-        /// Gets the name of the additinal data.
+        /// Gets the name of the additional data.
         /// </summary>
         public string Name { get; }
 
         /// <summary>
-        /// Gets the value of the additinal data.
+        /// Gets the value of the additional data.
         /// </summary>
         public object Value { get; }
 
