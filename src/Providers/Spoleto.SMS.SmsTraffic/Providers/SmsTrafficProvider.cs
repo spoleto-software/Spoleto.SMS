@@ -239,13 +239,11 @@ namespace Spoleto.SMS.Providers.SmsTraffic
                         ProviderName = Name,
                         Success = true,
                         SmsSendingData = smsResponse.MessageInfos?.MessageInfo?.Count > 0
-                        ? new List<SmdSendingData>
+                        ? smsResponse.MessageInfos.MessageInfo.Select(x => new SmdSendingData
                         {
-                            new()
-                            {
-                                MessageId = smsResponse.MessageInfos.MessageInfo[0].SmsId
-                            }
-                        }
+                            MessageId = x.SmsId,
+                            Recipient = x.Phone
+                        })
                         : null
                     };
                 }
@@ -254,14 +252,14 @@ namespace Spoleto.SMS.Providers.SmsTraffic
                 {
                     ProviderName = Name,
                     Success = false,
-                    Errors = new List<SmsSendingError>
-                    {
+                    Errors =
+                    [
                         new()
                         {
                             Code = smsResponse.Code.ToString(),
                             Message = smsResponse.Description
                         }
-                    }
+                    ]
                 };
 
             }
@@ -542,7 +540,8 @@ namespace Spoleto.SMS.Providers.SmsTraffic
             var rus = additionalData?.Rus.ToString() ?? Utf8Code;
             var message = string.IsNullOrEmpty(smsTrafficMessage.Body) ? null
                 : rus == Utf8Code ? smsTrafficMessage.Body : System.Web.HttpUtility.UrlEncode(smsTrafficMessage.Body, _windows1251Encoding);
-            var isToGroup = smsTrafficMessage.To.Any(char.IsLetter);
+            var isIndividualMessages = additionalData?.IndividualMessages == true;
+            var isToGroup = !isIndividualMessages && smsTrafficMessage.To.Any(char.IsLetter);
 
             return new SmsTrafficRequest
             {
