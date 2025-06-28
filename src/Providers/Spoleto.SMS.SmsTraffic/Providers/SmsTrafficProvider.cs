@@ -3,6 +3,7 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 using System.Xml.Serialization;
+using Spoleto.Common.Extensions;
 using Spoleto.Common.Helpers;
 using Spoleto.SMS.Extensions;
 
@@ -192,14 +193,21 @@ namespace Spoleto.SMS.Providers.SmsTraffic
             if (message is null)
                 throw new ArgumentNullException(nameof(message));
 
+            var individualMessages = message.SmsTrafficProviderData?.IndividualMessages == true;
+            var separator = individualMessages ? message.SmsTrafficProviderData?.Delimiter ?? "/n" : message.PhoneNumberSeparator.ToString();
 #if NET5_0_OR_GREATER
-            var phoneNumbers = message.To.Split(message.PhoneNumberSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            var phoneNumbers = message.To.Split(separator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 #else
-            var phoneNumbers = message.To.Split(message.PhoneNumberSeparator);
+            var phoneNumbers = message.To.SplitBySubstring(separator).ToArray();
 #endif
 
+            if (individualMessages)
+            {
+                phoneNumbers = phoneNumbers.Select(x => x.Substring(0, x.IndexOf(' '))).ToArray();
+            }
+
             // Validate:
-            phoneNumbers.ForEach(number => ValidateDataForSMS(number, message));
+            ValidateDataForSMS(phoneNumbers, message);
 
             var requestObject = ConvertToRequestObject(message);
             var json = JsonHelper.ToJson(requestObject);

@@ -1,4 +1,5 @@
 ﻿using Spoleto.SMS.Exceptions;
+using Spoleto.SMS.Extensions;
 
 namespace Spoleto.SMS.Providers
 {
@@ -43,9 +44,9 @@ namespace Spoleto.SMS.Providers
         /// <inheritdoc/>
         public abstract Task<SmsStatusResult> GetStatusAsync(string id, string? phoneNumber, CancellationToken cancellationToken = default);
 
-        protected void ValidateDataForSMS(string phoneNumber, SmsMessage smsMessage)
+        protected void ValidateDataForSMS(IEnumerable<string> phoneNumbers, SmsMessage smsMessage)
         {
-            ValidatePhoneNumber(phoneNumber, smsMessage.IsAllowSendToForeignNumbers);
+            phoneNumbers.ForEach(number => ValidatePhoneNumber(number, smsMessage.IsAllowSendToForeignNumbers));
             
             ValidateSmsMessage(smsMessage);
         }

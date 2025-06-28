@@ -202,7 +202,7 @@ namespace Spoleto.SMS.Providers.GetSms
 #endif
 
             // Validate:
-            phoneNumbers.ForEach(number => ValidateDataForSMS(number, getSmsMessage));
+            ValidateDataForSMS(phoneNumbers, getSmsMessage);
 
             var smsList = phoneNumbers
                 .Select(x => new Dictionary<string, string>()

@@ -89,14 +89,15 @@ namespace Spoleto.SMS.Providers.Smsc
 
             var smscMessage = CreateMessage(message);
 
-            // Validate:
+            
 #if NET5_0_OR_GREATER
-            smscMessage.To.Split(smscMessage.PhoneNumberSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                .ForEach(number => ValidateDataForSMS(number, smscMessage));
+            var phoneNumbers = smscMessage.To.Split(smscMessage.PhoneNumberSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
 #else
-            smscMessage.To.Split(smscMessage.PhoneNumberSeparator)
-                .ForEach(number => ValidateDataForSMS(number, smscMessage));
+            var phoneNumbers = smscMessage.To.Split(smscMessage.PhoneNumberSeparator);
 #endif
+            // Validate:
+            ValidateDataForSMS(phoneNumbers, smscMessage);
 
             var result = send_sms(smscMessage.To, smscMessage.Body, sender: smscMessage.From);
 
@@ -111,14 +112,13 @@ namespace Spoleto.SMS.Providers.Smsc
 
             var smscMessage = CreateMessage(message);
 
-            // Validate:
 #if NET5_0_OR_GREATER
-            smscMessage.To.Split(smscMessage.PhoneNumberSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                .ForEach(number => ValidateDataForSMS(number, smscMessage));
+            var phoneNumbers = smscMessage.To.Split(smscMessage.PhoneNumberSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 #else
-            smscMessage.To.Split(smscMessage.PhoneNumberSeparator)
-                .ForEach(number => ValidateDataForSMS(number, smscMessage));
+            var phoneNumbers= smscMessage.To.Split(smscMessage.PhoneNumberSeparator);
 #endif
+            // Validate:
+            ValidateDataForSMS(phoneNumbers, smscMessage);
 
             var result = await send_smsAsync(smscMessage.To, smscMessage.Body, sender: smscMessage.From).ConfigureAwait(false);
 
