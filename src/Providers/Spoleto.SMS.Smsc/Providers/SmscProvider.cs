@@ -99,7 +99,7 @@ namespace Spoleto.SMS.Providers.Smsc
             // Validate:
             ValidateDataForSMS(phoneNumbers, smscMessage);
 
-            var result = send_sms(smscMessage.To, smscMessage.Body, sender: smscMessage.From);
+            var result = send_sms(smscMessage.To, EscapeMessageBody(smscMessage.Body), sender: smscMessage.From);
 
             return GetSmsSendingResult(result);
         }
@@ -120,7 +120,7 @@ namespace Spoleto.SMS.Providers.Smsc
             // Validate:
             ValidateDataForSMS(phoneNumbers, smscMessage);
 
-            var result = await send_smsAsync(smscMessage.To, smscMessage.Body, sender: smscMessage.From).ConfigureAwait(false);
+            var result = await send_smsAsync(smscMessage.To, EscapeMessageBody(smscMessage.Body), sender: smscMessage.From).ConfigureAwait(false);
 
             return GetSmsSendingResult(result);
         }
@@ -357,5 +357,15 @@ namespace Spoleto.SMS.Providers.Smsc
                     Text = $"Неизвестный статус. Свяжитесь с ИТ отделом. Код ошибки : {code}."
                 },
             };
+
+        private static string EscapeMessageBody(string body)
+        {
+            if (body.Contains('+'))
+            {
+                return body.Replace("+", "%2B");
+            }
+
+            return body;
+        }
     }
 }
