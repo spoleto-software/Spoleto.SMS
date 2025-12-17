@@ -265,7 +265,8 @@ namespace Spoleto.SMS.Providers.SmsTraffic
                         new()
                         {
                             Code = smsResponse.Code.ToString(),
-                            Message = smsResponse.Description
+                            Message = smsResponse.Description,
+                            NumCode = smsResponse.Code
                         }
                     ]
                 };
