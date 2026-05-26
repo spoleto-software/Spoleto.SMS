@@ -9,7 +9,7 @@ namespace Spoleto.SMS
     public record SmdSendingData
     {
         [JsonPropertyName("recipient")]
-        public long Recipient
+        public string Recipient
         {
             get;
 #if NET5_0_OR_GREATER
@@ -54,7 +54,7 @@ namespace Spoleto.SMS
         }
 
         [JsonPropertyName("message_id")]
-        public long MessageId
+        public string MessageId
         {
             get;
 #if NET5_0_OR_GREATER

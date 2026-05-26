@@ -2,37 +2,50 @@
 {
     public record SmscOptions
     {
+        public const string DefaultCharset = "utf-8";
+        public const int DefaultRetryCount = 5;
+
         #region Константы с параметрами отправки
 
         /// <summary>
         /// логин клиента
         /// </summary>
-        public string SMSC_LOGIN { get; set; }
+        public string Login { get; set; }
 
         /// <summary>
         /// пароль или MD5-хеш пароля в нижнем регистре
         /// </summary>
-        public string SMSC_PASSWORD { get; set; }
+        public string Password { get; set; }
 
         /// <summary>
-        /// использовать метод POST
+        /// Специальный API-ключ, используемый для упрощенной авторизации вместо пары "логин+пароль".
         /// </summary>
-        public bool SMSC_POST { get; set; } = true;
+        public string? ApiKey { get; set; }
 
         /// <summary>
-        /// использовать HTTPS протокол
+        /// Использовать метод POST
         /// </summary>
-        public bool SMSC_HTTPS { get; set; }
+        public bool UsePost { get; set; } = true;
 
         /// <summary>
-        /// кодировка сообщения (windows-1251 или koi8-r), по умолчанию используется utf-8
+        /// Использовать HTTPS протокол
         /// </summary>
-        public string SMSC_CHARSET = "utf-8";
+        public bool UseHttps { get; set; }
 
         /// <summary>
-        /// флаг отладки
+        /// Кодировка сообщения (windows-1251 или koi8-r), по умолчанию используется utf-8
         /// </summary>
-        public bool SMSC_DEBUG { get; set; }
+        public string Charset { get; set; } = DefaultCharset;
+
+        /// <summary>
+        /// Флаг отладки
+        /// </summary>
+        public bool IsDebug { get; set; }
+
+        /// <summary>
+        /// Number of retry attempts on failure.
+        /// </summary>
+        public int RetryCount { get; set; } = DefaultRetryCount;
 
         #endregion
 
@@ -41,36 +54,40 @@
         /// <summary>
         /// e-mail адрес отправителя
         /// </summary>
-        public string SMTP_FROM { get; set; } = "api@smsc.ru";
+        public string SmtpFrom { get; set; } = "api@smsc.ru";
 
         /// <summary>
-        /// адрес smtp сервера
+        /// Адрес smtp сервера
         /// </summary>
-        public string SMTP_SERVER { get; set; } = "send.smsc.ru";
+        public string SmtpServer { get; set; } = "send.smsc.ru";
 
         /// <summary>
-        /// логин для smtp сервера
+        /// Порт smtp сервера
         /// </summary>
-        public string SMTP_LOGIN { get; set; }
+        public int SmtpPort { get; set; } = 25;
 
         /// <summary>
-        /// пароль для smtp сервера
+        /// Логин для smtp сервера
         /// </summary>
-        public string SMTP_PASSWORD { get; set; }
+        public string SmtpLogin { get; set; }
 
+        /// <summary>
+        /// Пароль для smtp сервера
+        /// </summary>
+        public string SmtpPassword { get; set; }
         #endregion
 
         /// <summary>
         /// Checks that all the settings within the options are configured properly.
         /// </summary>
-        /// <exception cref="ArgumentNullException">Thrown when <see cref="SMSC_LOGIN"/> or <see cref="SMSC_PASSWORD"/> are null.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when <see cref="Login"/> or <see cref="Password"/> are null.</exception>
         public void Validate()
         {
-            if (string.IsNullOrWhiteSpace(SMSC_LOGIN))
-                throw new ArgumentNullException($"{nameof(SMSC_LOGIN)}");
+            if (string.IsNullOrWhiteSpace(Login))
+                throw new ArgumentNullException($"{nameof(Login)}");
 
-            if (string.IsNullOrWhiteSpace(SMSC_PASSWORD))
-                throw new ArgumentNullException($"{nameof(SMSC_PASSWORD)}");
+            if (string.IsNullOrWhiteSpace(Password))
+                throw new ArgumentNullException($"{nameof(Password)}");
         }
     }
 }

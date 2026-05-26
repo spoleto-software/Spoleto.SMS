@@ -23,8 +23,8 @@ namespace Spoleto.SMS.Extensions.Smsc
         public static SmsServiceBuilder AddSmsc(this SmsServiceBuilder builder, string login, string password)
            => builder.AddSmsc(x =>
            {
-               x.SMSC_LOGIN = login;
-               x.SMSC_PASSWORD = password;
+               x.Login = login;
+               x.Password = password;
            });
 
         /// <summary>

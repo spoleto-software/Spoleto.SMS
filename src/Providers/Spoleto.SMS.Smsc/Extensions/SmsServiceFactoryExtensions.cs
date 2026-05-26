@@ -20,8 +20,8 @@ namespace Spoleto.SMS
         public static SmsServiceFactory AddSmsc(this SmsServiceFactory builder, string login, string password)
            => builder.AddSmsc(x =>
            {
-               x.SMSC_LOGIN = login;
-               x.SMSC_PASSWORD = password;
+               x.Login = login;
+               x.Password = password;
            });
 
         /// <summary>

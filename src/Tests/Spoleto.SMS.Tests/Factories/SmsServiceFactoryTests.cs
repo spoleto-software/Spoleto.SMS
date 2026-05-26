@@ -30,7 +30,7 @@ namespace Spoleto.SMS.Tests.Factories
                    options.DefaultFrom = "Default Sender ID";
                    options.DefaultProvider = SmscProvider.ProviderName;
                })
-               .AddSmsc(smscOptions.SMSC_LOGIN, smscOptions.SMSC_PASSWORD)
+               .AddSmsc(smscOptions.Login, smscOptions.Password)
                .AddGetSms(getSmsOptions.Login, getSmsOptions.Password)
                .AddSmsTraffic(smsTrafficOptions.Login, smsTrafficOptions.Password)
                .Build();

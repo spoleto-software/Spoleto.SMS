@@ -1,422 +1,589 @@
-﻿using System.Net.Mail;
+﻿using System.Globalization;
 using System.Net;
+using System.Net.Http.Headers;
+using System.Net.Mail;
 using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Web;
+using Microsoft.Extensions.Logging;
 
 namespace Spoleto.SMS.Providers.Smsc
 {
     /// <summary>
     /// The SMSC API.
     /// </summary>
-    /// <remarks>
-    /// Tuned with options version of <see href="https://smsc.ru/api/code/libraries/http_smtp/cs/#menu"/>.
-    /// The original version is here <see cref="SMSC"/>.
-    /// </remarks>
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
-    public partial class SmscProvider
+    public partial class SmscProvider : ISmscProvider
     {
-        // Константы с параметрами отправки
-        private readonly string SMSC_LOGIN = "login";          // логин клиента
-        private readonly string SMSC_PASSWORD = "password";    // пароль или MD5-хеш пароля в нижнем регистре
-        private bool SMSC_POST = false;                     // использовать метод POST
-        private readonly bool SMSC_HTTPS = false;              // использовать HTTPS протокол
-        private readonly string SMSC_CHARSET = "utf-8";        // кодировка сообщения (windows-1251 или koi8-r), по умолчанию используется utf-8
-        private readonly bool SMSC_DEBUG = false;              // флаг отладки
+        // The client always requests comma-delimited plain-text responses (fmt=1).
+        private const string FmtCsv = "1";
+        private const string BaseHost = "smsc.ru";
 
-        // Константы для отправки SMS по SMTP
-        private readonly string SMTP_FROM = "api@smsc.ru";     // e-mail адрес отправителя
-        private readonly string SMTP_SERVER = "send.smsc.ru";  // адрес smtp сервера
-        private readonly string SMTP_LOGIN = "";               // логин для smtp сервера
-        private readonly string SMTP_PASSWORD = "";			// пароль для smtp сервера
+        // Endpoint file names:
+        private const string SendEndpoint = "send.php";
+        private const string StatusEndpoint = "status.php";
+        private const string BalanceEndpoint = "balance.php";
 
-        public string[][] D2Res;
-
-        // Метод отправки SMS
-        //
-        // обязательные параметры:
-        //
-        // phones - список телефонов через запятую или точку с запятой
-        // message - отправляемое сообщение
-        //
-        // необязательные параметры:
-        //
-        // translit - переводить или нет в транслит
-        // time - необходимое время доставки в виде строки (DDMMYYhhmm, h1-h2, 0ts, +m)
-        // id - идентификатор сообщения. Представляет собой 32-битное число в диапазоне от 1 до 2147483647.
-        // format - формат сообщения (0 - обычное sms, 1 - flash-sms, 2 - wap-push, 3 - hlr, 4 - bin, 5 - bin-hex, 6 - ping-sms, 7 - mms, 8 - mail, 9 - call, 10 - viber, 11 - soc)
-        // sender - имя отправителя (Sender ID).
-        // query - строка дополнительных параметров, добавляемая в URL-запрос ("valid=01:00&maxsms=3")
-        //
-        // возвращает массив строк (<id>, <количество sms>, <стоимость>, <баланс>) в случае успешной отправки
-        // либо массив строк (<id>, -<код ошибки>) в случае ошибки
-
-        public string[] send_sms(string phones, string message, int translit = 0, string time = "", int id = 0, int format = 0, string sender = "", string query = "", string[] files = null)
+        /// <inheritdoc/>
+        public async Task<SmscResult<SmscSendSuccessResult>> SendAsync(
+            SmscMessage message,
+            IEnumerable<string>? files = null,
+            CancellationToken cancellationToken = default)
         {
-            if (files != null)
-                SMSC_POST = true;
-
-            string[] formats = { "flash=1", "push=1", "hlr=1", "bin=1", "bin=2", "ping=1", "mms=1", "mail=1", "call=1", "viber=1", "soc=1" };
-
-            string[] m = _smsc_send_cmd("send", "cost=3&phones=" + _urlencode(phones)
-                            + "&mes=" + _urlencode(message) + "&id=" + id.ToString() + "&translit=" + translit.ToString()
-                            + (format > 0 ? "&" + formats[format - 1] : "") + (sender != "" ? "&sender=" + _urlencode(sender) : "")
-                            + (time != "" ? "&time=" + _urlencode(time) : "") + (query != "" ? "&" + query : ""), files);
-
-            // (id, cnt, cost, balance) или (id, -error)
-
-            if (SMSC_DEBUG)
+            if (string.IsNullOrWhiteSpace(message.SmscProviderData?.List))
             {
-                if (Convert.ToInt32(m[1]) > 0)
-                    _print_debug("Сообщение отправлено успешно. ID: " + m[0] + ", всего SMS: " + m[1] + ", стоимость: " + m[2] + ", баланс: " + m[3]);
-                else
-                    _print_debug("Ошибка №" + m[1].Substring(1, 1) + (m[0] != "0" ? ", ID: " + m[0] : ""));
-            }
-
-            return m;
-        }
-
-        // SMTP версия метода отправки SMS
-
-        public void send_sms_mail(string phones, string message, int translit = 0, string time = "", int id = 0, int format = 0, string sender = "")
-        {
-            MailMessage mail = new MailMessage();
-
-            mail.To.Add("send@send.smsc.ru");
-            mail.From = new MailAddress(SMTP_FROM, "");
-
-            mail.Body = SMSC_LOGIN + ":" + SMSC_PASSWORD + ":" + id.ToString() + ":" + time + ":"
-                        + translit.ToString() + "," + format.ToString() + "," + sender
-                        + ":" + phones + ":" + message;
-
-            mail.BodyEncoding = Encoding.GetEncoding(SMSC_CHARSET);
-            mail.IsBodyHtml = false;
-
-            SmtpClient client = new SmtpClient(SMTP_SERVER, 25);
-            client.DeliveryMethod = SmtpDeliveryMethod.Network;
-            client.EnableSsl = false;
-            client.UseDefaultCredentials = false;
-
-            if (SMTP_LOGIN != "")
-                client.Credentials = new NetworkCredential(SMTP_LOGIN, SMTP_PASSWORD);
-
-            client.Send(mail);
-        }
-
-        // Метод получения стоимости SMS
-        //
-        // обязательные параметры:
-        //
-        // phones - список телефонов через запятую или точку с запятой
-        // message - отправляемое сообщение 
-        //
-        // необязательные параметры:
-        //
-        // translit - переводить или нет в транслит
-        // format - формат сообщения (0 - обычное sms, 1 - flash-sms, 2 - wap-push, 3 - hlr, 4 - bin, 5 - bin-hex, 6 - ping-sms, 7 - mms, 8 - mail, 9 - call, 10 - viber, 11 - soc)
-        // sender - имя отправителя (Sender ID)
-        // query - строка дополнительных параметров, добавляемая в URL-запрос ("list=79999999999:Ваш пароль: 123\n78888888888:Ваш пароль: 456")
-        //
-        // возвращает массив (<стоимость>, <количество sms>) либо массив (0, -<код ошибки>) в случае ошибки
-
-        public string[] get_sms_cost(string phones, string message, int translit = 0, int format = 0, string sender = "", string query = "")
-        {
-            string[] formats = { "flash=1", "push=1", "hlr=1", "bin=1", "bin=2", "ping=1", "mms=1", "mail=1", "call=1", "viber=1", "soc=1" };
-
-            string[] m = _smsc_send_cmd("send", "cost=1&phones=" + _urlencode(phones)
-                            + "&mes=" + _urlencode(message) + translit.ToString() + (format > 0 ? "&" + formats[format - 1] : "")
-                            + (sender != "" ? "&sender=" + _urlencode(sender) : "") + (query != "" ? "&query" : ""));
-
-            // (cost, cnt) или (0, -error)
-
-            if (SMSC_DEBUG)
-            {
-                if (Convert.ToInt32(m[1]) > 0)
-                    _print_debug("Стоимость рассылки: " + m[0] + ". Всего SMS: " + m[1]);
-                else
-                    _print_debug("Ошибка №" + m[1].Substring(1, 1));
-            }
-
-            return m;
-        }
-
-        // Метод проверки статуса отправленного SMS или HLR-запроса
-        //
-        // id - ID cообщения или список ID через запятую
-        // phone - номер телефона или список номеров через запятую
-        // all - вернуть все данные отправленного SMS, включая текст сообщения (0,1 или 2)
-        //
-        // возвращает массив (для множественного запроса возвращается массив с единственным элементом, равным 1. В этом случае статусы сохраняются в
-        //					двумерном динамическом массиве класса D2Res):
-        //
-        // для одиночного SMS-сообщения:
-        // (<статус>, <время изменения>, <код ошибки доставки>)
-        //
-        // для HLR-запроса:
-        // (<статус>, <время изменения>, <код ошибки sms>, <код IMSI SIM-карты>, <номер сервис-центра>, <код страны регистрации>, <код оператора>,
-        // <название страны регистрации>, <название оператора>, <название роуминговой страны>, <название роумингового оператора>)
-        //
-        // при all = 1 дополнительно возвращаются элементы в конце массива:
-        // (<время отправки>, <номер телефона>, <стоимость>, <sender id>, <название статуса>, <текст сообщения>)
-        //
-        // при all = 2 дополнительно возвращаются элементы <страна>, <оператор> и <регион>
-        //
-        // при множественном запросе (данные по статусам сохраняются в двумерном массиве D2Res):
-        // если all = 0, то для каждого сообщения или HLR-запроса дополнительно возвращается <ID сообщения> и <номер телефона>
-        //
-        // если all = 1 или all = 2, то в ответ добавляется <ID сообщения>
-        //
-        // либо массив (0, -<код ошибки>) в случае ошибки
-
-        public string[] get_status(string id, string phone, int all = 0)
-        {
-            string[] m = _smsc_send_cmd("status", "phone=" + _urlencode(phone) + "&id=" + _urlencode(id) + "&all=" + all.ToString());
-
-            // (status, time, err, ...) или (0, -error)
-
-            if (id.IndexOf(',') == -1)
-            {
-                if (SMSC_DEBUG)
+                if (string.IsNullOrWhiteSpace(message.To))
                 {
-                    if (m[1] != "" && Convert.ToInt32(m[1]) >= 0)
-                    {
-                        int timestamp = Convert.ToInt32(m[1]);
-                        DateTime offset = new DateTime(1970, 1, 1, 0, 0, 0, 0);
-                        DateTime date = offset.AddSeconds(timestamp);
-
-                        _print_debug("Статус SMS = " + m[0] + (timestamp > 0 ? ", время изменения статуса - " + date.ToLocalTime() : ""));
-                    }
-                    else
-                        _print_debug("Ошибка №" + m[1].Substring(1, 1));
+                    throw new ArgumentException("Value cannot be null or whitespace.", nameof(message.To));
                 }
 
-                int idx = all == 1 ? 9 : 12;
+                if (message.Body == null)
+                {
+                    throw new ArgumentException("Value cannot be null or whitespace.", nameof(message.Body));
+                }
 
-                if (all > 0 && m.Length > idx && (m.Length < idx + 5 || m[idx + 5] != "HLR"))
-                    m = String.Join(",", m).Split(",".ToCharArray(), idx);
+#if NET5_0_OR_GREATER
+                var phoneNumbers = message.To.Split(message.PhoneNumberSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+#else
+                var phoneNumbers = message.To.Split(message.PhoneNumberSeparator);
+#endif
+                // Validate:
+                ValidateDataForSMS(phoneNumbers, message);
+            }
+
+            var fileList = files?.ToArray();
+            var usePost = _options.UsePost || fileList?.Length > 0;
+
+            var parameters = BuildAuthParameters();
+            if (!string.IsNullOrWhiteSpace(message.To))
+            {
+                parameters["phones"] = message.To;
+            }
+            if (!string.IsNullOrEmpty(message.Body))
+            {
+                parameters["mes"] = message.Body;
+            }
+
+            if (!string.IsNullOrEmpty(message.SmscProviderData?.List))
+            {
+                parameters["nl"] = "1"; // process the symbol '/n' in messages
+            }
+
+            // cost=3 → response: <id>,<cnt>,<cost>,<balance>
+            parameters["cost"] = "3";
+
+            if (!string.IsNullOrWhiteSpace(message.From))
+            {
+                parameters["sender"] = message.From!;
+            }
+
+            ApplyMessageData(parameters, message.SmscProviderData);
+
+            var raw = await ExecuteAsync(SendEndpoint, parameters, usePost, fileList, cancellationToken).ConfigureAwait(false);
+
+            // fmt=1 success (cost=3): <id>,<cnt>,<cost>,<balance>
+            // fmt=1 error 1,2,4,5,9:  0,-N
+            // fmt=1 error 3,6,7,8:   <id>,-N
+            if (TryParseError(raw, out var error))
+            {
+                LogDebug("Send failed. MessageId: {Id}, Error: {Code}.", error!.MessageId, error.ErrorCode);
+
+                return SmscResult<SmscSendSuccessResult>.Fail(error);
+            }
+
+            var success = new SmscSendSuccessResult
+            {
+                Id = raw[0],
+                SmsCount = raw.Length > 1 && int.TryParse(raw[1], out int cnt) ? cnt : 0,
+                Cost = raw.Length > 2 && TryParseDecimal(raw[2], out decimal c) ? c : 0m,
+                Balance = raw.Length > 3 && TryParseDecimal(raw[3], out decimal b) ? b : 0m
+            };
+
+            LogDebug("SMS sent. ID: {Id}, Count: {Count}, Cost: {Cost}, Balance: {Balance}",
+                success.Id, success.SmsCount, success.Cost, success.Balance);
+
+            return SmscResult<SmscSendSuccessResult>.Ok(success);
+        }
+
+        /// <inheritdoc/>
+        public async Task<SmscResult<SmscCostSuccessResult>> GetSmsCostAsync(
+            string phones,
+            string message,
+            string? sender = null,
+            SmscMessageData? data = null,
+            CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(data?.List))
+            {
+                if (string.IsNullOrWhiteSpace(phones))
+                {
+                    throw new ArgumentException("Value cannot be null or whitespace.", nameof(phones));
+                }
+
+                if (string.IsNullOrWhiteSpace(message))
+                {
+                    throw new ArgumentException("Value cannot be null or whitespace.", nameof(message));
+                }
+            }
+
+            var parameters = BuildAuthParameters();
+            if (!string.IsNullOrWhiteSpace(phones))
+            {
+                parameters["phones"] = phones;
+            }
+            if (!string.IsNullOrEmpty(message))
+            {
+                parameters["mes"] = message;
+            }
+            // cost=1 → estimate only, no message is sent; response: <cost>,<cnt>
+            parameters["cost"] = "1";
+
+            if (!string.IsNullOrWhiteSpace(sender))
+            {
+                parameters["sender"] = sender!;
+            }
+
+            ApplyMessageData(parameters, data);
+
+            var raw = await ExecuteAsync(SendEndpoint, parameters, _options.UsePost, null, cancellationToken).ConfigureAwait(false);
+
+            if (TryParseError(raw, out var error))
+            {
+                LogDebug("Cost check failed. Error: {Code}.", error!.ErrorCode);
+
+                return SmscResult<SmscCostSuccessResult>.Fail(error);
+            }
+
+            var success = new SmscCostSuccessResult
+            {
+                Cost = TryParseDecimal(raw[0], out decimal cost) ? cost : 0m,
+                SmsCount = raw.Length > 1 && int.TryParse(raw[1], out int cnt) ? cnt : 0
+            };
+
+            LogDebug("Cost: {Cost}, SMS count: {Count}", success.Cost, success.SmsCount);
+
+            return SmscResult<SmscCostSuccessResult>.Ok(success);
+        }
+
+        /// <inheritdoc/>
+        public async Task<SmscStatusResult> GetStatusAsync(
+            string id,
+            string phone,
+            int all = 0,
+            bool forTelegramBot = false,
+            CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(id));
+            }
+
+            if (string.IsNullOrWhiteSpace(phone))
+            {
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(phone));
+            }
+
+            var parameters = BuildAuthParameters();
+            parameters["phone"] = phone;
+            parameters["id"] = id;
+            parameters["all"] = all.ToString();
+
+            // bot=1: query messages delivered via a Telegram bot (documented in status.php params)
+            if (forTelegramBot)
+            {
+                parameters["bot"] = "1";
+            }
+
+            var isBatch = id.Contains(',');
+
+            // Batch responses use newline as the row separator; each row is still comma-delimited.
+            var raw = await ExecuteAsync(StatusEndpoint, parameters, _options.UsePost, null, cancellationToken, delimiter: isBatch ? '\n' : ',').ConfigureAwait(false);
+
+            return isBatch ? ParseBatchStatus(raw) : ParseSingleStatus(raw);
+        }
+
+        /// <inheritdoc/>
+        public decimal? GetBalance(CancellationToken cancellationToken = default)
+        {
+            return GetBalanceAsync(cancellationToken).GetAwaiter().GetResult();
+        }
+
+        /// <inheritdoc/>
+        public async Task<decimal?> GetBalanceAsync(CancellationToken cancellationToken = default)
+        {
+            var parameters = BuildAuthParameters();
+
+            var raw = await ExecuteAsync(BalanceEndpoint, parameters, _options.UsePost, null, cancellationToken).ConfigureAwait(false);
+
+            // fmt=1 success: <balance>
+            // fmt=1 error:   0,-N
+            if (raw.Length == 1 && TryParseDecimal(raw[0], out decimal balance))
+            {
+                LogDebug("Balance: {Balance}", balance);
+                return balance;
+            }
+
+            if (raw.Length >= 2)
+            {
+                LogDebug("Balance check failed. Error: {Code}", raw[1].TrimStart('-'));
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Sends an SMS via SMTP (alternative delivery channel documented at smsc.ru/api/smtp).
+        /// </summary>
+        /// <remarks>
+        /// SMTP body format: <c>login:password:id:time:translit,format,sender:phones:message</c>
+        /// </remarks>
+        public async Task SendSmsViaSmtpAsync(
+            string phones,
+            string message,
+            string? sender = null,
+            SmscMessageData? data = null,
+            CancellationToken cancellationToken = default)
+        {
+            if (string.IsNullOrWhiteSpace(phones))
+            {
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(phones));
+            }
+
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                throw new ArgumentException("Value cannot be null or whitespace.", nameof(message));
+            }
+
+            var id = data?.Id ?? "0";
+            var time = data?.Time ?? string.Empty;
+            var translit = data?.Translit ?? 0;
+            var format = ResolveFormatEmailFormat(data);
+
+            using var mail = new MailMessage();
+            mail.To.Add("send@send.smsc.ru");
+            mail.From = new MailAddress(_options.SmtpFrom);
+            mail.Body = string.Join(":",
+                _options.Login ?? string.Empty,
+                _options.Password ?? string.Empty,
+                id, time,
+                $"{translit},{format},{sender ?? string.Empty}",
+                phones, message);
+
+            mail.BodyEncoding = Encoding.GetEncoding(_options.Charset);
+            mail.IsBodyHtml = false;
+
+            using var smtpClient = new SmtpClient(_options.SmtpServer, _options.SmtpPort)
+            {
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                EnableSsl = false,
+                UseDefaultCredentials = false
+            };
+
+            if (!string.IsNullOrEmpty(_options.SmtpLogin))
+            {
+                smtpClient.Credentials = new NetworkCredential(_options.SmtpLogin, _options.SmtpPassword);
+            }
+
+#if NET7_0_OR_GREATER
+            await smtpClient.SendMailAsync(mail, cancellationToken).ConfigureAwait(false);
+#else
+            await smtpClient.SendMailAsync(mail).ConfigureAwait(false);
+#endif
+        }
+
+        /// <summary>
+        /// Builds the mandatory parameters that every request must carry.
+        /// Includes authentication (apikey OR login+psw), fixed response format
+        /// (<c>fmt=1</c>), and the default charset from options.
+        /// </summary>
+        private Dictionary<string, string> BuildAuthParameters()
+        {
+            var p = new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                // fmt=1 → comma-separated plain text (most compact)
+                ["fmt"] = FmtCsv,
+                ["charset"] = _options.Charset
+            };
+
+            // API accepts either apikey alone, or login + psw together.
+            if (!string.IsNullOrWhiteSpace(_options.ApiKey))
+            {
+                p["apikey"] = _options.ApiKey!;
             }
             else
             {
-                if (m.Length == 1 && m[0].IndexOf('-') == 2)
-                    return m[0].Split(',');
-
-                Array.Resize(ref D2Res, 0);
-                Array.Resize(ref D2Res, m.Length);
-
-                for (int i = 0; i < D2Res.Length; i++)
-                    D2Res[i] = m[i].Split(',');
-
-                Array.Resize(ref m, 1);
-                m[0] = "1";
+                p["login"] = _options.Login!;
+                p["psw"] = _options.Password!;
             }
 
-            return m;
+            return p;
         }
 
-        // Метод получения баланса
-        //
-        // без параметров
-        //
-        // возвращает баланс в виде строки или пустую строку в случае ошибки
-
-        public string get_balance()
+        private static void ApplyMessageData(Dictionary<string, string> p, SmscMessageData? data)
         {
-            string[] m = _smsc_send_cmd("balance", ""); // (balance) или (0, -error)
+            if (data is null) return;
 
-            if (SMSC_DEBUG)
+            using var doc = JsonSerializer.SerializeToDocument(data, new JsonSerializerOptions { DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull });
+
+            foreach (var prop in doc.RootElement.EnumerateObject())
             {
-                if (m.Length == 1)
-                    _print_debug("Сумма на счете: " + m[0]);
-                else
-                    _print_debug("Ошибка №" + m[1].Substring(1, 1));
-            }
-
-            return m.Length == 1 ? m[0] : "";
-        }
-
-        // ПРИВАТНЫЕ МЕТОДЫ
-
-        // Метод вызова запроса. Формирует URL и делает 3 попытки чтения
-
-        private string[] _smsc_send_cmd(string cmd, string arg, string[] files = null)
-        {
-            string url, _url;
-
-            arg = "login=" + _urlencode(SMSC_LOGIN) + "&psw=" + _urlencode(SMSC_PASSWORD) + "&fmt=1&charset=" + SMSC_CHARSET + "&" + arg;
-
-            url = _url = (SMSC_HTTPS ? "https" : "http") + "://smsc.ru/sys/" + cmd + ".php" + (SMSC_POST ? "" : "?" + arg);
-
-            string ret;
-            int i = 0;
-            HttpWebRequest request;
-            StreamReader sr;
-            HttpWebResponse response;
-
-            do
-            {
-                if (i++ > 0)
-                    url = _url.Replace("smsc.ru/", "www" + i.ToString() + ".smsc.ru/");
-
-                request = (HttpWebRequest)WebRequest.Create(url);
-
-                if (SMSC_POST)
+                string apiValue = prop.Value.ValueKind switch
                 {
-                    request.Method = "POST";
+                    JsonValueKind.True => "1",
+                    JsonValueKind.False => "0",
+                    JsonValueKind.Number => prop.Value.GetRawText(),
+                    JsonValueKind.String => prop.Value.GetString()!,
+                    _ => prop.Value.GetRawText()
+                };
 
-                    string postHeader, boundary = "----------" + DateTime.Now.Ticks.ToString("x");
-                    byte[] postHeaderBytes, boundaryBytes = Encoding.ASCII.GetBytes("--" + boundary + "--\r\n"), tbuf;
-                    StringBuilder sb = new StringBuilder();
-                    int bytesRead;
+                p[prop.Name] = apiValue;
+            }
+        }
 
-                    byte[] output = new byte[0];
+        private static int ResolveFormatEmailFormat(SmscMessageData? data)
+        {
+            if (data is null) return 8; // default for email
 
-                    if (files == null)
-                    {
-                        request.ContentType = "application/x-www-form-urlencoded";
-                        output = Encoding.UTF8.GetBytes(arg);
-                        request.ContentLength = output.Length;
-                    }
-                    else
-                    {
-                        request.ContentType = "multipart/form-data; boundary=" + boundary;
+            if (data.Flash == true) return 1;
+            if (data.Push == true) return 2;
+            if (data.Hlr == true) return 3;
+            if (data.Binary == 1) return 4;
+            if (data.Binary == 2) return 5;
+            if (data.Ping == true) return 6;
+            if (data.Mms == true) return 7;
+            if (data.Mail == true) return 8;
+            if (data.Call == true) return 9;
+            if (data.Viber == true) return 10;
+            if (data.Social == true) return 11;
 
-                        string[] par = arg.Split('&');
-                        int fl = files.Length;
+            return 0;
+        }
 
-                        for (int pcnt = 0; pcnt < par.Length + fl; pcnt++)
-                        {
-                            sb.Clear();
+        /// <summary>
+        /// Sends the API request, retrying against numbered mirror hosts on transient failures.
+        /// Primary host: smsc.ru → mirrors: www2.smsc.ru, www3.smsc.ru, …
+        /// </summary>
+        private async Task<string[]> ExecuteAsync(
+            string endpoint,
+            Dictionary<string, string> parameters,
+            bool usePost,
+            string[]? files,
+            CancellationToken cancellationToken,
+            char delimiter = ',')
+        {
+            var scheme = _options.UseHttps ? "https" : "http";
+            string? lastError = null;
 
-                            sb.Append("--");
-                            sb.Append(boundary);
-                            sb.Append("\r\n");
-                            sb.Append("Content-Disposition: form-data; name=\"");
-
-                            bool pof = pcnt < fl;
-                            String[] nv = new String[0];
-
-                            if (pof)
-                            {
-                                sb.Append("File" + (pcnt + 1));
-                                sb.Append("\"; filename=\"");
-                                sb.Append(Path.GetFileName(files[pcnt]));
-                            }
-                            else
-                            {
-                                nv = par[pcnt - fl].Split('=');
-                                sb.Append(nv[0]);
-                            }
-
-                            sb.Append("\"");
-                            sb.Append("\r\n");
-                            sb.Append("Content-Type: ");
-                            sb.Append(pof ? "application/octet-stream" : "text/plain; charset=\"" + SMSC_CHARSET + "\"");
-                            sb.Append("\r\n");
-                            sb.Append("Content-Transfer-Encoding: binary");
-                            sb.Append("\r\n");
-                            sb.Append("\r\n");
-
-                            postHeader = sb.ToString();
-                            postHeaderBytes = Encoding.UTF8.GetBytes(postHeader);
-
-                            output = _concatb(output, postHeaderBytes);
-
-                            if (pof)
-                            {
-                                FileStream fileStream = new FileStream(files[pcnt], FileMode.Open, FileAccess.Read);
-
-                                // Write out the file contents
-                                byte[] buffer = new Byte[checked((uint)Math.Min(4096, (int)fileStream.Length))];
-
-                                bytesRead = 0;
-                                while ((bytesRead = fileStream.Read(buffer, 0, buffer.Length)) != 0)
-                                {
-                                    tbuf = buffer;
-                                    Array.Resize(ref tbuf, bytesRead);
-
-                                    output = _concatb(output, tbuf);
-                                }
-                            }
-                            else
-                            {
-                                byte[] vl = Encoding.UTF8.GetBytes(nv[1]);
-                                output = _concatb(output, vl);
-                            }
-
-                            output = _concatb(output, Encoding.UTF8.GetBytes("\r\n"));
-                        }
-                        output = _concatb(output, boundaryBytes);
-
-                        request.ContentLength = output.Length;
-                    }
-
-                    Stream requestStream = request.GetRequestStream();
-                    requestStream.Write(output, 0, output.Length);
-                }
+            for (var attempt = 0; attempt < _options.RetryCount; attempt++)
+            {
+                var host = attempt == 0 ? BaseHost : $"www{attempt + 1}.{BaseHost}";
+                var url = $"{scheme}://{host}/sys/{endpoint}";
 
                 try
                 {
-                    response = (HttpWebResponse)request.GetResponse();
+                    using var request = BuildRequest(url, parameters, files, usePost);
+                    using var response = await _httpClient
+                        .SendAsync(request, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
+                        .ConfigureAwait(false);
 
-                    sr = new StreamReader(response.GetResponseStream());
-                    ret = sr.ReadToEnd();
+                    response.EnsureSuccessStatusCode();
+
+#if NET7_0_OR_GREATER
+                    var body = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+#else
+                    var body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+#endif
+
+                    if (!string.IsNullOrWhiteSpace(body))
+                    {
+                        return body.Trim().Split(delimiter);
+                    }
                 }
-                catch (WebException)
+                catch (Exception ex) when (ex is HttpRequestException ||
+                                            ex is TaskCanceledException { CancellationToken.IsCancellationRequested: false })
                 {
-                    ret = "";
+                    lastError = ex.Message;
+
+                    LogDebug("Attempt {Attempt}/{Total} failed for {Url}: {Error}", attempt + 1, _options.RetryCount, url, lastError);
                 }
             }
-            while (ret == "" && i < 5);
 
-            if (ret == "")
+            LogDebug("All {Total} attempts exhausted. Last error: {Error}", _options.RetryCount, lastError);
+
+            // Minimal dummy response that callers treat as an unrecognised error.
+            return ["0", "-0"];
+        }
+
+        /// <summary>
+        /// Builds the <see cref="HttpRequestMessage"/>: multipart POST with files,
+        /// form-urlencoded POST without files, or GET with a query string.
+        /// </summary>
+        private static HttpRequestMessage BuildRequest(
+            string url,
+            Dictionary<string, string> parameters,
+            string[]? files,
+            bool usePost)
+        {
+            bool hasFiles = files is { Length: > 0 };
+
+            if (hasFiles)
             {
-                if (SMSC_DEBUG)
-                    _print_debug("Ошибка чтения адреса: " + url);
+                // Multipart POST: file parts first ("File1", "File2", …), then text params.
+                var multipart = new MultipartFormDataContent();
 
-                ret = ","; // фиктивный ответ
-            }
-
-            char delim = ',';
-
-            if (cmd == "status")
-            {
-                string[] par = arg.Split('&');
-
-                for (i = 0; i < par.Length; i++)
+                for (int i = 0; i < files!.Length; i++)
                 {
-                    string[] lr = par[i].Split("=".ToCharArray(), 2);
+                    var fileContent = new StreamContent(File.OpenRead(files[i]));
+                    fileContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                    multipart.Add(fileContent, $"File{i + 1}", Path.GetFileName(files[i]));
+                }
 
-                    if (lr[0] == "id" && lr[1].IndexOf("%2c") > 0) // запятая в id - множественный запрос
-                        delim = '\n';
+                foreach (var keyValue in parameters)
+                    multipart.Add(new StringContent(keyValue.Value, Encoding.UTF8), keyValue.Key);
+
+                return new HttpRequestMessage(HttpMethod.Post, url) { Content = multipart };
+            }
+
+            if (usePost)
+            {
+                return new HttpRequestMessage(HttpMethod.Post, url)
+                {
+                    Content = new FormUrlEncodedContent(parameters)
+                };
+            }
+
+            // GET — build query string with proper percent-encoding.
+            var qs = string.Join("&", parameters.Select(kv => $"{Uri.EscapeDataString(kv.Key)}={Uri.EscapeDataString(kv.Value)}"));
+
+            return new HttpRequestMessage(HttpMethod.Get, $"{url}?{qs}");
+        }
+
+        /// <summary>
+        /// Detects the fmt=1 error pattern in a raw response array.
+        /// <para>
+        /// Errors 1,2,4,5,9 → <c>["0", "-N"]</c><br/>
+        /// Errors 3,6,7,8   → <c>["&lt;id&gt;", "-N"]</c>
+        /// </para>
+        /// </summary>
+        private static bool TryParseError(string[] raw, out SmscErrorResult? result)
+        {
+            if (raw.Length >= 2
+                && raw[1].StartsWith("-")
+                && int.TryParse(raw[1].Substring(1), out var code))
+            {
+                result = new SmscErrorResult
+                {
+                    MessageId = raw[0],
+                    ErrorCode = code
+                };
+
+                return true;
+            }
+
+            result = null;
+            return false;
+        }
+
+        /// <summary>
+        /// Parses the fmt=1 status response for a single message ID.
+        /// </summary>
+        /// <remarks>
+        /// Field layout (fmt=1, all=0, SMS/HLR):
+        ///   <c>status, last_timestamp, err [, imsi, msc, mcc, mnc, cn, net, rcn, rnet]</c>
+        /// Field layout (fmt=1, all=1, SMS):
+        ///   <c>status, last_timestamp, err, send_timestamp, phone, cost, sender,
+        ///      status_name, message, comment, type</c>
+        /// Field layout (fmt=1, all=2, SMS):
+        ///   same as all=1 but country, operator, region inserted after phone.
+        /// </remarks>
+        private SmscStatusResult ParseSingleStatus(string[] raw)
+        {
+            if (TryParseError(raw, out var error))
+            {
+                LogDebug("Status check failed. Error: {Code}.", error!.ErrorCode);
+
+                return SmscStatusResult.Fail(error);
+            }
+
+            int statusCode = int.TryParse(raw[0], out int s) ? s : 0;
+            int timestamp = raw.Length > 1 && int.TryParse(raw[1], out int t) ? t : 0;
+            int errCode = raw.Length > 2 && int.TryParse(raw[2], out int e) ? e : 0;
+
+            DateTimeOffset? lastChanged = timestamp > 0
+                ? DateTimeOffset.FromUnixTimeSeconds(timestamp)
+                : null;
+
+            LogDebug("Status: {Status}{At}", statusCode,
+                lastChanged.HasValue ? $", changed at {lastChanged}" : string.Empty);
+
+            // Indices 0–2 are always status/timestamp/err; everything after is "extra".
+            IReadOnlyList<string> extra = raw.Length > 3
+                ? raw.Skip(3).ToList()
+                : Array.Empty<string>();
+
+            var success = new SmscStatusSuccessResult
+            {
+                Status = statusCode,
+                LastChanged = lastChanged,
+                ErrorCode = errCode,
+                ExtraInfo = extra
+            };
+
+            return SmscStatusResult.Ok(success);
+        }
+
+        /// <summary>
+        /// Parses the newline-delimited batch status response.
+        /// Each row is a comma-separated string that is split independently.
+        /// </summary>
+        private static SmscStatusResult ParseBatchStatus(string[] rows)
+        {
+            // A single-row response may still be an error ("0,-2")
+            if (rows.Length == 1)
+            {
+                var parts = rows[0].Split(',');
+                if (parts.Length >= 2
+                    && parts[1].StartsWith("-")
+                    && int.TryParse(parts[1].Substring(1), out int code))
+                {
+                    var error = new SmscErrorResult
+                    {
+                        MessageId = parts[0],
+                        ErrorCode = code
+                    };
+
+                    return SmscStatusResult.Fail(error);
                 }
             }
 
-            return ret.Split(delim);
+            var parsed = rows
+                .Select(row => (IReadOnlyList<string>)row.Split(','))
+                .ToArray();
+
+            var success = new SmscBatchStatusSuccessResult
+            {
+                Rows = parsed
+            };
+
+            return SmscStatusResult.OkBatch(success);
         }
 
-        // кодирование параметра в http-запросе
-        private string _urlencode(string str)
-        {
-            if (SMSC_POST) return str;
+        private static bool TryParseDecimal(string s, out decimal value) => decimal.TryParse(s, NumberStyles.Any, CultureInfo.InvariantCulture, out value);
 
-            return HttpUtility.UrlEncode(str);
+        private void LogDebug(string message, params object?[] args)
+        {
+            if (_options.IsDebug)
+            {
+                _logger.LogDebug(message, args);
+            }
         }
 
-        // объединение байтовых массивов
-        private byte[] _concatb(byte[] farr, byte[] sarr)
+        public void Dispose()
         {
-            int opl = farr.Length;
-
-            Array.Resize(ref farr, farr.Length + sarr.Length);
-            Array.Copy(sarr, 0, farr, opl, sarr.Length);
-
-            return farr;
-        }
-
-        // вывод отладочной информации
-        private void _print_debug(string str)
-        {
-            //System.Windows.Forms.MessageBox.Show(str);
-            System.Diagnostics.Debug.WriteLine(str);
+            if (_ownsHttpClient)
+            {
+                _httpClient.Dispose();
+            }
         }
     }
 }

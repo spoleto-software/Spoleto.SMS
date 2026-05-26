@@ -67,5 +67,12 @@ namespace Spoleto.SMS.Tests
 
             return testGroup;
         }
+
+        public static string GetSmsMessageListSmsc()
+        {
+            var list = _config.GetSection("SmsMessageListSmsc").Get<string>()!;
+
+            return list;
+        }
     }
 }

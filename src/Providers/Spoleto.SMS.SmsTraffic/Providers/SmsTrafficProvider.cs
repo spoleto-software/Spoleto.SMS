@@ -249,8 +249,8 @@ namespace Spoleto.SMS.Providers.SmsTraffic
                         SmsSendingData = smsResponse.MessageInfos?.MessageInfo?.Count > 0
                         ? smsResponse.MessageInfos.MessageInfo.Select(x => new SmdSendingData
                         {
-                            MessageId = x.SmsId,
-                            Recipient = x.Phone
+                            MessageId = x.SmsId.ToString(),
+                            Recipient = x.Phone.ToString()
                         })
                         : null
                     };

@@ -8,10 +8,10 @@
         /// <summary>
         /// Creates the SMS message.
         /// </summary>
-        public SmsMessage(string body, string? from, string to, bool isAllowSendToForeignNumbers = false, List<SmsProviderData>? providerData = null)
+        public SmsMessage(string body, string? from, string? to, bool isAllowSendToForeignNumbers = false, List<SmsProviderData>? providerData = null)
         {
             Body = body;
-            To = to ?? throw new ArgumentNullException(nameof(to));
+            To = to;
             IsAllowSendToForeignNumbers = isAllowSendToForeignNumbers;
             From = from;
             ProviderData = providerData ?? [];
