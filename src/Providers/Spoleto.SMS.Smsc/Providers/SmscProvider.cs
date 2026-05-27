@@ -242,7 +242,7 @@ namespace Spoleto.SMS.Providers.Smsc
             if (result.IsSuccess)
             {
                 var date = result.Success!.LastChanged?.UtcDateTime;
-                var data = GetStatusData(result.Success!.Status.ToString(), date, null);
+                var data = GetStatusData(result.Success!.Status, date, null);
                 var successful = GetStatusSuccessfulFlag(result.Success!.Status);
 
                 if (!successful)
@@ -255,7 +255,7 @@ namespace Spoleto.SMS.Providers.Smsc
                         [
                             new()
                             {
-                                Error =result.Success!.ErrorCode,
+                                Error = result.Success!.ErrorCode,
                                 Code = result.Success!.Status.ToString(),
                                 Message =$"{data.Text} ({data.Description})"
                             }
@@ -276,10 +276,10 @@ namespace Spoleto.SMS.Providers.Smsc
 
             if (result.IsBatchSuccess)
             {
-                static (int Code, bool Successful, DateTime? StatusDate, string? PhoneNumber) GetStatusInfo(IReadOnlyList<string> raw)
+                static (SmscMessageStatus Status, bool Successful, DateTime? StatusDate, string? PhoneNumber) GetStatusInfo(IReadOnlyList<string> raw)
                 {
-                    int statusCode = int.TryParse(raw[0], out int s) ? s : 0;
-                    int timestamp = raw.Count > 1 && int.TryParse(raw[1], out int t) ? t : 0;
+                    var statusCode = (SmscMessageStatus)(int.TryParse(raw[0], out int s) ? s : 0);
+                    var timestamp = raw.Count > 1 && int.TryParse(raw[1], out int t) ? t : 0;
                     var successful = GetStatusSuccessfulFlag(statusCode);
                     var phoneNumber = raw.Count > 4 ? raw[4] : null;
 
@@ -296,7 +296,7 @@ namespace Spoleto.SMS.Providers.Smsc
                 {
                     ProviderName = Name,
                     Success = statusList.Any(x => x.Successful),
-                    SmsStatusData = statusList.Select(x => GetStatusData(x.Code.ToString(), x.StatusDate, x.PhoneNumber)).ToList()
+                    SmsStatusData = statusList.Select(x => GetStatusData(x.Status, x.StatusDate, x.PhoneNumber)).ToList()
                 };
             }
 
@@ -342,10 +342,10 @@ namespace Spoleto.SMS.Providers.Smsc
                 _ => $"Неизвестная ошибка. Свяжитесь с ИТ отделом. Код ошибки : {code}.",
             };
 
-        private static SmsStatusData GetStatusData(string code, DateTime? date, string phoneNumber)
-            => code switch
+        private static SmsStatusData GetStatusData(SmscMessageStatus status, DateTime? date, string phoneNumber)
+            => status switch
             {
-                "-3" => new()
+                SmscMessageStatus.MessageNotFound => new()
                 {
                     Status = "-3",
                     Text = "Сообщение не найдено.",
@@ -355,7 +355,7 @@ namespace Spoleto.SMS.Providers.Smsc
                     DateDelivered = date ?? DateTime.MinValue,
                     Recipient = phoneNumber
                 },
-                "-2" => new()
+                SmscMessageStatus.Stopped => new()
                 {
                     Status = "-2",
                     Text = "Остановлено",
@@ -365,7 +365,7 @@ namespace Spoleto.SMS.Providers.Smsc
                     DateDelivered = date ?? DateTime.MinValue,
                     Recipient = phoneNumber
                 },
-                "-1" => new()
+                SmscMessageStatus.WaitingForSending => new()
                 {
                     Status = "-1",
                     Text = "Ожидает отправки",
@@ -375,7 +375,7 @@ namespace Spoleto.SMS.Providers.Smsc
                     DateDelivered = date ?? DateTime.MinValue,
                     Recipient = phoneNumber
                 },
-                "0" => new()
+                SmscMessageStatus.SentToOperator => new()
                 {
                     Status = "0",
                     Text = "Передано оператору",
@@ -385,7 +385,7 @@ namespace Spoleto.SMS.Providers.Smsc
                     DateDelivered = date ?? DateTime.MinValue,
                     Recipient = phoneNumber
                 },
-                "1" => new()
+                SmscMessageStatus.Delivered => new()
                 {
                     Status = "1",
                     Text = "Доставлено",
@@ -395,7 +395,7 @@ namespace Spoleto.SMS.Providers.Smsc
                     DateDelivered = date ?? DateTime.MinValue,
                     Recipient = phoneNumber
                 },
-                "2" => new()
+                SmscMessageStatus.Read => new()
                 {
                     Status = "2",
                     Text = "Прочитано",
@@ -405,7 +405,7 @@ namespace Spoleto.SMS.Providers.Smsc
                     DateDelivered = date ?? DateTime.MinValue,
                     Recipient = phoneNumber
                 },
-                "3" => new()
+                SmscMessageStatus.Expired => new()
                 {
                     Status = "3",
                     Text = "Просрочено",
@@ -415,7 +415,7 @@ namespace Spoleto.SMS.Providers.Smsc
                     DateDelivered = date ?? DateTime.MinValue,
                     Recipient = phoneNumber
                 },
-                "4" => new()
+                SmscMessageStatus.LinkClicked => new()
                 {
                     Status = "4",
                     Text = "Нажата ссылка",
@@ -425,7 +425,7 @@ namespace Spoleto.SMS.Providers.Smsc
                     DateDelivered = date ?? DateTime.MinValue,
                     Recipient = phoneNumber
                 },
-                "20" => new()
+                SmscMessageStatus.CannotBeDelivered => new()
                 {
                     Status = "20",
                     Text = "Невозможно доставить",
@@ -435,7 +435,7 @@ namespace Spoleto.SMS.Providers.Smsc
                     DateDelivered = date ?? DateTime.MinValue,
                     Recipient = phoneNumber
                 },
-                "22" => new()
+                SmscMessageStatus.InvalidPhoneNumber => new()
                 {
                     Status = "22",
                     Text = "Неверный номер",
@@ -445,7 +445,7 @@ namespace Spoleto.SMS.Providers.Smsc
                     DateDelivered = date ?? DateTime.MinValue,
                     Recipient = phoneNumber
                 },
-                "23" => new()
+                SmscMessageStatus.Forbidden => new()
                 {
                     Status = "23",
                     Text = "Запрещено",
@@ -455,7 +455,7 @@ namespace Spoleto.SMS.Providers.Smsc
                     DateDelivered = date ?? DateTime.MinValue,
                     Recipient = phoneNumber
                 },
-                "24" => new()
+                SmscMessageStatus.InsufficientFunds => new()
                 {
                     Status = "24",
                     Text = "Недостаточно средств",
@@ -465,7 +465,7 @@ namespace Spoleto.SMS.Providers.Smsc
                     DateDelivered = date ?? DateTime.MinValue,
                     Recipient = phoneNumber
                 },
-                "25" => new()
+                SmscMessageStatus.UnavailableNumber => new()
                 {
                     Status = "25",
                     Text = "Недоступный номер.",
@@ -477,8 +477,8 @@ namespace Spoleto.SMS.Providers.Smsc
                 },
                 _ => new()
                 {
-                    Status = code,
-                    Text = $"Неизвестный статус. Свяжитесь с ИТ отделом. Код ошибки : {code}.",
+                    Status = status.ToString(),
+                    Text = $"Неизвестный статус. Свяжитесь с ИТ отделом. Код ошибки : {(int)status}.",
                     DateSent = date ?? DateTime.MinValue,
                     DateReceived = date ?? DateTime.MinValue,
                     DateDelivered = date ?? DateTime.MinValue,
@@ -486,12 +486,12 @@ namespace Spoleto.SMS.Providers.Smsc
                 }
             };
 
-        private static bool GetStatusSuccessfulFlag(int code)
-            => code switch
+        private static bool GetStatusSuccessfulFlag(SmscMessageStatus status)
+            => status switch
             {
-                1 => true, // Доставлено
-                2 => true, // Прочитано
-                4 => true, // Нажата ссылка
+                SmscMessageStatus.Delivered => true, // Доставлено
+                SmscMessageStatus.Read => true, // Прочитано
+                SmscMessageStatus.LinkClicked => true, // Нажата ссылка
                 _ => false
             };
 

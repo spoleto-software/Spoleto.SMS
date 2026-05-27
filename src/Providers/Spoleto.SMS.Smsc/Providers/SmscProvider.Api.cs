@@ -505,9 +505,9 @@ namespace Spoleto.SMS.Providers.Smsc
                 return SmscStatusResult.Fail(error);
             }
 
-            int statusCode = int.TryParse(raw[0], out int s) ? s : 0;
-            int timestamp = raw.Length > 1 && int.TryParse(raw[1], out int t) ? t : 0;
-            int errCode = raw.Length > 2 && int.TryParse(raw[2], out int e) ? e : 0;
+            var statusCode = (SmscMessageStatus)(int.TryParse(raw[0], out int s) ? s : 0);
+            var timestamp = raw.Length > 1 && int.TryParse(raw[1], out int t) ? t : 0;
+            var errCode = raw.Length > 2 && int.TryParse(raw[2], out int e) ? e : 0;
 
             DateTimeOffset? lastChanged = timestamp > 0
                 ? DateTimeOffset.FromUnixTimeSeconds(timestamp)

@@ -7,9 +7,9 @@
     public record SmscStatusSuccessResult
     {
         /// <summary>
-        /// Delivery status code. See statuses reference page.
+        /// Delivery status code.
         /// </summary>
-        public int Status { get; set; }
+        public SmscMessageStatus Status { get; set; }
 
         /// <summary>
         /// UTC time of the last status change, or null if not yet changed.
