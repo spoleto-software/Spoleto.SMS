@@ -1,13 +1,17 @@
-﻿namespace Spoleto.SMS
+﻿using System.Text.Json.Serialization;
+using Spoleto.SMS.Converters;
+
+namespace Spoleto.SMS.Providers.GetSms
 {
     /// <summary>
-    /// The SMS status.
+    /// The GetSms status.
     /// </summary>
     public record SmsStatusData
     {
         /// <summary>
         ///  Gets the status info.
         /// </summary>
+        [JsonPropertyName("status")]
         public string Status
         {
             get;
@@ -21,6 +25,7 @@
         /// <summary>
         /// Gets the status description.
         /// </summary>
+        [JsonPropertyName("description")]
         public string Description
         {
             get;
@@ -31,6 +36,7 @@
 #endif
         }
 
+        [JsonPropertyName("recipient")]
         public string Recipient
         {
             get;
@@ -41,6 +47,7 @@
 #endif
         }
 
+        [JsonPropertyName("text")]
         public string Text
         {
             get;
@@ -51,6 +58,7 @@
 #endif
         }
 
+        [JsonPropertyName("user_id")]
         public string UserId
         {
             get;
@@ -61,6 +69,8 @@
 #endif
         }
 
+        [JsonPropertyName("date_received")]
+        [JsonConverter(typeof(DateTimeConverter))]
         public DateTime DateReceived
         {
             get;
@@ -71,6 +81,8 @@
 #endif
         }
 
+        [JsonPropertyName("date_sent")]
+        [JsonConverter(typeof(DateTimeConverter))]
         public DateTime DateSent
         {
             get;
@@ -81,6 +93,8 @@
 #endif
         }
 
+        [JsonPropertyName("date_delivered")]
+        [JsonConverter(typeof(DateTimeConverter))]
         public DateTime DateDelivered
         {
             get;
@@ -91,6 +105,7 @@
 #endif
         }
 
+        [JsonPropertyName("message_id")]
         public string MessageId
         {
             get;
@@ -101,6 +116,7 @@
 #endif
         }
 
+        [JsonPropertyName("request_id")]
         public string RequestId
         {
             get;
@@ -111,6 +127,7 @@
 #endif
         }
 
+        [JsonPropertyName("count_messages")]
         public string CountMessages
         {
             get;
@@ -121,6 +138,7 @@
 #endif
         }
 
+        [JsonPropertyName("client_ip")]
         public string ClientIp
         {
             get;

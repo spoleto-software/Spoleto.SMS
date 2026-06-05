@@ -1,11 +1,15 @@
-﻿namespace Spoleto.SMS
+﻿using System.Text.Json.Serialization;
+using Spoleto.SMS.Converters;
+
+namespace Spoleto.SMS.Providers.GetSms
 {
     /// <summary>
-    /// The SMS sending data.
+    /// The GetSms sending data.
     /// </summary>
     public record SmdSendingData
     {
-        public string Recipient
+        [JsonPropertyName("recipient")]
+        public long Recipient
         {
             get;
 #if NET5_0_OR_GREATER
@@ -15,6 +19,7 @@
 #endif
         }
 
+        [JsonPropertyName("text")]
         public string Text
         {
             get;
@@ -25,6 +30,7 @@
 #endif
         }
 
+        [JsonPropertyName("user_id")]
         public int UserId
         {
             get;
@@ -35,6 +41,8 @@
 #endif
         }
 
+        [JsonPropertyName("date_received")]
+        [JsonConverter(typeof(DateTimeConverter))]
         public DateTime DateReceived
         {
             get;
@@ -45,7 +53,8 @@
 #endif
         }
 
-        public string MessageId
+        [JsonPropertyName("message_id")]
+        public long MessageId
         {
             get;
 #if NET5_0_OR_GREATER
@@ -55,6 +64,7 @@
 #endif
         }
 
+        [JsonPropertyName("request_id")]
         public int RequestId
         {
             get;
@@ -65,6 +75,7 @@
 #endif
         }
 
+        [JsonPropertyName("client_ip")]
         public string ClientIp
         {
             get;

@@ -128,7 +128,7 @@ namespace Spoleto.SMS.Providers.GetSms
                         {
                             ProviderName = Name,
                             Success = false,
-                            Errors = new List<SmsSendingError> { error }
+                            Errors = [error.ToSmsSendingError()]
                         };
                     }
 
@@ -138,7 +138,7 @@ namespace Spoleto.SMS.Providers.GetSms
                     {
                         ProviderName = Name,
                         Success = true,
-                        SmsStatusData = new List<SmsStatusData> { statusData }
+                        SmsStatusData = [statusData.ToSmsStatusData()]
                     };
                 }
                 // Check if the returned JSON is an array
@@ -158,7 +158,7 @@ namespace Spoleto.SMS.Providers.GetSms
                                 {
                                     ProviderName = Name,
                                     Success = false,
-                                    Errors = errors
+                                    Errors = errors.Select(x => x.ToSmsSendingError())
                                 };
                             }
 
@@ -168,7 +168,7 @@ namespace Spoleto.SMS.Providers.GetSms
                             {
                                 ProviderName = Name,
                                 Success = true,
-                                SmsStatusData = statusData
+                                SmsStatusData = statusData.Select(x => x.ToSmsStatusData())
                             };
                         }
                     }
@@ -179,7 +179,7 @@ namespace Spoleto.SMS.Providers.GetSms
             {
                 ProviderName = Name,
                 Success = false,
-                Errors = new List<SmsSendingError> { new() { Message = responseString } }
+                Errors = [new() { Message = responseString }]
             };
         }
 
@@ -255,7 +255,7 @@ namespace Spoleto.SMS.Providers.GetSms
                                 {
                                     Success = false,
                                     ProviderName = Name,
-                                    Errors = errors
+                                    Errors = errors.Select(x => x.ToSmsSendingError())
                                 };
                             }
 
@@ -265,7 +265,7 @@ namespace Spoleto.SMS.Providers.GetSms
                             {
                                 ProviderName = Name,
                                 Success = true,
-                                SmsSendingData = statusData
+                                SmsSendingData = statusData.Select(x => x.ToSmsSendingResult())
                             };
                         }
                     }
@@ -282,7 +282,7 @@ namespace Spoleto.SMS.Providers.GetSms
                         {
                             ProviderName = Name,
                             Success = false,
-                            Errors = new List<SmsSendingError> { error }
+                            Errors = [error.ToSmsSendingError()]
                         };
                     }
 
@@ -292,7 +292,7 @@ namespace Spoleto.SMS.Providers.GetSms
                     {
                         ProviderName = Name,
                         Success = true,
-                        SmsSendingData = new List<SmdSendingData> { statusData }
+                        SmsSendingData = [statusData.ToSmsSendingResult()]
                     };
                 }
 
@@ -303,7 +303,7 @@ namespace Spoleto.SMS.Providers.GetSms
             {
                 ProviderName = Name,
                 Success = false,
-                Errors = new List<SmsSendingError> { new() { Message = responseString } }
+                Errors = [new() { Message = responseString }]
             };
         }
 
