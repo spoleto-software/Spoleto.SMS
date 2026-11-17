@@ -42,6 +42,38 @@ namespace Spoleto.SMS.Tests.Providers
         }
 
         [Test]
+        public void SendGetSms()
+        {
+            // Arrange
+            var provider = ServiceProvider.GetRequiredService<IGetSmsProvider>();
+            var getSms = new GetSmsMessage(_sms.From, [new GetSmsMessageItem(_sms.To, _sms.Body)], _sms.IsAllowSendToForeignNumbers);
+
+            // Act
+            var result = provider.Send(getSms);
+
+            // Assert
+            Assert.That(result.Success, Is.True);
+        }
+
+        [Test]
+        public void SendSmsWithProviderData()
+        {
+            // Arrange
+            var provider = ServiceProvider.GetRequiredService<IGetSmsProvider>();
+            var providerData = new List<SmsProviderData>
+            {
+                new(GetSmsProviderData.Items, new List<GetSmsMessageItem>{new(_sms.To, _sms.Body)})
+            };
+            var smsMessage = new SmsMessage(_sms.Body, _sms.From, _sms.To, _sms.IsAllowSendToForeignNumbers, providerData);
+
+            // Act
+            var result = provider.Send(smsMessage);
+
+            // Assert
+            Assert.That(result.Success, Is.True);
+        }
+
+        [Test]
         public void GetStatus()
         {
             // Arrange

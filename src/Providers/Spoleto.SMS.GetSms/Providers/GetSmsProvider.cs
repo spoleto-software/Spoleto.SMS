@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Spoleto.Common.Helpers;
-using Spoleto.SMS.Extensions;
+using Spoleto.SMS.Exceptions;
 
 namespace Spoleto.SMS.Providers.GetSms
 {
@@ -13,7 +13,7 @@ namespace Spoleto.SMS.Providers.GetSms
     /// <remarks>
     /// <see href="https://getsms.uz/page/index/16"/>.
     /// </remarks>
-    public class GetSmsProvider : SmsProviderBase<SmsMessage>, IGetSmsProvider
+    public class GetSmsProvider : SmsProviderBase<GetSmsMessage>, IGetSmsProvider
     {
         /// <summary>
         /// The name of the SMS provider.
@@ -183,32 +183,57 @@ namespace Spoleto.SMS.Providers.GetSms
             };
         }
 
+        protected override void ValidateSmsMessage(SmsMessage smsMessage)
+        {
+            if (smsMessage is GetSmsMessage message)
+            {
+                if (message.Items.Count == 0
+                    || message.Items.Any(x => string.IsNullOrWhiteSpace(x.Text)))
+                {
+                    throw new SmsBodyIsNullException("The SMS body is empty.");
+                }
+            }
+            else
+            {
+                base.ValidateSmsMessage(smsMessage);
+            }
+        }
+
         /// <inheritdoc/>
         public override SmsSendingResult Send(SmsMessage message)
             => SendAsync(message).GetAwaiter().GetResult();
 
         /// <inheritdoc/>
-        public override async Task<SmsSendingResult> SendAsync(SmsMessage message, CancellationToken cancellationToken = default)
+        public override Task<SmsSendingResult> SendAsync(SmsMessage message, CancellationToken cancellationToken = default)
         {
             if (message is null)
                 throw new ArgumentNullException(nameof(message));
 
-            var getSmsMessage = CreateMessage(message);
+            var smsTrafficMessage = CreateMessage(message);
 
-#if NET5_0_OR_GREATER
-            var phoneNumbers = getSmsMessage.To.Split(getSmsMessage.PhoneNumberSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-#else
-            var phoneNumbers = getSmsMessage.To.Split(getSmsMessage.PhoneNumberSeparator);
-#endif
+            return SendAsync(smsTrafficMessage, cancellationToken);
+        }
+
+        /// <inheritdoc/>
+        public SmsSendingResult Send(GetSmsMessage message)
+            => SendAsync(message).GetAwaiter().GetResult();
+
+        /// <inheritdoc/>
+        public async Task<SmsSendingResult> SendAsync(GetSmsMessage message, CancellationToken cancellationToken = default)
+        {
+            if (message is null)
+                throw new ArgumentNullException(nameof(message));
+
+            var phoneNumbers = message.Items.Select(x => x.Phone);
 
             // Validate:
-            ValidateDataForSMS(phoneNumbers, getSmsMessage);
+            ValidateDataForSMS(phoneNumbers, message);
 
-            var smsList = phoneNumbers
+            var smsList = message.Items
                 .Select(x => new Dictionary<string, string>()
                 {
-                    {"phone", x},
-                    {"text", getSmsMessage.Body}
+                    {"phone", x.Phone},
+                    {"text", x.Text}
                 }).ToList();
 
             var requestData = new Dictionary<string, string>
@@ -217,9 +242,9 @@ namespace Spoleto.SMS.Providers.GetSms
                 { "password", _options.Password }
             };
 
-            if (!string.IsNullOrEmpty(getSmsMessage.From))
+            if (!string.IsNullOrEmpty(message.From))
             {
-                requestData.Add("nickname", getSmsMessage.From);
+                requestData.Add("nickname", message.From);
             }
 
             requestData.Add("data", JsonHelper.ToJson(smsList));
@@ -295,8 +320,6 @@ namespace Spoleto.SMS.Providers.GetSms
                         SmsSendingData = [statusData.ToSmsSendingResult()]
                     };
                 }
-
-
             }
 
             return new SmsSendingResult
@@ -305,6 +328,41 @@ namespace Spoleto.SMS.Providers.GetSms
                 Success = false,
                 Errors = [new() { Message = responseString }]
             };
+        }
+
+        protected override GetSmsMessage CreateMessage(SmsMessage originalMessage)
+        {
+            if (originalMessage is GetSmsMessage getSmsMessage)
+            {
+                return getSmsMessage;
+            }
+
+            var items = default(List<GetSmsMessageItem>);
+            var providerData = originalMessage.ProviderData;
+            if (providerData?.Count > 0)
+            {
+                foreach (var data in providerData)
+                {
+                    if (data.Name == GetSmsProviderData.Items)
+                        items = (List<GetSmsMessageItem>)data.Value;
+                }
+            }
+
+            if (items == null)
+            {
+#if NET5_0_OR_GREATER
+                var phoneNumbers = originalMessage.To.Split(originalMessage.PhoneNumberSeparator, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+#else
+                var phoneNumbers = originalMessage.To.Split(originalMessage.PhoneNumberSeparator);
+#endif
+                items = phoneNumbers
+                    .Select(x => new GetSmsMessageItem(x, originalMessage.Body))
+                    .ToList();
+            }
+
+            var message = new GetSmsMessage(originalMessage.From, items, originalMessage.IsAllowSendToForeignNumbers);
+
+            return message;
         }
 
         private static readonly Dictionary<string, string> _reflectionCache = new();
